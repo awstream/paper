@@ -1,0 +1,35 @@
+\definecolor{todo}{rgb}{1, 0, 0}
+\definecolor{ben}{rgb}{0.5, 0.5, 0.0}
+\definecolor{xin}{rgb}{0.0, 0.5, 0.5}
+
+\newtoggle{anonymous}
+\toggletrue{anonymous}
+%\togglefalse{anonymous}
+
+\newtoggle{comments}
+\toggletrue{comments}
+% \togglefalse{comments}
+
+\iftoggle{comments} {
+  % show comments with the corresponding color
+  \newcommand {\ben}[1]{{\color{ben}\bf{BZ: #1}\normalfont}}
+  \newcommand {\xin}[1]{{\color{xin}\bf{XJ: #1}\normalfont}}
+
+  \newcommand {\todo}[1]{{\color{todo}\bf{TODO: #1}\normalfont}}
+}{
+  % do not show comments
+  \newcommand {\ben}[1]{}
+  \newcommand {\xin}[1]{}
+
+  \newcommand {\todo}[1]{}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sigcomm2017"
+%%% End:

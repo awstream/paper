@@ -178,3 +178,7 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# Emacs AucTex
+auto/
+sigcomm2017.pdf

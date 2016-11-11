@@ -1,0 +1,52 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Motivate how streaming data are increasing. This includes IoT sensor streams,
+video surveillance and machine generated logs.
+
+microPMU generates data at kHz.
+
+Video surveillance increasing. IDC report~\cite{gantz2012digital} predicted
+5,800 exabytes of video footage.
+
+Large scale geo-deployed systems such as Content Distribution Network (CDN)
+generates logs.
+
+Traditional approach of aggregating data into a single point and then process is
+not scalable.
+
+Existing research Clarinet~\cite{viswanathan2016clarinet} such as
+GDA~\cite{pu2015low} studies how to distribute computation onto edge devices.
+
+JetStream~\cite{rabkin2014aggregation} explores how aggregation and degradation.
+Although the programming framework provides mechanisms (APIs) that allow
+applications to aggregate or degrade data streams. The specific mechanism has to
+be codified in JetStream. We explore how the system can automatically adapt the
+execution while still satisfying certain application guarantees (such as bounded
+latency).
+
+In wide-area, the bandwidth is not only scarce, but also varied. Applications
+developed without such awareness will easily backlogged at the edge side
+(hurting latency and real-time) or not fully utilizing the available resource.
+
+JetStream uses data cube API where operations are well understood; but it's
+limited to the type of query that it can answer.
+
+We design and implement a general-purpose WAN-aware stream processing system
+that adapts the application execution to available resources.
+
+Our approach combines offline and online profiling the application to adapt to
+resource (bandwidth) changes. This allows us to explore and fine-tune the
+trade-off between application accuracy and system performance.
+
+When deploying wide-area analytics applications, we envision it's common that
+multiple applications, which may or may not be developed from the same party,
+will run on the same worker machine. When the resources (CPU, memory and
+bandwidth) are scarce, we need to properly allocate the resource to each running
+application. Combined with our knowledge of the profiling information, the the
+system aims to maximize the overall performance (rather than min-max fairness).
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sigcomm2017"
+%%% End:
