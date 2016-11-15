@@ -1,0 +1,35 @@
+\section{System Design}
+\label{sec:system-design}
+
+\subsection{Profiling Applications}
+\label{sec:prof-appl}
+
+We take hints from the application developers who use our API. For each block of
+\texttt{MaybeDownsample}, \texttt{MaybeDegrade}, \texttt{MaybeBatch} and
+\texttt{Tunable}, we first run an off-line profiling phase that generates the
+application profile.
+
+Naively this requires scanning the entire parameter space, which is a
+high-dimension space. But we assume that domain experts could embed their
+knowledge to assist the search.
+
+\subsection{Per-task Adaptation}
+\label{sec:per-task-adaptation}
+
+During the execution of the application, our runtime monitors the available
+resource and tune the application according to the offline generated graph.
+
+\subsection{Inter-task Allocation}
+\label{sec:inter-task-alloc}
+
+When multiple tasks are available, since their profiles are different, the naive
+adaptation (drop half for all) is not idea. We explore how these taks can
+cooperatively improve the system.
+
+\subsection{Processing Placement}
+\label{sec:processing-placement}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sigcomm2017"
+%%% End:

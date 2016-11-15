@@ -1,22 +1,23 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Motivate how streaming data are increasing. This includes IoT sensor streams,
-video surveillance and machine generated logs.
+A growing number of devices are employed at the edge that monitors our
+environment and generate massive data. These include high-frequency sensors such
+as microPMU (kHz) level. Video surveillance increasing. IDC
+report~\cite{gantz2012digital} predicted 5,800 exabytes of video
+footage. Machines also generate a large quantity of data; for example,
+geo-deployed systems such as Content Distribution Network (CDN) has logs about
+the access.
 
-microPMU generates data at kHz.
+These data are often aggregated and processed and then triggers some action:
+such as smart grid control, calling policy or adjust content distribution to
+minimize latency.
 
-Video surveillance increasing. IDC report~\cite{gantz2012digital} predicted
-5,800 exabytes of video footage.
-
-Large scale geo-deployed systems such as Content Distribution Network (CDN)
-generates logs.
-
-Traditional approach of aggregating data into a single point and then process is
-not scalable.
-
-Existing research Clarinet~\cite{viswanathan2016clarinet} such as
-GDA~\cite{pu2015low} studies how to distribute computation onto edge devices.
+We target at these distributed sense-compute-control applications. They have a
+similar interface to stream processing. Traditional approach of aggregating data
+into a single point has proven to be un-scalable. There is a rise of distributed
+processing. Clarinet~\cite{viswanathan2016clarinet}, GDA~\cite{pu2015low} study
+how to distribute computation onto edge devices.
 
 JetStream~\cite{rabkin2014aggregation} explores how aggregation and degradation.
 Although the programming framework provides mechanisms (APIs) that allow
@@ -25,19 +26,23 @@ be codified in JetStream. We explore how the system can automatically adapt the
 execution while still satisfying certain application guarantees (such as bounded
 latency).
 
-In wide-area, the bandwidth is not only scarce, but also varied. Applications
-developed without such awareness will easily backlogged at the edge side
-(hurting latency and real-time) or not fully utilizing the available resource.
+We agree with JetStream about the scarcity of wide-area bandwidth; in addition,
+it's also varying. Applications without a graceful way to adapt to such scenario
+will lead to poor performance.
 
-JetStream uses data cube API where operations are well understood; but it's
-limited to the type of query that it can answer.
+The degradation is better understood in the DB context (JetStream uses data
+cube, and BlinkDB), but it's not applicable to the general computing.
 
-We design and implement a general-purpose WAN-aware stream processing system
-that adapts the application execution to available resources.
+To solve the problem where the limited resources in WAN will also fluctuate, we
+design and implement \sysname{}, which adapts the application execution to
+available resources.
 
-Our approach combines offline and online profiling the application to adapt to
-resource (bandwidth) changes. This allows us to explore and fine-tune the
-trade-off between application accuracy and system performance.
+Our approach combines offline and online profiling to assist the decision
+making. The offline process generates a profile for each application that
+represents the paramter (knob) space of this application. During the execution,
+the online monitoring part will change the application execution. This allows us
+to explore and fine-tune the trade-off between application accuracy and system
+performance.
 
 When deploying wide-area analytics applications, we envision it's common that
 multiple applications, which may or may not be developed from the same party,
@@ -45,6 +50,10 @@ will run on the same worker machine. When the resources (CPU, memory and
 bandwidth) are scarce, we need to properly allocate the resource to each running
 application. Combined with our knowledge of the profiling information, the the
 system aims to maximize the overall performance (rather than min-max fairness).
+
+At its core, our work explores end-to-end whole-stack optimization.
+
+We make three contributions in this paper.
 
 %%% Local Variables:
 %%% mode: latex

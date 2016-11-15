@@ -6,6 +6,12 @@
 \usepackage{hyperref}
 \usepackage{subcaption}
 
+\def\Snospace~{\S{}}
+\renewcommand*\sectionautorefname{\Snospace}
+\renewcommand*\subsectionautorefname{\Snospace}
+\renewcommand*\subsubsectionautorefname{\Snospace}
+\renewcommand*{\figureautorefname}{Fig.}
+
 \begin{document}
 
 \input{macros}
@@ -16,16 +22,25 @@
 % --- End of Author Metadata ---
 
 \title{Adaptive Stream Processing in Wide-Area Network}
+
 \numberofauthors{1}
-\author{
-  \alignauthor
-  \textit{Anonymous for submission}
-}
+\author{ \alignauthor \textit{Anonymous for submission} }
 
 \maketitle
 
 \begin{abstract}
-  Abstract is here.
+  In this paper, we present \sysname{}, a stream processing system that adapts
+  the application execution to wide-area network changes. \sysname{} enables
+  graceful degradation during resource fluctuations: trading application
+  accuracy for the freshness of analytics. To achieve this, \sysname{} explores
+  the PAR (performance-accuracy-resource) principle. We employ an offline
+  profiling process that explores the parameter space of each application and
+  generates a profile of the application. During runtime, the system would alter
+  the application execution if the resource level changes. We evaluate
+  \sysname{} against three real-world applications: large-scale IoT
+  applications, video analytics and distributed CDN monitoring. At places where
+  traditional approaches would lead to either significant application accuracy
+  drop or long tail, our system gracefully handles the application.
 \end{abstract}
 
 % \category{H.4}{Information Systems Applications}{Miscellaneous}
@@ -34,7 +49,15 @@
 
 \input{intro}
 \input{motivation}
+\input{system-overview}
+\input{design}
+\input{implementation}
+\input{evaluation}
 
-{\footnotesize \bibliographystyle{acm}\bibliography{sigcomm2017}}
+{\bibliographystyle{acm}\bibliography{sigcomm2017}}
 
 \end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

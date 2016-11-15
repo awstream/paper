@@ -2,14 +2,22 @@
 \label{sec:motivation}
 
 In this section, we motivate our research by outlining a few concrete real-world
-applications
 
 \subsection{Motivating Applications}
 \label{sec:motiv-appl}
 
+Background on wide area streaming analytics; Application examples
+
 We consider three distinct area, yet architecturally similar applications. These
 applications represent the streaming applications that span the wide area and
 the traditional ways have been aggregating them and processing offline.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.95\linewidth]{figures/model.pdf}
+  \label{fig:app-model}
+  \caption{Stream Processing Applications}
+\end{figure}
 
 \subsubsection{Smart City}
 \label{sec:smart-city}
@@ -31,8 +39,8 @@ malls.
 \subsection{Making the Case for Adaptive Execution}
 \label{sec:making-case-adapt}
 
-Describe how the wide-area network resources fluctuate, Even well-provisioned
-bandwidth between data centers.
+We show that wide-area has relatively scarce bandwidth and it fluctuates, even
+well-provisioned bandwidth between data centers.
 
 \begin{figure}
   \centering
@@ -77,6 +85,27 @@ Application can transmit a large chunk of data if needed. But when the network
 condition deteriorate, doing so will create back-logged data. Not all sensor
 data and log data are inheritantly important, many application can tolerate data
 loss. So we could degrade the data quality but remains responsive.
+
+\subsection{PAR Tradeoff}
+\label{sec:par-tradeoff}
+
+When fixed resource, often the accuracy and performance needs trade-off.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{.41\columnwidth}
+    \centering
+    \includegraphics[width=.95\linewidth]{figures/accuracy-performance.pdf}
+    \label{fig:a-vs-p}
+  \end{subfigure}
+  \begin{subfigure}{.57\columnwidth}
+    \centering
+    \includegraphics[width=.95\linewidth]{figures/time-series.pdf}
+    \label{fig:detect-ts}
+  \end{subfigure}
+  \caption{Accuracy and Performance Trade off}
+  \label{fig:bw}
+\end{figure}
 
 %% Maybe also last hop wireless?
 
