@@ -4,7 +4,20 @@
 \usepackage{color}
 \usepackage{etoolbox}
 \usepackage{hyperref}
+\usepackage{listings}
 \usepackage{subcaption}
+\usepackage{bold-extra}
+
+\lstset{
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible
+}
 
 \def\Snospace~{\S{}}
 \renewcommand*\sectionautorefname{\Snospace}

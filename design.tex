@@ -4,10 +4,31 @@
 \subsection{Profiling Applications}
 \label{sec:prof-appl}
 
+Below is a snippet of applications that uses our API. Each of the `maybe\_X`
+function is a design space hinted by the application developer. The `Param` is
+another way to get input knowledge from the application developer.
+
+\begin{figure}
+  \begin{lstlisting}
+source.maybe_skip(Upto(10))
+    .maybe_downsample(MaxRate(0.5))
+    .maybe_batch(30)
+    .maybe_transform(|frame|
+        roi(frame, Rect::new(0, 0, 30, 30)))
+    .then(|frame|
+        hog_detect(frame, Param::range(30, 50)))
+    .collect();
+  \end{lstlisting}
+  \caption{Hello World}
+  \label{fig:code}
+\end{figure}
+
 We take hints from the application developers who use our API. For each block of
 \texttt{MaybeDownsample}, \texttt{MaybeDegrade}, \texttt{MaybeBatch} and
 \texttt{Tunable}, we first run an off-line profiling phase that generates the
 application profile.
+
+At first sight, this involves a combinatorial search step.
 
 Naively this requires scanning the entire parameter space, which is a
 high-dimension space. But we assume that domain experts could embed their
