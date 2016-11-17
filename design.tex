@@ -17,7 +17,7 @@ source.maybe_skip(Upto(10))
         roi(frame, Rect::new(0, 0, 30, 30)))
     .then(|frame|
         hog_detect(frame, Param::range(30, 50)))
-    .collect();
+    .compose();
   \end{lstlisting}
   \caption{Hello World}
   \label{fig:code}

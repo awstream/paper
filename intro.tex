@@ -1,41 +1,55 @@
 \section{Introduction}
 \label{sec:introduction}
 
-A growing number of devices are employed at the edge that monitors our
-environment and generate massive data. These include high-frequency sensors such
-as microPMU (kHz) level. Video surveillance increasing. IDC
-report~\cite{gantz2012digital} predicted 5,800 exabytes of video
-footage. Machines also generate a large quantity of data; for example,
-geo-deployed systems such as Content Distribution Network (CDN) has logs about
-the access.
+An increasing number of streaming data are generated at the edge of the
+network. These include the growing number of Internet-of-Thing (IoT) devices and
+many geo-distributed clusters. Take the video surveillance as an example, large
+cities such as New York, Beijing and Seattle are deploying millions of cameras
+for traffic control. Retails stores and critical areas such as railway stations
+are also employing cameras for abnormally detection. Traditional view of sensors
+in IoT are slow-changing environment monitoring sensors such as temperature or
+humidity. But the trend has shown an increasing amount of high-frequency sensor
+data. BTrDB~\cite{andersen2016btrdb} handle uPMU monitoring, which is a network
+of 1000 devices and each produces 12 streams of 120Hz high-precision values with
+timestamps accurate to 100ns. In total, it accounts to 1.4 million data points
+per second. Large organizations are managing 10s-100s of datacenters (DCs) and
+edge clusters worldwide~\cite{calder2013mapping}, and each DC constantly
+generates enormous amount of machine logs which requires real-time processing.
 
-These data are often aggregated and processed and then triggers some action:
-such as smart grid control, calling policy or adjust content distribution to
-minimize latency.
+Recent stream processing systems that can handle ``big data'', such as
+Borealis~\cite{abadi2005design}, Storm~\cite{toshniwal2014storm}, or Spark
+Streaming~\cite{zaharia2012discretized}, often focus in the context of a single
+cluster. They are not designed for the wide-area applications where the
+bandwidth is scarce and time-varying. \todo{more on scarce and time-varying}.
 
-We target at these distributed sense-compute-control applications. They have a
-similar interface to stream processing. Traditional approach of aggregating data
-into a single point has proven to be un-scalable. There is a rise of distributed
-processing. Clarinet~\cite{viswanathan2016clarinet}, GDA~\cite{pu2015low} study
-how to distribute computation onto edge devices.
+Fundamentally, when the bandwidth resource supply fails to satisfy the
+application demand, a decision about data communication needs to be made. For
+application-agnostic stream processing, the system can either drop data or
+backlog data.
+% Any application using arial requires running over every frame, drop is bad
+% Handling backpressure by retransmission, not good for latency
+We demonstrate that either action can lead to significant application
+degradation. In fact, there is not an optimal universal degradation strategy for
+all application. This motivates our design of a novel set of APIs that
+developers can use to explicitly make choices when the resource becomes scarce.
 
-JetStream~\cite{rabkin2014aggregation} explores how aggregation and degradation.
-Although the programming framework provides mechanisms (APIs) that allow
-applications to aggregate or degrade data streams. The specific mechanism has to
-be codified in JetStream. We explore how the system can automatically adapt the
-execution while still satisfying certain application guarantees (such as bounded
-latency).
+In fact, such APIs can be more powerful than simply hinting at degradation
+strategy. Almost many real-world applications have parameters that controls the
+performance and accurcy of a particular algorithm. When using
+HOG~\cite{dalal2005histograms} for human detection, developers can choose the
+stride window size that controls the number of sliding windows that will be
+applied to the image, therefore controlling processing time as well as accuracy.
 
-We agree with JetStream about the scarcity of wide-area bandwidth; in addition,
-it's also varying. Applications without a graceful way to adapt to such scenario
-will lead to poor performance.
+JetStream~\cite{rabkin2014aggregation} studies streaming analytics in wide area
+network. Using structured storage for data aggregation and explicit degradation,
+it demonstrates how to achieve responsiveness in the presence of bandwidth
+fluctuation. However, JetStream didn't explore how to automatically synthesize
+the degradation strategy for each application.
 
-The degradation is better understood in the DB context (JetStream uses data
-cube, and BlinkDB), but it's not applicable to the general computing.
-
-To solve the problem where the limited resources in WAN will also fluctuate, we
-design and implement \sysname{}, which adapts the application execution to
-available resources.
+The idea of adapting the computation and communication is also explored in other
+context. BlinkDB~\cite{agarwal2013blinkdb} for database operations and adaptive
+video streaming for video streaming~\cite{yin2015control}. Our work is attempted
+to empower more general applications to benefit from the idea of adaptation.
 
 Our approach combines offline and online profiling to assist the decision
 making. The offline process generates a profile for each application that
@@ -44,16 +58,25 @@ the online monitoring part will change the application execution. This allows us
 to explore and fine-tune the trade-off between application accuracy and system
 performance.
 
-When deploying wide-area analytics applications, we envision it's common that
-multiple applications, which may or may not be developed from the same party,
-will run on the same worker machine. When the resources (CPU, memory and
-bandwidth) are scarce, we need to properly allocate the resource to each running
-application. Combined with our knowledge of the profiling information, the the
-system aims to maximize the overall performance (rather than min-max fairness).
-
-At its core, our work explores end-to-end whole-stack optimization.
+% When deploying wide-area analytics applications, we envision it's common that
+% multiple applications, which may or may not be developed from the same party,
+% will run on the same worker machine. When the resources (CPU, memory and
+% bandwidth) are scarce, we need to properly allocate the resource to each
+% running application. Combined with our knowledge of the profiling information,
+% the the system aims to maximize the overall performance (rather than min-max
+% fairness).
 
 We make three contributions in this paper.
+
+\squishlist    %% \begin{itemize}
+\item We study the problem of wide-area anlaytics in the face of scarce
+  bandwidth resources and propose to adopt an adaptive scheme.
+\item We propose the combination of offline profiling and online refining
+  architecture for generic applications.
+\item We evaluate the system using real-world data and applications.
+\squishend     %% \end{itemize}
+
+The paper is structured as follows.
 
 %%% Local Variables:
 %%% mode: latex

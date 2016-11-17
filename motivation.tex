@@ -1,5 +1,5 @@
-\section{Motivation}
-\label{sec:motivation}
+\section{Background and Motivation}
+\label{sec:background-motivation}
 
 In this section, we motivate our research by outlining a few concrete real-world
 
@@ -39,8 +39,13 @@ malls.
 \subsection{Making the Case for Adaptive Execution}
 \label{sec:making-case-adapt}
 
-We show that wide-area has relatively scarce bandwidth and it fluctuates, even
-well-provisioned bandwidth between data centers.
+In this section, we characterize the resource availability in the wide-area. To
+understand the real-world characteristics, we've conducted some measurements
+using computers at the edge as well as in the cloud.
+
+Our key take-away is that the latency is mostly stable but the available
+bandwidth has large variation, even in well-provisioned connections that one
+would assume between Amazon data centers.
 
 \begin{figure}
   \centering
@@ -56,7 +61,7 @@ well-provisioned bandwidth between data centers.
     \caption{Timeseries plot}
     \label{fig:ts}
   \end{subfigure}
-  \caption{Measured from Ireland, data from PBallis's measurement}
+  \caption{Latency measurement between U.S. west and other EC2 sites. Data from Bailis~\cite{bailis2013highly}.}
   \label{fig:bw}
 \end{figure}
 
@@ -79,8 +84,6 @@ well-provisioned bandwidth between data centers.
   \label{fig:bw}
 \end{figure}
 
-Although the latency is mostly stable.
-
 Application can transmit a large chunk of data if needed. But when the network
 condition deteriorate, doing so will create back-logged data. Not all sensor
 data and log data are inheritantly important, many application can tolerate data
@@ -93,12 +96,12 @@ When fixed resource, often the accuracy and performance needs trade-off.
 
 \begin{figure}
   \centering
-  \begin{subfigure}{.41\columnwidth}
+  \begin{subfigure}{.42\columnwidth}
     \centering
-    \includegraphics[width=.95\linewidth]{figures/accuracy-performance.pdf}
+    \includegraphics[width=.90\linewidth]{figures/accuracy-performance.pdf}
     \label{fig:a-vs-p}
   \end{subfigure}
-  \begin{subfigure}{.57\columnwidth}
+  \begin{subfigure}{.54\columnwidth}
     \centering
     \includegraphics[width=.95\linewidth]{figures/time-series.pdf}
     \label{fig:detect-ts}
