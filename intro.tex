@@ -2,58 +2,59 @@
 \label{sec:introduction}
 
 An increasing number of streaming data are generated at the edge of the
-network. These include the growing number of Internet-of-Thing (IoT) devices and
-many geo-distributed clusters. Take the video surveillance as an example, large
-cities such as New York, Beijing and Seattle are deploying millions of cameras
-for traffic control. Retails stores and critical areas such as railway stations
-are also employing cameras for abnormally detection. Traditional view of sensors
-in IoT are slow-changing environment monitoring sensors such as temperature or
-humidity. But the trend has shown an increasing amount of high-frequency sensor
-data. BTrDB~\cite{andersen2016btrdb} handle uPMU monitoring, which is a network
-of 1000 devices and each produces 12 streams of 120Hz high-precision values with
-timestamps accurate to 100ns. In total, it accounts to 1.4 million data points
-per second. Large organizations are managing 10s-100s of datacenters (DCs) and
-edge clusters worldwide~\cite{calder2013mapping}, and each DC constantly
-generates enormous amount of machine logs which requires real-time processing.
+Internet. These include the growing number of Internet-of-Thing (IoT) devices
+and geo-distributed clusters from large companies. Take the video surveillance
+as an example, large cities such as New York, Beijing and Seattle are deploying
+millions of cameras for traffic control. Retails stores and critical areas such
+as railway stations are also employing cameras for abnormally
+detection. Traditional view of sensors in IoT are slow-changing environment
+monitoring sensors such as temperature or humidity. But the trend has shown an
+increasing amount of high-frequency sensor data. BTrDB~\cite{andersen2016btrdb}
+handles uPMU monitoring, which is a network of 1000 devices and each produces 12
+streams of 120 Hz high-precision values with timestamps accurate to 100 ns. In
+total, it accounts to 1.4 million data points per second. Large organizations
+are managing 10--100s of datacenters (DCs) and edge clusters
+worldwide~\cite{calder2013mapping}. Enormous amount of machine logs are
+generated for real-time processing.
 
 Recent stream processing systems that can handle ``big data'', such as
 Borealis~\cite{abadi2005design}, Storm~\cite{toshniwal2014storm}, or Spark
 Streaming~\cite{zaharia2012discretized}, often focus in the context of a single
-cluster. They are not designed for the wide-area applications where the
-bandwidth is scarce and time-varying. \todo{more on scarce and time-varying}.
+cluster, where the bandwidth resources are sufficient (or at least easier to
+provision). When processing streams in wide-area, the bandwidth easily becomes
+the bottleneck~\cite{rabkin2014aggregation}. It's scarce and has a large
+variation over time.
 
-Fundamentally, when the bandwidth resource supply fails to satisfy the
-application demand, a decision about data communication needs to be made. For
-application-agnostic stream processing, the system can either drop data or
-backlog data.
+When the network resource becomes oversubscribed (supply fails to meet the
+demand), decisions about data communication needs to be
+made. Application-agnostic behaviors, such as drop data (UDP) or create
+backlogged data (TCP).
 % Any application using arial requires running over every frame, drop is bad
 % Handling backpressure by retransmission, not good for latency
-We demonstrate that either action can lead to significant application
-degradation. In fact, there is not an optimal universal degradation strategy for
-all application. This motivates our design of a novel set of APIs that
-developers can use to explicitly make choices when the resource becomes scarce.
+We demonstrate that either option would lead to significant application
+degradation in some cases. In fact, there is not an optimal universal
+degradation strategy for all stream processing application. While application
+specific solutions can be built in an ad-hoc fashion, our goal is to design APIs
+that systematically generates degradation strategies that allows an explicit
+exploration of the design space.
 
-In fact, such APIs can be more powerful than simply hinting at degradation
-strategy. Almost many real-world applications have parameters that controls the
-performance and accurcy of a particular algorithm. When using
-HOG~\cite{dalal2005histograms} for human detection, developers can choose the
-stride window size that controls the number of sliding windows that will be
-applied to the image, therefore controlling processing time as well as accuracy.
+The degradation can also be arbitrary user-defined function (UDF) that embeds
+deeper knowledge about the particular application. Consider a surveillance
+scenario, under normal operation the full scene is transmitted. When the network
+condition degrades, the application may choose a critical region to monitor
+instead of either dropping frames or reducing the resolution.
 
-JetStream~\cite{rabkin2014aggregation} studies streaming analytics in wide area
-network. Using structured storage for data aggregation and explicit degradation,
-it demonstrates how to achieve responsiveness in the presence of bandwidth
-fluctuation. However, JetStream didn't explore how to automatically synthesize
-the degradation strategy for each application.
-
-The idea of adapting the computation and communication is also explored in other
-context. BlinkDB~\cite{agarwal2013blinkdb} for database operations and adaptive
-video streaming for video streaming~\cite{yin2015control}. Our work is attempted
-to empower more general applications to benefit from the idea of adaptation.
+% In fact, such APIs can be more powerful than simply hinting at degradation
+% strategy. Almost many real-world applications have parameters that controls
+% the performance and accurcy of a particular algorithm. When using
+% HOG~\cite{dalal2005histograms} for human detection, developers can choose the
+% stride window size that controls the number of sliding windows that will be
+% applied to the image, therefore controlling processing time as well as
+% accuracy.
 
 Our approach combines offline and online profiling to assist the decision
 making. The offline process generates a profile for each application that
-represents the paramter (knob) space of this application. During the execution,
+represents the parameter (knob) space of this application. During the execution,
 the online monitoring part will change the application execution. This allows us
 to explore and fine-tune the trade-off between application accuracy and system
 performance.
@@ -69,14 +70,16 @@ performance.
 We make three contributions in this paper.
 
 \squishlist    %% \begin{itemize}
-\item We study the problem of wide-area anlaytics in the face of scarce
-  bandwidth resources and propose to adopt an adaptive scheme.
+\item We study how different adaptive schemes impact wide-area streaming
+  applications.
 \item We propose the combination of offline profiling and online refining
-  architecture for generic applications.
+  architecture.
 \item We evaluate the system using real-world data and applications.
-\squishend     %% \end{itemize}
+\squishend %% \end{itemize}
 
 The paper is structured as follows.
+
+\newpage
 
 %%% Local Variables:
 %%% mode: latex

@@ -17,9 +17,11 @@
   showstringspaces=false,
   breakatwhitespace=true,
   escapeinside={(*@}{@*)},
-  basicstyle=\footnotesize\ttfamily,
+  basicstyle=\scriptsize\ttfamily,
   columns=fullflexible
 }
+
+\setlength{\abovecaptionskip}{4pt}
 
 \def\Snospace~{\S{}}
 \renewcommand*\sectionautorefname{\Snospace}
@@ -47,15 +49,16 @@
   In this paper, we present \sysname{}, a stream processing system that adapts
   the application execution to wide-area network changes. \sysname{} enables
   graceful degradation during resource fluctuations: trading application
-  accuracy for the freshness of analytics. To achieve this, \sysname{} explores
-  the PAR (performance-accuracy-resource) principle. We employ an offline
-  profiling process that explores the parameter space of each application and
-  generates a profile of the application. During runtime, the system would alter
-  the application execution if the resource level changes. We evaluate
-  \sysname{} against three real-world applications: large-scale IoT
-  applications, video analytics and distributed CDN monitoring. At places where
-  traditional approaches would lead to either significant application accuracy
-  drop or long tail, our system gracefully handles the application.
+  accuracy for the freshness of analytics. To achieve this, \sysname{} employs
+  an offline profiling process that explores the parameter space of each
+  application and generates a resource-accuracy profile of the
+  application. During runtime, the system would alter the application execution
+  according to the resource level. We evaluate \sysname{} against three
+  real-world applications: a city-scale IoT application, continuous video
+  analytics and distributed CDN monitoring. At places where traditional
+  approaches would lead to either significant application accuracy drop or long
+  tail latency, our system gracefully maintains the balance between application
+  accuracy and system performance.
 \end{abstract}
 
 % \category{H.4}{Information Systems Applications}{Miscellaneous}
@@ -63,12 +66,12 @@
 % \keywords{ACM proceedings, \LaTeX, text tagging}
 
 \input{intro}
-\input{motivation}
-\input{system-overview}
-\input{design}
-\input{implementation}
+% \input{motivation}
+% \input{system-overview}
+% \input{design}
+% \input{implementation}
 \input{evaluation}
-\input{related}
+% \input{related}
 
 {\bibliographystyle{acm}\bibliography{sigcomm2017}}
 

@@ -4,7 +4,18 @@
 Borealis~\cite{abadi2005design}, Storm~\cite{toshniwal2014storm},
 Streaming~\cite{zaharia2012discretized}.
 
-JetStream~\cite{rabkin2014aggregation}.
+The idea of adapting the computation and communication is also explored in other
+context. BlinkDB~\cite{agarwal2013blinkdb} for database operations and adaptive
+video streaming~\cite{yin2015control}. Our work recognizes the increasing
+streams in the IoT context and aims to empower more general applications to
+benefit from adaptation.
+
+JetStream~\cite{rabkin2014aggregation} studies streaming analytics in wide area
+network. Using structured storage for data aggregation and explicit degradation,
+it demonstrates how to achieve responsiveness in the presence of bandwidth
+fluctuation. However, JetStream didn't explore how to automatically synthesize
+the degradation strategy for each application.
+
 Clarinet~\cite{viswanathan2016clarinet}, GDA~\cite{pu2015low}
 
 %%% Local Variables:
