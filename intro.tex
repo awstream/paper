@@ -1,84 +1,132 @@
 \section{Introduction}
 \label{sec:introduction}
 
-An increasing number of streaming data are generated at the edge of the
-Internet. These include the growing number of Internet-of-Thing (IoT) devices
-and geo-distributed clusters from large companies. Take the video surveillance
-as an example, large cities such as New York, Beijing and Seattle are deploying
-millions of cameras for traffic control. Retails stores and critical areas such
-as railway stations are also employing cameras for abnormally
-detection. Traditional view of sensors in IoT are slow-changing environment
-monitoring sensors such as temperature or humidity. But the trend has shown an
-increasing amount of high-frequency sensor data. BTrDB~\cite{andersen2016btrdb}
-handles uPMU monitoring, which is a network of 1000 devices and each produces 12
-streams of 120 Hz high-precision values with timestamps accurate to 100 ns. In
-total, it accounts to 1.4 million data points per second. Large organizations
-are managing 10--100s of datacenters (DCs) and edge clusters
-worldwide~\cite{calder2013mapping}. Enormous amount of machine logs are
-generated for real-time processing.
+Wide-area streaming analytics are becoming pervasive, especially with the
+emerging Internet-of-Thing (IoT) applications. Large cities such as New York,
+Beijing and Seattle are deploying millions of cameras for traffic
+control. Retails stores and critical areas such as railway stations are also
+being monitored for abnormal activities. Buildings are increasingly equiped with
+a wide variety of sensors to improve building energy use, occupant comfort,
+reliability and maintenance~\cite{krioukov2012building}. Geo-distributed
+infrastructure, such as Content Delivery Network (CDN), needs to analyze user
+requests (machine logs) and optimize data placement to improve delivery
+efficiency. In these problems, the data collected at the edge needs to be
+transported acoross the wide-area and analyzed in near real-time.
 
-Recent stream processing systems that can handle ``big data'', such as
+Existing stream processing for ``big data'', such as
 Borealis~\cite{abadi2005design}, Storm~\cite{toshniwal2014storm}, or Spark
 Streaming~\cite{zaharia2012discretized}, often focus in the context of a single
-cluster, where the bandwidth resources are sufficient (or at least easier to
-provision). When processing streams in wide-area, the bandwidth easily becomes
-the bottleneck~\cite{rabkin2014aggregation}. It's scarce and has a large
-variation over time.
+cluster, where the bandwidth is sufficient (or at least easier to
+provision). While they are the perfect backends for analyzing streams once data
+arrive, in the context of wide-area, the available bandwidth easily becomes the
+bottleneck: it's scarce and variable~\cite{rabkin2014aggregation} and not keep
+up with the increase rate of traffic~\cite{index2013zettabyte}.
 
-When the network resource becomes oversubscribed (supply fails to meet the
-demand), decisions about data communication needs to be
-made. Application-agnostic behaviors, such as drop data (UDP) or create
-backlogged data (TCP).
-% Any application using arial requires running over every frame, drop is bad
-% Handling backpressure by retransmission, not good for latency
-We demonstrate that either option would lead to significant application
-degradation in some cases. In fact, there is not an optimal universal
-degradation strategy for all stream processing application. While application
-specific solutions can be built in an ad-hoc fashion, our goal is to design APIs
-that systematically generates degradation strategies that allows an explicit
-exploration of the design space.
+When facing situations where the bandwidth is not sufficient, applications
+deployed today either choose a conservative setting to ensure a long-period
+running or leave the fate to the underlying transport layer. In the case of TCP,
+the sender will be blocked and data are backlogged, leading to severe delay. In
+the case of UDP, uncontrolled packet loss occurs, leading to application
+performance drop. While specialized adaptive streaming approaches exist for
+multimedia applications~\cite{michalos2012dynamic, schulzrinne1998real}, their
+scope is limited: the optimization target is for human consumption rather than
+analytics.
 
-The degradation can also be arbitrary user-defined function (UDF) that embeds
-deeper knowledge about the particular application. Consider a surveillance
-scenario, under normal operation the full scene is transmitted. When the network
-condition degrades, the application may choose a critical region to monitor
-instead of either dropping frames or reducing the resolution.
+In this paper, we present the design and implementation of \sysname{}, a stream
+processing systems for the wide-area. The biggest difference from existing
+systems is to enable applications making explicit trade-off between data
+fidelity and freshness.
 
-% In fact, such APIs can be more powerful than simply hinting at degradation
-% strategy. Almost many real-world applications have parameters that controls
-% the performance and accurcy of a particular algorithm. When using
-% HOG~\cite{dalal2005histograms} for human detection, developers can choose the
-% stride window size that controls the number of sliding windows that will be
-% applied to the image, therefore controlling processing time as well as
-% accuracy.
+Our system allows developers construct applications that uses the computing
+capabilities at the data source site for pre-processing, which has been
+demonstrated effective in reducing the bandwidth demand~\cite{pu2015low,
+  viswanathan2016clarinet}. There are two types of pre-procssing operations:
+lossless or lossy. While lossless transformations are
+helpful~\cite{rabkin2014aggregation}, lossy operations often allow more savings
+at the expense of reduced accuracy. In this paper, we primarily study the effect
+of lossy transformations, i.e.\,degradation.
 
-Our approach combines offline and online profiling to assist the decision
-making. The offline process generates a profile for each application that
-represents the parameter (knob) space of this application. During the execution,
-the online monitoring part will change the application execution. This allows us
-to explore and fine-tune the trade-off between application accuracy and system
-performance.
+In video applications, reducing image resolution, frame rate or changing the
+video encoding quality are potential degradation operations that affects data
+rate and application accuracy. In log analysis, a local thresholding before
+transmitting the data is an example of degradation. We notice that these
+operations are often more than binary decision; rather they are tunable
+\textit{knobs}.
 
-% When deploying wide-area analytics applications, we envision it's common that
-% multiple applications, which may or may not be developed from the same party,
-% will run on the same worker machine. When the resources (CPU, memory and
-% bandwidth) are scarce, we need to properly allocate the resource to each
-% running application. Combined with our knowledge of the profiling information,
-% the the system aims to maximize the overall performance (rather than min-max
-% fairness).
+Although the basic idea behind degradation is intuitive, realizing them in
+practice is non-trivial. First, degradation has different impact for different
+application and data. Second, each degradation is often more than a binary
+decision; they are often parameterized and has different impact. Real-world
+application also have multiple knobs to tune. It's not always possible to derive
+a closed form of analytical relationship between the degradation and its impact
+on bandwidth/accuracy. We elaborate on the challenges in
+\autoref{sec:challenges}.
 
-This paper makes the following five contributions:
+% \begin{lstlisting}
+% let mut tcp_conn = TcpStream::connect(...)
+% let mut hog = cv::Hog::default();
+% let stream = Camera::new((1920, 1080, 30))
+%         .maybe_downsample(vec![(1600, 900), (1280, 720)])
+%         .maybe_skip(vec![2, 5, 9, 14, 29])
+%         .map(|frame| h264enc(frame))
+%         .write(move |buf| tcp_conn.write(buf))
+%         .map(|buf| h264dec(buf))
+%         .map(move |frame| hog.detect(frame))
+%         .map(|rects| println!("{:?}", rects))
+%         .compose();
+% \end{lstlisting}
+
+% let stream = Camera::new((1920, 1080, 30))
+%         .maybe_downsample(vec![(1600, 900), (1280, 720)])
+%         .maybe_skip((2..11).step_by(2))
+%         .map(move |frame| hog.detect(frame))
+%         .map(|rects| println!("{:?}", rects))
+%         .compose();
+
+To make degradation and adaptation practical, \sysname{} employs a data-driven
+empirical-analysis approach. First of all, developers express degradation
+operations with \sysname{} APIs. These operations are merely hints rather than
+exact rules as we do not assume developers are well-aware of the degradation
+impact (\autoref{sec:prog-abs}). Instead, \sysname{} performs an automatic
+multi-dimensional profiling that produces the bandwidth-accuracy trade-off
+\textit{profile}. Developers do need to provide a representative dataset and a
+utility function to measure the degradation impact
+(\autoref{sec:profiling}). The profile is used in our runtime system. Aided with
+bandwidth estimation and congestion controller, the runtime ensures an adaptive
+execution in the case of network variation (\autoref{sec:adaptation}).
+
+To study the effect of degradation, we've built three real-world applications
+using \sysname{}: a street surveillance application performing pedestrian
+detection, an augmented reality application recognizing everyday objects and a
+distributed top-k application analyzing web server access logs. The first two
+video streaming applications have three knobs: resolution, frame rate and video
+encoding quality. For the distributed top-k application, we have two knobs: N in
+the local top-N operation and T as a local threshold.
+
+Our offline profiling stage explores the design space for all three applications
+and generates the profile consists of Pareto-effiecient configurations. Our
+results show that degradation operations often have different impact and many
+optimal configurations are only possible when they are combined.
+
+We also evaluate our system's runtime behavior against baseline with controlled
+experiment. The evaluations shows that \sysname{} can gracefully handle network
+deteriorate where a bounded latency is achieved without too much application
+accuracy drop. Even when the bandwidth is nearly halved, we can still achieve
+80\% accuracy with 15 seconds delay where TCP creates backlogged for minutes and
+UDP only offers accuracy less than 50\%.
+
+In summary, this paper makes the following contributions:
 
 \squishlist    %% \begin{itemize}
-\item We build a framework for wide-area stream processing.
-\item We propose an efficient profiling mechanisms to learn the characteristics
-  of applications under bandwidth constrain.
-\item We propose a quick online adaptation method.
-\item We implement three real-world applications to demonstrate the systems.
-\item We evaluate the system under different scenarios extensively.
-  \squishend %% \end{itemize}
-
-The paper is structured as follows.
+\item We study in depth of wide-area streaming applications in the case of
+  network resource variation.
+\item We design APIs to allow for exploring bandwidth-accuracy trade-off with
+  minimal developer effort.
+\item We implement the system to perform application profiling and runtime
+  adaptation.
+\item We build three real-world applications and evaluate their behavior
+  under different scenarios.
+\squishend %% \end{itemize}
 
 %%% Local Variables:
 %%% mode: latex

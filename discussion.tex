@@ -1,0 +1,35 @@
+
+\section{Discussion}
+\label{sec:discussion}
+
+We discuss other usage of \sysname{} and the limitations of our current system.
+
+\boldhead{Wireless:} In wireless communication, existing protocols doesn't
+work well for crowded context. For example we've all experienced slow network
+for applications during conference when the talk is boring. Our technique
+extends well into these context.
+
+\boldhead{Online Profiling:} Currently our profiling runs only
+offline. The qualify of the adaptation depends on how representative the
+training data is. Performing online profiling is possible. When the network
+capacity is enough, the aggregation server will receive data that's not
+degraded. The server can run profiling as a batch job and send back the newly
+learned profile.
+
+\boldhead{Failure Recovery:} The current system doesn't explicit address the
+failure cases as we consider it a relevant but orthogonal problem to solve.  The
+source node can be made failure-safe by employing multiple instances of
+machines. The aggregation may happen within a data center, where failure
+recovery can be achieve as in other stream processing systems, e.g.\,snapshot.
+
+\para{Computation:} Some degradation operations will also reduce the resource
+demand of computation. For example image resolution drop and frame
+rate. However, encoding quality does not because typically processing software
+will decode the data first and then run the code. Exploring the trade-off
+between compute resource and accuracy trade-off is a relevant but orthogonal
+problem.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sigcomm2017"
+%%% End:

@@ -6,9 +6,11 @@
 \usepackage{courier}
 \usepackage{enumitem}
 \usepackage{etoolbox}
+\usepackage{microtype}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{subcaption}
+\usepackage{times}
 
 \lstset{
   showspaces=false,
@@ -18,7 +20,8 @@
   breakatwhitespace=true,
   escapeinside={(*@}{@*)},
   basicstyle=\scriptsize\ttfamily,
-  columns=fullflexible
+  columns=fullflexible,
+  morekeywords={maybe_downsample, maybe_skip}
 }
 
 \setlength{\abovecaptionskip}{4pt}
@@ -38,27 +41,27 @@
 % \crdata{0-12345-67-8/90/01}
 % --- End of Author Metadata ---
 
-\title{Adaptive Stream Processing in Wide-Area Network}
+\title{Adaptive Wide-area Streaming Analytics \\ for the Internet of Things}
 
 \numberofauthors{1}
-\author{ \alignauthor \textit{Anonymous for submission} }
+\author{ \alignauthor Paper \#97, 12 pages }
 
 \maketitle
 
 \begin{abstract}
-  In this paper, we present \sysname{}, a stream processing system that adapts
-  the application execution to wide-area network changes. \sysname{} enables
-  graceful degradation during resource fluctuations: trading application
-  accuracy for the freshness of analytics. To achieve this, \sysname{} employs
-  an offline profiling process that explores the parameter space of each
-  application and generates a resource-accuracy profile of the
-  application. During runtime, the system would alter the application execution
-  according to the resource level. We evaluate \sysname{} against three
-  real-world applications: a city-scale IoT application, continuous video
-  analytics and distributed CDN monitoring. At places where traditional
-  approaches would lead to either significant application accuracy drop or long
-  tail latency, our system gracefully maintains the balance between application
-  accuracy and system performance.
+  In this paper, we present \sysname{}, a stream processing system for real-time
+  analytical applications in the wide area. To cope with the scarce and varying
+  available bandwidth, \sysname{} allows applications to trade-off accuracy for
+  data freshness. To achieve this, \sysname{} first performs an offline
+  profiling that explores different degradation strategies and generates an
+  accuracy-bandwidth profile. During runtime, \sysname{} adapts the application
+  to match the rate of measured bandwidth.
+
+  We evaluate \sysname{} against three real-world applications including
+  surveillance applications, augmented reality and distributed log analysis. At
+  places where traditional approaches would lead to either significant
+  application accuracy drop or long tail latency, our system gracefully
+  maintains the balance between application accuracy and system performance.
 \end{abstract}
 
 % \category{H.4}{Information Systems Applications}{Miscellaneous}
@@ -66,16 +69,15 @@
 % \keywords{ACM proceedings, \LaTeX, text tagging}
 
 \input{intro}
-\newpage
 \input{motivation}
-\newpage
-\input{system-overview}
+\input{overview}
 \input{profile}
 \input{adaptation}
 % \input{design}
-% \input{implementation}
+\input{implementation}
 \input{evaluation}
 \input{related}
+\input{discussion}
 \input{conclusion}
 
 {\bibliographystyle{acm}\bibliography{sigcomm2017}}

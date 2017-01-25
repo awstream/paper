@@ -1,7 +1,44 @@
-\section{Profile}
-\label{sec:profile}
+\subsection{Multi-dimensional Profiling}
+\label{sec:profiling}
 
-Describe how we do profiling in this section.
+The second stage of \sysname{} involves profiling the application over all
+possible configurations. The goal is to select a subset of all possible
+degradation configurations that simutaneously minimize the data rate and
+maximize the accuracy (the Pareto boundary). The output \textit{profile} is a
+table where each row is \textit{(bandwidth, configuration, accuracy)}.
+\todo{figure to illustrate.}
+
+\para{Generate configuration space:} the details on how our profiling works. The
+profiling stage is automatic without developer intervention. When using
+\texttt{maybe} API, it generates an internal data structure that holds all
+possible values.  A transformation of the users program into internal data
+structure. Each application consists of multiple \textit{knobs}, forming a
+\textit{Configuration}.
+
+\para{Bandwidth measure:} We measure the data that needs to be transmitted over
+the wire. We do not consider protocol overhead such as TCP header here.
+
+\para{Accuracy measure:} To quantify the accuracy, we expect developers to
+provide a representative training dataset and an application-specific utility
+function that quantifies the degradation impact. The utility functions could
+compare the output stream with respect to some groundtruth information; or when
+labelled data is not available, it can compare against the original stream (with
+degradation not in effect). In vision applications, a typical utility function
+is F1 score~\cite{Rijsbergen:1979:IR:539927}. We discuss example utilities in
+\autoref{sec:build-appl}.
+
+\vspace{0.5em}
+
+Quest for an efficient profiling method: Although exploring the entire design is
+embarrassingly parallel, it can be very time-consuming and
+resource-intensive. The impact is monotonic. We observe the following heuristics
+that can speed up the profiling. The degree of information loss is different
+along each dimension. We may optimize the space exploration by with different
+stride along each dimension. In general, it's not possible to save much
+work. \todo{Discuss issues with the search of the entire space.} Developers can
+configure an accuracy bound where configurations whose accuracy is below the
+threshold is not considered. In this case, the applications will tolerate
+delays.
 
 %%% Local Variables:
 %%% mode: latex
