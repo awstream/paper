@@ -1,16 +1,12 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-We evaluate \sysname{} for two parts. First, we demonstrate the effectiveness of
-our multi-dimensional profiling. We show the generated profile for the three
-applications we've built; the result validates our prior hypothesis on the
-degradation impact. Second, we show our runtime adaptation is able to maintain
-low latency and high accuracy in the case of severe network degradation. Under a
-controlled experiment, even with only transient network capacity drop, our
-system is able to maintain an end-to-end delay for ~10 seconds in the wide-area
-and accuracy level above 80\%. Application-agnostic protocols creates
-significant backlogged data (TCP for about 100 seconds) or unusable accuracy
-(UDP).
+We first show the generated profile for the three applications. Then for each
+application, We show how they adapt the behavior at runtime. Under a controlled
+experiment, even with only transient network capacity drop, our system is able
+to maintain an end-to-end delay for 10 seconds in the wide-area and accuracy
+level above 80\%. Application-agnostic protocols creates significant backlogged
+data (TCP for about 100 seconds) or unusable accuracy (UDP).
 
 \subsection{Degradation Performance}
 \label{sec:degr-perf}
@@ -37,7 +33,7 @@ significant backlogged data (TCP for about 100 seconds) or unusable accuracy
     \caption{Top-k}
     \label{fig:tk-profile}
   \end{subfigure}
-  \caption{Profile. \todo{add more legend}}
+  \caption{Application profiles.}
   \label{fig:all-profiles}
 \end{figure*}
 
@@ -126,6 +122,20 @@ complex relationship between bandwidth, accuracy and configuration.
 \subsection{Runtime Performance}
 \label{sec:runtime-performance}
 
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/ped-runtime-horizontal.pdf}
+  \caption{Runtime Adaptation of Pedestrian Detection}
+  \label{fig:ped-runtime}
+\end{figure*}
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/cdn-runtime-horizontal.pdf}
+  \caption{Runtime Adaptation of Top-K}
+  \label{fig:ped-runtime}
+\end{figure*}
+
 To evaluate the runtime behavior, we conduct controlled experiments using four
 geo-distributed worker nodes from Amazon EC2 (t2.large instances) and an
 aggregation server from our institute. For each experiment, worker nodes
@@ -151,39 +161,14 @@ For UDP, the latency has been consistently small (mostly below 1 second) because
 there is no queue building up. But when traffic shaping starts, the accuracy
 drop is catastrophic.
 
-Our system is a middle-ground between two baselines.
-
-We notice that our delay is still on the order of ten seconds. The reason for
-the slow adaptation is three-folds: (1) our current implementation only requests
-for bandwidth information when congestion is detected, the delay of getting
-bandwidth estimation can be large in the case of network capacity drop; (2) we
-perform the bandwidth in a conservative way with smoothing to avoid sudden
-spikes. While more improvements are possible, the current settings are
-satisfactory.
-
-\begin{figure*}[t!]
-  \centering
-  \begin{subfigure}[t]{0.30\textwidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/ped-runtime.pdf}
-    \caption{Pedestrian Detection}
-  \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.30\textwidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/degrade-placeholder-2.pdf}
-    \caption{Object Recognition}
-  \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.30\textwidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/cdn-runtime}
-    \caption{Top-k}
-  \end{subfigure}
-  \caption{Runtime Adapation Behavior of \sysname{}.  \todo{adjust the accuracy
-      measure}}
-  \label{fig:runtime}
-\end{figure*}
+Applications built with \sysname{} performs with a middle-ground behavior
+between two extremes. We notice that our delay is still on the order of ten
+seconds. The reason for the slow adaptation is three-folds: (1) our current
+implementation only requests for bandwidth information when congestion is
+detected, the delay of getting bandwidth estimation can be large in the case of
+network capacity drop; (2) we perform the bandwidth in a conservative way with
+smoothing to avoid sudden spikes. While more improvements are possible, the
+current settings are satisfactory.
 
 %%% Local Variables:
 %%% mode: latex

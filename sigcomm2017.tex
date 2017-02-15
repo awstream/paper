@@ -11,6 +11,8 @@
 \usepackage{listings}
 \usepackage{subcaption}
 \usepackage{times}
+\usepackage{multirow}
+\usepackage{booktabs}
 
 \lstset{
   showspaces=false,
@@ -30,6 +32,7 @@
 \renewcommand*\sectionautorefname{\Snospace}
 \renewcommand*\subsectionautorefname{\Snospace}
 \renewcommand*\subsubsectionautorefname{\Snospace}
+\renewcommand*{\equationautorefname}{Eq.}
 \renewcommand*{\figureautorefname}{Fig.}
 
 \begin{document}
@@ -71,9 +74,9 @@
 \input{intro}
 \input{motivation}
 \input{overview}
+\input{design}
 \input{profile}
 \input{adaptation}
-% \input{design}
 \input{implementation}
 \input{evaluation}
 \input{related}

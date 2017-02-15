@@ -4,38 +4,43 @@
 Wide-area streaming analytics are becoming pervasive, especially with the
 emerging Internet-of-Thing (IoT) applications. Large cities such as New York,
 Beijing and Seattle are deploying millions of cameras for traffic
-control. Retails stores and critical areas such as railway stations are also
-being monitored for abnormal activities. Buildings are increasingly equiped with
-a wide variety of sensors to improve building energy use, occupant comfort,
-reliability and maintenance~\cite{krioukov2012building}. Geo-distributed
-infrastructure, such as Content Delivery Network (CDN), needs to analyze user
-requests (machine logs) and optimize data placement to improve delivery
-efficiency. In these problems, the data collected at the edge needs to be
-transported acoross the wide-area and analyzed in near real-time.
+control~\cite{london.surveillance,skynet}. Retails stores and critical areas
+such as railway stations are also being monitored for abnormal
+activities. Buildings are increasingly equiped with a wide variety of sensors to
+improve building energy use, occupant comfort, reliability and
+maintenance~\cite{krioukov2012building}. Geo-distributed infrastructure, such as
+Content Delivery Network (CDN), needs to analyze user requests (machine logs)
+and optimize data placement to improve delivery efficiency. In these problems,
+the data collected at the edge needs to be transported acoross the wide-area and
+analyzed in near real-time.
 
 Existing stream processing for ``big data'', such as
 Borealis~\cite{abadi2005design}, Storm~\cite{toshniwal2014storm}, or Spark
-Streaming~\cite{zaharia2012discretized}, often focus in the context of a single
+Streaming~\cite{zaharia2012discretized}, only work in the context of a single
 cluster, where the bandwidth is sufficient (or at least easier to
 provision). While they are the perfect backends for analyzing streams once data
-arrive, in the context of wide-area, the available bandwidth easily becomes the
-bottleneck: it's scarce and variable~\cite{rabkin2014aggregation} and not keep
-up with the increase rate of traffic~\cite{index2013zettabyte}.
+arrive, in wide-area, the network, with scarce and variable bandwidth, easily
+becomes the bottleneck \cite{rabkin2014aggregation}. What's worse, the growth
+rate of wide-area network capacity is not keeping up with the increasing rate of
+traffic~\cite{index2013zettabyte}.
 
 When facing situations where the bandwidth is not sufficient, applications
-deployed today either choose a conservative setting to ensure a long-period
-running or leave the fate to the underlying transport layer. In the case of TCP,
-the sender will be blocked and data are backlogged, leading to severe delay. In
-the case of UDP, uncontrolled packet loss occurs, leading to application
-performance drop. While specialized adaptive streaming approaches exist for
-multimedia applications~\cite{michalos2012dynamic, schulzrinne1998real}, their
-scope is limited: the optimization target is for human consumption rather than
-analytics.
+deployed today either choose a conservative setting (e.g.\,only delivering 360p
+videos) or leave their fate to the underlying transport layer: (1) in the case
+of TCP, the sender will be blocked and data are backlogged, leading to severe
+delay; (2) in the case of UDP, uncontrolled packet loss occurs, leading to
+application performance drop.
+
+The idea of adaptive streaming and trading accuracy for data freshness is not
+new. Multimedia applications~\cite{michalos2012dynamic, schulzrinne1998real} has
+been extensively studied in the past. However, their optimization goal is to
+improve user experience; resulting in an adaptation strategy with a mismatch
+from our target video analytical applications (\autoref{sec:making-case-adapt}).
 
 In this paper, we present the design and implementation of \sysname{}, a stream
-processing systems for the wide-area. The biggest difference from existing
-systems is to enable applications making explicit trade-off between data
-fidelity and freshness.
+processing systems for the wide-area. Our system enables applications making
+explicit trade-off between data fidelity and freshness with empirical
+performance models.
 
 Our system allows developers construct applications that uses the computing
 capabilities at the data source site for pre-processing, which has been
