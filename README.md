@@ -1,5 +1,6 @@
-# WAN Adaptive Stream Processing (WASP)
+# Adaptive Wide-area Stream Processing
 
-This repository holds the LaTex file for a paper submission to
-Sigcomm2017. `sigcomm2017.tex` is the main file and it includes related
-sections.
+Run `make` inside this folder to generate the PDF file.
+
+`sigcomm17` contains the old paper draft for SIGCOMM'17 submission (didn't
+submit due to time constrain).
