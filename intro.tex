@@ -1,0 +1,40 @@
+\section{Introduction}
+
+Adaptive Wide-area Streaming Analytics. Video Surveillance, Electric Grid
+Monitoring and Distributed Log Analysis, etc. Huge data volumes at the
+edge. video surveillance, 3 mbps per camera [H264 Primer]. eletrical grid
+monitoring, 1.4 million data points per second. machine logs, 300 million
+records per day. Scarce and varying bandwidth, impossible to backhaul all the
+data. And the demand is growing faster than the network capacity.
+
+Existing approaches: When the network resource is not sufficient, TCP ensures
+data delivery, but hurts latency, UDP sends as fast as possible, uncontrolled
+packet loss. Developer heuristics are sub-optimal JetStream (Princeton, NSDI'14)
+uses manual policy ``if bandwidth is insufficient, switch to sennding images at
+75\%''.
+
+Application-specific optimizations don't generalize. video streaming often aims
+at Quality of Experience , thus limited degradation dimension, e.g. maintain
+25FPS).
+
+Making degradation practical is challenging: Goal: Minimize bandwidth while
+maximizing application accuracy. Application-specific optimizations don't
+generalize. It requires expertise and manual work to explore multidimensional
+degradations. The adaptation needs to happen at the runtime: no viable system
+yet.
+
+We tackle this problem with (1) maybe operators to express degradation (2)
+automatically learn Pareto-optimal strategy with multi-dimensional exploration
+and (3) runtime adaptation balances the latency with data accuracy.
+
+We've built three applications: pedestrian detection, augmented reality and
+distributed top-k.
+
+Evaluation shows that...
+
+Dolly~\cite{ananthanarayanan2013effective}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sosp17"
+%%% End:
