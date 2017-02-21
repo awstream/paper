@@ -10,7 +10,16 @@
 \usepackage[T1]{fontenc}
 \usepackage{booktabs} % For formal tables
 \usepackage{multirow}
+\usepackage{subcaption}
 \usepackage{listings}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=[rgb]{0.1, 0.3, 0.7},
+  citecolor=[rgb]{0.8, 0, 0.2},
+}
 
 \lstset{
   showspaces=false,
@@ -45,7 +54,7 @@
 % \acmISBN{123-4567-24-567/08/06}
 
 % % Conference
-% \acmConference[SOSP'17]{}{Oct. 2017}{Shanghai, China}
+% \acmConference[SOSP'17]{}{October 29--31, 2017}{Shanghai, China}
 % \acmYear{2017}
 % \copyrightyear{2017}
 % \acmPrice{15.00}
@@ -115,14 +124,16 @@
 
 \maketitle
 
-\input{intro}
-\input{motivation}
-\input{overview}
-\input{design}
-\input{implementation}
-\input{evaluation}
-\input{related}
-\input{conclusion}
+% \input{intro}
+% \input{motivation}
+% \input{overview}
+% \input{design}
+% \input{implementation}
+% \input{evaluation}
+% \input{related}
+% \input{conclusion}
+
+\input{evaluation-placeholder}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{sosp17}
