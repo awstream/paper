@@ -14,6 +14,24 @@ The evaluation consists of four parts:
 \subsection{Application Profiles}
 \label{sec:application-profiles}
 
+Our system learned the application profiles for all three applications (shown in
+\autoref{fig:all-profiles}). From these profiles, we make the following three
+observations:
+
+\para{Optimal strategy is achieved with multiple dimensions.} In each profile,
+in addition to the Pareto-optimal strategies, we show the performance if only
+one dimension is tuned. As show in the figure, they almost always lead to a
+sub-optimal performance.
+
+\para{Different dimensions have different impact for the same application.}
+For pedestrian detection, tuning resolution leads to a quicker degradation in
+comparison to tuning frame rate.
+
+\para{The same dimension has different impact for different applications.}
+If we compare two video analytics applications, pedestrian detection and
+augmented reality, we see how tuning each dimension affects the performance
+differently.
+
 \begin{figure*}
   \centering
   \begin{subfigure}[t]{0.33\textwidth}
@@ -40,16 +58,16 @@ The evaluation consists of four parts:
   \label{fig:all-profiles}
 \end{figure*}
 
-\subsection{Online Profiling}
+\subsection{Efficient Online Profiling}
 \label{sec:online-profiling}
 
-The main challenge with online profiling is the combinatorial space and
-efficiency of profiling.
-
-First we validate the demand for online
-profiling. \autoref{fig:online-profiling-comparison} shows the difference for
-with and without online profiling. Without online profiling, the initial profile
-fails to offer optimal degradation soon afterwards.
+First, we validate the necessity for online profiling. We compare two adaptation
+scheme: one with the offline learned profile; the other enabled with online
+profiling. \autoref{fig:online-profiling-comparison} shows the performance
+difference. Initially, both schemes work similarly. Overtime, when the data
+distribution changes, the offline-learned profile doesn't match with the newly
+generated data, leading to accuracy deterioration. System enabled with online
+profiling is able to track the data and offers high accuracy.
 
 \begin{figure}
   \centering
@@ -58,12 +76,17 @@ fails to offer optimal degradation soon afterwards.
   \label{fig:online-profiling-comparison}
 \end{figure}
 
-Naively running profiling online is computational expensive. We evaluate two
-solutions regarding the efficiency:
+While online profiling is beneficial, doing it naively faces the combinatorial
+space search. This is different from the offline profiling that doesn't have
+much time or resource constrain.
 
-\para{Degradation-aware parallel profiling:} Compare strategies for profiling.
-\autoref{fig:parallel} shows our profiling scheduling in comparison with a naive
-scheduler.
+We evaluate our proposed solutions regarding the efficiency.
+
+\para{Degradation-aware parallel profiling:} In the offline learned profile, we
+have the measured time required to run for each configuration. Our parallel
+profiling takes the measurements as input and generates a parallel profiling
+schedule: Compare strategies for profiling.  \autoref{fig:parallel} shows our
+profiling scheduling in comparison with a naive scheduler.
 
 \begin{figure}
   \centering
@@ -73,8 +96,8 @@ scheduler.
 \end{figure}
 
 \para{Trigger-based profiling:} Only start the profiling when there is
-substantial difference. \autoref{fig:trigger-profiling} shows the savings in
-trigger-based profiling.
+substantial difference. \autoref{fig:trigger} shows the savings in trigger-based
+profiling.
 
 \begin{figure}
   \centering
