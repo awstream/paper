@@ -1,21 +1,29 @@
 \section{Introduction}
 
-Adaptive Wide-area Streaming Analytics. Video Surveillance, Electric Grid
-Monitoring and Distributed Log Analysis, etc. Huge data volumes at the
-edge. video surveillance, 3 mbps per camera [H264 Primer]. eletrical grid
-monitoring, 1.4 million data points per second. machine logs, 300 million
-records per day. Scarce and varying bandwidth, impossible to backhaul all the
-data. And the demand is growing faster than the network capacity.
+In this paper, we study streaming analytics in the wide area. Although recent
+stream processing systems (such as Storm~\cite{toshniwal2014storm}, Spark
+Streaming~\cite{zaharia2013discretized}) can handle large streams of data in a
+single cluster, they are not designed to work in the wide area where the
+bandwidth is not sufficient to backhaul all the data to a central location.
 
-Existing approaches: When the network resource is not sufficient, TCP ensures
-data delivery, but hurts latency, UDP sends as fast as possible, uncontrolled
-packet loss. Developer heuristics are sub-optimal JetStream (Princeton, NSDI'14)
-uses manual policy ``if bandwidth is insufficient, switch to sennding images at
-75\%''.
+% Video Surveillance, Electric Grid Monitoring and Distributed Log Analysis,
+% etc. Huge data volumes at the edge. video surveillance, 3 mbps per camera [H264
+% Primer]. eletrical grid monitoring, 1.4 million data points per second. machine
+% logs, 300 million records per day. Scarce and varying bandwidth, impossible to
+% backhaul all the data. And the demand is growing faster than the network
+% capacity.
 
-Application-specific optimizations don't generalize. video streaming often aims
-at Quality of Experience , thus limited degradation dimension, e.g. maintain
-25FPS).
+When the network resources become insufficient, applications have to choose
+between data freshness and data fidelity. Applications based on TCP ensures a
+reliable delivery of the data but the backlogged data will increase application
+latency. Applications based on UDP could minimize latency by sending packets as
+fast as possible, the uncontrolled packet loss along the network may devastate
+the application. JetStream~\cite{rabkin2014aggregation}
+
+Application-specific optimizations do not generalize. For example, adaptive
+video streaming~\cite{yin2015control} is a well-studied topic but many
+adaptations aim at human consumption, focusing on Quality of Experience
+(QoE). This limits the adaptation space e.g. maintain 25FPS.
 
 Making degradation practical is challenging: Goal: Minimize bandwidth while
 maximizing application accuracy. Application-specific optimizations don't
@@ -23,16 +31,15 @@ generalize. It requires expertise and manual work to explore multidimensional
 degradations. The adaptation needs to happen at the runtime: no viable system
 yet.
 
-We tackle this problem with (1) maybe operators to express degradation (2)
-automatically learn Pareto-optimal strategy with multi-dimensional exploration
-and (3) runtime adaptation balances the latency with data accuracy.
+In this work, we present \sysname{}. We tackle this problem with (1) maybe
+operators to express degradation (2) automatically learn Pareto-optimal strategy
+with multi-dimensional exploration and (3) runtime adaptation balances the
+latency with data accuracy.
 
 We've built three applications: pedestrian detection, augmented reality and
 distributed top-k.
 
 Evaluation shows that...
-
-Dolly~\cite{ananthanarayanan2013effective}.
 
 %%% Local Variables:
 %%% mode: latex

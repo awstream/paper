@@ -1,0 +1,57 @@
+\section{\sysname{}}
+\label{sec:system}
+
+\sysname{} separates applications specific computations from degradation
+operations with \texttt{maybe} APIs.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=.9\linewidth]{figures/system.pdf}
+  \caption{\sysname{} Overview.}
+  \label{fig:overview}
+\end{figure*}
+
+\subsection{Programming Abstractions}
+\label{sec:progr-abstr}
+
+Applications are modelled as a directed acyclic graph (DAG) of computation.
+\texttt{maybe} operators to express the specification of degradation. Our
+propose APIs do not require developers to be exact on the quantity; integrating
+this into existing applications requires minimal effort.
+
+\begin{table*}
+  \centering
+  \begin{tabular}{ c r l }
+    \toprule
+    \multirow{7}{*}{Normal Operators}
+    & \textit{map}(f: I $\Rightarrow$ O) & Stream<I> $\Rightarrow$ Stream<O> \\
+    & \textit{filter}(f: I $\Rightarrow$ bool) & Stream<I> $\Rightarrow$
+                                                 Stream<I> \\
+    & \textit{skip}(i: Integer) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{sliding\_window}(count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                            Stream<O> \\
+    & \textit{tumbling\_window}(count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                             Stream<O> \\
+    & \textit{timed\_window}(time: Duration, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                          Stream<O> \\
+    & ... & ... \\
+    \midrule
+    \multirow{4}{*}{Degradation Operators}
+    & \textit{maybe}(knobs: Vec<T>, f: (T, I) $\Rightarrow$ I) & Stream<I> $\Rightarrow$
+                                                                 Stream<I> \\
+    & \textit{maybe\_skip}(knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{maybe\_downsample}(knobs: Vec<(Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
+    & ... & ... \\
+    \bottomrule
+  \end{tabular}
+  \caption{A comparison between normal stream processing operators and our
+    degradation operators. \texttt{Vec<T>} represents a list of elements of type
+    T. \texttt{Option<T>} indicates an optional element of type T which is
+    either present \texttt{Some(T)} or absent \texttt{None}.}
+  \label{tab:operators}
+\end{table*}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sosp17"
+%%% End:
