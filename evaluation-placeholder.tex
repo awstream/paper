@@ -3,7 +3,7 @@
 
 The evaluation consists of four parts:
 
-\begin{itemize}
+\begin{itemize}[leftmargin=16pt]
 \item Application profiles (\autoref{fig:all-profiles})
 \item Online Profiling (\autoref{fig:online-profiling-comparison},
   \autoref{fig:parallel}, \autoref{fig:trigger})
@@ -107,18 +107,18 @@ significant difference between probe configurations and current
 configurations. In our scheme, users can either configure the number of probe
 configurations, or configure the available resources (CPU-time) and our system
 will use offline profiles to calculate the corresponding trigger configurations.
-\autoref{fig:trigger} shows how different numbers of trigger configurations
-affects the profiling time. Notice that the continuous mode is effectively
-probing all configurations (trigger($N$), $N$ is the total number of all
-configurations).
+\autoref{fig:online-tricks} shows how different numbers of trigger
+configurations affects the profiling time. Notice that the continuous mode is
+effectively probing all configurations (trigger($N$), $N$ is the total number of
+all configurations).
 
 Add subsample data (1 second duration vs. 5 seconds).
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/trigger.pdf}
+  \includegraphics[width=\columnwidth]{figures/online-tricks.pdf}
   \caption{Trigger-based profiling}
-  \label{fig:trigger}
+  \label{fig:online-tricks}
 \end{figure}
 
 \subsection{Runtime Adaptation}
