@@ -1,11 +1,11 @@
 \documentclass[sigplan, anonymous, review]{acmart}
 
 % Removes citation information below abstract
-\settopmatter{printacmref=false}
+\settopmatter{printacmref=false, printcss=false, printfolios=true}
 % removes footnote with conference information in first column
 \renewcommand\footnotetextcopyrightpermission[1]{}
 %% removes running headers
-\pagestyle{plain}
+%% \pagestyle{plain}
 
 \usepackage[T1]{fontenc}
 \usepackage{booktabs} % For formal tables
@@ -37,27 +37,26 @@
 \setlength{\abovecaptionskip}{4pt}
 \captionsetup{belowskip=12pt,aboveskip=4pt}
 
-% Copyright
+%% Copyright
 \setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-%\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
+% \setcopyright{acmcopyright}
+% \setcopyright{acmlicensed}
+% \setcopyright{rightsretained}
+% \setcopyright{usgov}
+% \setcopyright{usgovmixed}
+% \setcopyright{cagov}
+% \setcopyright{cagovmixed}
 
 %% Below is commented out for submission
 % % DOI
 % \acmDOI{10.475/123_4}
-
 % % ISBN
 % \acmISBN{123-4567-24-567/08/06}
 
-% % Conference
-% \acmConference[SOSP'17]{}{October 29--31, 2017}{Shanghai, China}
-% \acmYear{2017}
-% \copyrightyear{2017}
+%% Conference
+\acmConference[SOSP'17]{}{October 29--31, 2017}{Shanghai, China}
+\acmYear{2017}
+\copyrightyear{2017}
 % \acmPrice{15.00}
 % \acmBadgeL[http://ctuning.org/ae/ppopp2016.html]{ae-logo}
 
@@ -114,7 +113,8 @@
 \ccsdesc[300]{Information systems~Multimedia streaming}
 \ccsdesc[300]{Information systems~Computing platforms}
 
-\keywords{adaptation, learning, stream processing}
+%% Keywords are mostly obsolete, use CCS.
+%% \keywords{adaptation, learning, stream processing}
 
 %% Below is the code to create the teaser
 % \begin{teaserfigure}
