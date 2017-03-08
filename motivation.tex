@@ -44,7 +44,7 @@ manage a large cluster and perform data analytics at real-time.
 \label{sec:making-case-adapt}
 
 To understand the bandwidth characteristics in the wide-area, we conducted a
-simple measurement using Amazon EC2. We use iPerf~\cite{iperf} to measure the
+simple measurement using Amazon EC2. We use iPerf~\cite{iperf3} to measure the
 pair-wise bandwidth between four geo-distributed sites throughout the day. We
 observed large variance in the measured bandwidth and one such pair of sites is
 shown in. Regardless of the number of flows\footnote{EC2 has a per-flow and
@@ -88,41 +88,6 @@ errors.
 
 This motivates us to take a system-level approach that synthesize different
 adaptation strategies for different queries and contexts.
-
-% Constant Rate Factor (CRF) as it provides maximum compression efficiency with a
-% single pass. The range of the quantizer scale is 0-51: where 0 is lossless, 23
-% is default, and 51 is worst possible. A lower value is a higher quality and a
-% subjectively sane range is 18-28. Consider 18 to be visually lossless or nearly
-% so: it should look the same or nearly the same as the input but it isn't
-% technically lossless.
-% Many of the encoding techniques reduces data size use quantized approach.  Each
-% frame gets the bitrate it needs to keep the requested quality level. The
-% downside is that you can't tell it to get a specific filesize or not go over a
-% specific size or bitrate.
-
-% For applications where TCP's retransmission is not unnessary, UDP is often
-% chosen. Many multimedia applications such as Internet
-% telephony~\cite{baset2004analysis}. Live IP cameras streaming with RTMP. Or
-% sensor data over OSC~\cite{wright1997open}, a protocol based on UDP. UDP's
-% packet loss can be detrimental in the deteriorate situations.
-
-% The issue with these protocol is that they are designed to be generally
-% applicable to many applications without intervening the application execution.
-% Often developers of individual applications need to tune the transport to fit
-% their needs~\cite{tierney2001tcp} or deal with the insufficient bandwidth case.
-
-% In some verticle domain, such as video encoding, adaptive scheme
-% exists. However, there is no general solution and these solutions are not
-% generally applicable to all applications. Most video encoding techniques will
-% adjust the quantizer to tune the encoding size and quality; while often
-% preserving the frame rate as these videos are for human consumption. A smooth
-% video provides a better quality of experience than higher resolution but
-% intermitten images.
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "sigcomm2017"
-%%% End:
 
 %%% Local Variables:
 %%% mode: latex
