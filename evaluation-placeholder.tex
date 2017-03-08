@@ -63,18 +63,10 @@ differently.
 
 First, we validate the necessity for online profiling. We compare two adaptation
 scheme: one with the offline learned profile; the other enabled with online
-profiling. \autoref{fig:online-profiling-comparison} shows the performance
-difference. Initially, both schemes work similarly. Overtime, when the data
+profiling. Initially, both schemes work similarly. Overtime, when the data
 distribution changes, the offline-learned profile doesn't match with the newly
 generated data, leading to accuracy deterioration. System enabled with online
 profiling is able to track the data and offers high accuracy.
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=\columnwidth]{figures/offline-online-profiling.pdf}
-  \caption{The case for online profiling}
-  \label{fig:online-profiling-comparison}
-\end{figure}
 
 While online profiling is beneficial, doing it naively faces the combinatorial
 space search. This is different from the offline profiling that doesn't have
