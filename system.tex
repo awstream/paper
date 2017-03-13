@@ -10,17 +10,17 @@ and controls the application execution adaptively. \autoref{fig:overview}
 provides an overview of the systems and we will then describe each stage in
 detail.
 
-\begin{figure*}
+\begin{figure}
   \centering
   \includegraphics[width=.9\linewidth]{figures/system.pdf}
   \caption{\sysname{} Overview.}
   \label{fig:overview}
-\end{figure*}
+\end{figure}
 
-\subsection{Programming Abstractions}
-\label{sec:progr-abstr}
+\subsection{Structured Adaptation}
+\label{sec:struct-adapt}
 
-\paraf{DAG} Applications are modelled as a directed acyclic graph (DAG) of
+DAG: Applications are modelled as a directed acyclic graph (DAG) of
 computation.  \texttt{maybe} operators to express the specification of
 degradation. Our propose APIs do not require developers to be exact on the
 quantity; integrating this into existing applications requires minimal effort.
@@ -150,8 +150,8 @@ the second stage of our system that performs automatic profiling.
 The goal of our profiling stage is to explore the bandwidth-accuracy trade-off
 and generate a \textit{profile} that is Pareto-optimal.
 
-\subsubsection{Offline Profiling}
-\label{sec:offline-profiling}
+\subsubsection{Profiling Formalism}
+\label{sec:formalize-profiling}
 
 We first define terms and notations we will use. Each \texttt{maybe} operator
 within an application corresponds to a knob $k$. Suppose the application has $n$
@@ -201,7 +201,11 @@ either be measured against the groundtruth; or in the case when labelled dataset
 is not available, the system uses the reference results when all degradations
 are turned off.
 
-\para{Profiling is costly, ok for offline.}
+\subsubsection{Offline Profiling}
+\label{sec:offline-profiling}
+
+Users provide a representative training data set. \para{Profiling is costly, ok
+  for offline.}
 
 \subsubsection{Online Profiling}
 \label{sec:online-profiling}
@@ -217,6 +221,10 @@ undegraded data may not be available.
 \item Allocate some bandwidth for portions of undegraded data.
 \item Use current best data as reference.
 \end{itemize}
+
+Although the first scheme seems to be incurring unnecessary bandwidth
+consumption, when the runtime is probing for bandwidth, the data can enjoy a
+free ride.
 
 \para{Efficient profiling.} When doing profiling online, exhaustive exploring
 all configurations is costly.
@@ -257,11 +265,11 @@ latency, the queue derive the congestion watermark.
 
 \para{Bandwidth Measurement:} The receiver delivers the received data to
 application. In the meantime, it measures the effective throughput between each
-client-server pair as an indication of current bandwidth~\cite{iperf}. To avoid
-spikes in the bandwidth measurement, exponential smoothing is employed. While
-the receiver performs bandwidth measurement every second, it does not send the
-information back to each client.  avoid unnecessary communication, the client
-requests the measurement only when congestion is detected.
+client-server pair as an indication of current bandwidth. To avoid spikes in the
+bandwidth measurement, exponential smoothing is employed. While the receiver
+performs bandwidth measurement every second, it does not send the information
+back to each client.  avoid unnecessary communication, the client requests the
+measurement only when congestion is detected.
 
 \para{Policy Manager:} Upon receiving signals from congestion controller, it
 performs an RPC request to the server for current bandwidth measurement. With
@@ -277,6 +285,10 @@ based on the \texttt{maybe} API supports a \texttt{set} function that would
 change the internals of the operator. The \texttt{set} function is invoked when
 degradation is needed.
 
+We then outline the rate-based congestion control algorithm.
+
+\todo{One figure about states and state transitions during the congestion
+  control}.
 
 %%% Local Variables:
 %%% mode: latex

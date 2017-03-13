@@ -46,10 +46,12 @@ In summary, this paper makes the following contributions:
 \begin{itemize}[leftmargin=16pt]
 \item We study in depth of wide-area streaming applications in the case of
   network resource variation.
-\item We design APIs to allow for exploring bandwidth-accuracy trade-off with
-  minimal developer effort.
-\item We implement the system to perform application profiling and runtime
-  adaptation.
+\item We propose a novel set of APIs to allow for structured adaptation: they
+  require minimal developer efforts while being precise with automatic
+  profiling.
+\item We propose a new congestion control scheme that adapts the application
+  data to available bandwidth, with a goal of minimizing the latency.
+\item We implement a prototype system.
 \item We build three real-world applications and evaluate their behavior
   under different scenarios.
 \end{itemize}

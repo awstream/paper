@@ -1,11 +1,16 @@
 \section{Motivation}
-\label{sec:background-motivation}
+\label{sec:motivation}
 
 In this section, we make the case for an adaptive stream processing system in
-the wide area by examining the gap between application demands and the existing
-infrastructure. We start with a few streaming applications.
+the wide area by examining the gap between application demands (high) and the
+existing infrastructure (scarce and varying). At last, we show that
+application-specific optimizations don't generalize across applications, instead
+a system-level approach is desired.
 
-\para{Video Surveillance:} We envisage a city-wide monitoring system that
+\subsection{Wide-area Streaming Applications}
+\label{sec:wide-area-streaming}
+
+\paraf{Video Surveillance:} We envisage a city-wide monitoring system that
 aggregates camera feeds (both stationary ground cameras and moving aerial
 vehicles) and analyzes video streams in real-time for surveillance, anomaly
 detection or business intelligence~\cite{oh2011large}. While traditionally human
@@ -16,15 +21,15 @@ detection~\cite{dollar2012pedestrian}, vehicle tracking~\cite{coifman1998real},
 or facial recognition to locate people of interest~\cite{parkhi2015deep,
   Lu:2015:SHF:2888116.2888245}.
 
-\para{IoT Sensors:} While traditional environmental sensors are
-slow~\cite{atzori2010internet}, we are seeing an increasing trend with
-high-frequency, high-precision sensors being deployed. For example, the uPMU
-monitoring system for the electrical grid consists of a network of 1000 devices;
-each produces 12 streams of 120 Hz high-precision values accurate to 100
-ns. This amounts to 1.4 million points per second that requires specialized
-timeseries database~\cite{andersen2016btrdb}.
+\para{High-frequency IoT Sensors:} Although traditional environmental sensors
+are slow and not data-intensive~\cite{atzori2010internet}, we are seeing an
+increasing trend with high-frequency, high-precision sensors being deployed. For
+example, the uPMU monitoring system for the electrical grid consists of a
+network of 1000 devices; each produces 12 streams of 120 Hz high-precision
+values accurate to 100 ns. This amounts to 1.4 million points per second that
+requires specialized timeseries database~\cite{andersen2016btrdb}.
 
-\para{Log Analysis:} Large organizations today are managing 10--100s of
+\para{Log Monitoring:} Large organizations today are managing 10--100s of
 datacenters (DCs) and edge clusters worldwide~\cite{calder2013mapping}. While
 most log analysis today runs in a batch mode and on a daily basis, there is
 trend in analyzing logs in real-time for quicker optimization. For example, a
@@ -41,18 +46,48 @@ wide-area. Once they arrive, existing stream processing systems can easily
 manage a large cluster and perform data analytics at real-time.
 
 \subsection{Wide-Area Bandwidth Characteristics}
-\label{sec:making-case-adapt}
+\label{sec:wide-area-bandwidth}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.95\linewidth]{figures/motiv-aws.pdf}
+  \caption{Bandwidth measurement between Amazon EC2 sites (from Ireland to
+    California). Note the time-series plot has a resolution of 30 minutes.}
+  \label{fig:bw}
+\end{figure}
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/motiv-app-specific.pdf}
+  \caption{Application specific adaptations doesn't generalize. There are often
+    multiple dimensions to explore. Degradation has different impact along
+    different dimension}
+  \label{fig:app-specific}
+\end{figure*}
 
 To understand the bandwidth characteristics in the wide-area, we conducted a
 simple measurement using Amazon EC2. We use iPerf~\cite{iperf3} to measure the
 pair-wise bandwidth between four geo-distributed sites throughout the day. We
 observed large variance in the measured bandwidth and one such pair of sites is
-shown in. Regardless of the number of flows\footnote{EC2 has a per-flow and
-  per-VM rate limiting~\cite{zhang2016guaranteeing}.}, there exist occasions
-when the available bandwidth is almost halved. We believe the back-haul links
-between EC2 sites are better (if not at least representative) in comparison to
-the general wide-area links. The varying nature poses real challenge to the
-realization and successful deployment of wide-area streaming applications.
+shown in~\autoref{fig:bw}. Regardless of the number of flows\footnote{EC2 has a
+  per-flow and per-VM rate limiting~\cite{zhang2016guaranteeing}.}, there exist
+occasions when the available bandwidth is almost halved. We believe the
+back-haul links between EC2 sites are better (if not at least representative) in
+comparison to the general wide-area links. The varying nature poses real
+challenge to the realization and successful deployment of wide-area streaming
+applications.
+
+Similar variations have also been reported in wireless
+network~\cite{biswas2015large}, ISP network~\cite{grover2013peeking}, cellular
+network~\cite{nikravesh2014mobile}.
+
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=.95\linewidth]{figures/motiv-aws.pdf}
+%   \caption{Bandwidth measurement between Amazon EC2 sites (from Ireland to
+%     California). Note the time-series plot has a resolution of 30 minutes.}
+%   \label{fig:bw}
+% \end{figure}
 
 \subsection{Making the Case for a System Approach}
 \label{sec:bat}
