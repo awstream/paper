@@ -6,40 +6,66 @@ Streaming~\cite{zaharia2013discretized}) can handle large streams of data in a
 single cluster, they are not designed to work in the wide area where the
 bandwidth is not sufficient to backhaul all the data to a central location.
 
-% Video Surveillance, Electric Grid Monitoring and Distributed Log Analysis,
-% etc. Huge data volumes at the edge. video surveillance, 3 mbps per camera [H264
-% Primer]. eletrical grid monitoring, 1.4 million data points per second. machine
-% logs, 300 million records per day. Scarce and varying bandwidth, impossible to
-% backhaul all the data. And the demand is growing faster than the network
-% capacity.
+With the emerging class of Internet of Things (IoT) applications, such as video
+surveillance and industrial monitoring, huge data volumes of data are generated
+at the edge. In contrast, the Internet's available bandwidth is scarce and
+varying, making it impossible to back-haul all the data. And the demand is
+growing faster than the network capacity.
 
 When the network resources become insufficient, applications have to choose
 between data freshness and data fidelity. Applications based on TCP ensures a
 reliable delivery of the data but the backlogged data will increase application
 latency. Applications based on UDP could minimize latency by sending packets as
 fast as possible, the uncontrolled packet loss along the network may devastate
-the application. JetStream~\cite{rabkin2014aggregation}.
+the application. Either option is not ideal for many streaming anlaytics.
 
-Application-specific optimizations do not generalize. For example, adaptive
-video streaming~\cite{yin2015control} is a well-studied topic but many
-adaptations aim at human consumption, focusing on Quality of Experience
-(QoE). This limits the adaptation space e.g. maintain 25FPS.
+Previous work (JetStream~\cite{rabkin2014aggregation}) has explored the
+direction of reducing application's demand with degradation, but it relies on
+developers' manual policy, which lacks precision and faces scalability issue.
+There are also application-specific optimizations; but they do not
+generalize. For example, adaptive video streaming~\cite{yin2015control} is a
+well-studied topic but many adaptations aim at human consumption, focusing on
+Quality of Experience (QoE). This limits the adaptation space e.g. maintain
+25FPS.
 
-Making degradation practical is challenging: Goal: Minimize bandwidth while
-maximizing application accuracy. Application-specific optimizations don't
-generalize. It requires expertise and manual work to explore multidimensional
-degradations. The adaptation needs to happen at the runtime: no viable system
-yet.
+Making degradation practical and general across applications is challenging. The
+goal is to maximizing application accuracy under the constrain of available
+bandwidth with minimal developers' effort. It calls for the right level of
+abstraction with a system-level approach.
 
-In this work, we present \sysname{}. We tackle this problem with (1) maybe
-operators to express degradation (2) automatically learn Pareto-optimal strategy
-with multi-dimensional exploration and (3) runtime adaptation balances the
-latency with data accuracy.
+In this work, we present \sysname{}, which aims to empower developers with an
+easy-to-use framework for wide-area streaming analytics. We focus on the scarce
+and variable bandwidth and solve it with three ideas: (1) a novel set of APIs
+for structured adaptation; (2) a combination of offline and online profiling to
+construct a Pareto-optimal strategy; (3) a rate-based congestion control for
+runtime adaptation.
 
-We've built three applications: pedestrian detection, augmented reality and
-distributed top-k.
+Our proposed API imposes a structure on the adaptation that each application can
+perform; although the API is narrow, when combined with other operators, we find
+the framework is expressive enough for many streaming analytics.
 
-Evaluation shows that...
+To liberate developers from specifying rules manually, our system employs a
+data-driven empirical-analysis approach. The profiling is done both offline and
+online. Offline profiling offers bootstrap information that makes online
+profiling more efficient. Online profiling alleviates the problem of
+\textit{model drift}.
+
+The runtime adaptation automatically adjusts the applications' execution such
+that the streaming demand matches the available bandwidth. We employs a
+congestion-based congestion control scheme by measuring the bottleneck
+bandwidth; in steady state, the system probes for more available bandwidth.
+
+Using \sysname{}, we've built three applications: pedestrian detection,
+augmented reality and distributed top-k. We use real-world data for these
+applications to evaluate our systems.
+
+The evaluation shows the generated profile for the three applications. Then for
+each application, We show how they adapt the behavior at runtime. Under a
+controlled experiment, even with only transient network capacity drop, our
+system is able to maintain an end-to-end delay for 1 seconds in the wide-area
+and accuracy level above 80\%. Application-agnostic protocols creates
+significant backlogged data (TCP for about 100 seconds) or unusable accuracy
+(UDP).
 
 In summary, this paper makes the following contributions:
 
