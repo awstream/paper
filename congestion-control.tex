@@ -1,0 +1,52 @@
+\begin{tikzpicture}[>=latex]
+  %
+  % Styles for states, and state edges
+  %
+  \tikzstyle{state} = [draw, very thick, fill=white, rectangle, minimum
+  height=3em, minimum width=7em, node distance=7em, font={\bfseries}, align=center]
+  \tikzstyle{stateEdgePortion} = [black,thick];
+  \tikzstyle{stateEdge} = [stateEdgePortion,->];
+  \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\itshape}];
+
+  \node[state, name=startup] {STARTUP};
+  \node[state, name=congestion, below of=startup] {CONGESTION\\AVOIDANCE};
+  \node[state, name=steady, below of=congestion] {STEADY};
+  \node[state, name=probe, below of=steady] {PROBE};
+
+  \draw ($(startup.south) + (-.5em,0)$)
+  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {Congestion}
+  ($(congestion.north) + (-.5em,0)$);
+
+  \draw ($(congestion.south) + (-.5em,0)$)
+  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {No Queue}
+  ($(steady.north) + (-.5em,0)$);
+
+  \draw ($(steady.north) + (.5em,0)$)
+  edge[stateEdge] node[edgeLabel, xshift=2.5em] {Congestion}
+  ($(congestion.south) + (.5em,0)$);
+
+  \draw ($(steady.south) + (-.5em,0)$)
+  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {No Queue}
+  ($(probe.north) + (-.5em,0)$);
+
+  \draw ($(probe.north) + (.5em,0)$)
+  edge[stateEdge] node[edgeLabel, xshift=2.5em] {ProbeDone}
+  ($(steady.south) + (.5em,0)$);
+
+  %
+  % probe to congestion avoidance
+  %
+  \coordinate (probe2congestionA) at ($(probe.east) + (+3em,0)$);
+  \coordinate (probe2congestionB) at ($(congestion.east) + (+3em,0)$);
+  \draw (probe.east) edge[stateEdgePortion] (probe2congestionA);
+  \draw (probe2congestionA)
+  edge[stateEdgePortion] node[edgeLabel, xshift=+2.5em]{Congestion}
+  (probe2congestionB);
+  \draw (probe2congestionB) edge[stateEdge] (congestion.east);
+
+\end{tikzpicture}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sosp17"
+%%% End:
