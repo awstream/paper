@@ -1,50 +1,40 @@
-\begin{tikzpicture}[>=latex]
-  %
-  % Styles for states, and state edges
-  %
-  \tikzstyle{state} = [draw, very thick, fill=white, rectangle, minimum
-  height=3em, minimum width=7em, node distance=7em, font={\bfseries}, align=center]
-  \tikzstyle{stateEdgePortion} = [black,thick];
-  \tikzstyle{stateEdge} = [stateEdgePortion,->];
-  \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\itshape}];
+\begin{tikzpicture}[
+  state/.style = { draw, very thick, fill=white, rounded corners=1em,
+    minimum height=3em, minimum width=7em, node distance=7em, font={\bfseries},
+    align=center },
+  edge portion/.style = { black, thick },
+  transition/.style = { edge portion, -> },
+  algorithm/.style = { draw, thin, fill=white },
+  ]
 
-  \node[state, name=startup] {STARTUP};
-  \node[state, name=congestion, below of=startup] {CONGESTION\\AVOIDANCE};
-  \node[state, name=steady, below of=congestion] {STEADY};
-  \node[state, name=probe, below of=steady] {PROBE};
+  \node [state] (startup) {
+    STARTUP };
+  \node [state] (congestion) [right=of startup] {CONGESTION};
+  \draw [transition] (startup) -- (congestion)
+  node [midway, auto] {Q.Congestion};
 
-  \draw ($(startup.south) + (-.5em,0)$)
-  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {Congestion}
-  ($(congestion.north) + (-.5em,0)$);
+  \node [state] (steady) [below=of congestion] {STEADY};
 
-  \draw ($(congestion.south) + (-.5em,0)$)
-  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {No Queue}
-  ($(steady.north) + (-.5em,0)$);
+  \draw [transition] ($(congestion.south west)!0.4!(congestion.south east)$)
+  to node[midway, sloped, below] {Q.NoQueue}
+  ($(steady.north west)!0.4!(steady.north east)$);
 
-  \draw ($(steady.north) + (.5em,0)$)
-  edge[stateEdge] node[edgeLabel, xshift=2.5em] {Congestion}
-  ($(congestion.south) + (.5em,0)$);
+  \draw [transition] ($(steady.north west)!0.6!(steady.north east)$)
+  to node[midway, sloped, below] {Q.Congestion}
+  ($(congestion.south west)!0.6!(congestion.south east)$);
 
-  \draw ($(steady.south) + (-.5em,0)$)
-  edge[stateEdge] node[edgeLabel, xshift=-2.5em] {No Queue}
-  ($(probe.north) + (-.5em,0)$);
+  \node [state] (probe) [left=of steady] {PROBE};
 
-  \draw ($(probe.north) + (.5em,0)$)
-  edge[stateEdge] node[edgeLabel, xshift=2.5em] {ProbeDone}
-  ($(steady.south) + (.5em,0)$);
+  \draw [transition] ($(steady.south west)!0.6!(steady.north west)$)
+  -- ($(probe.south east)!0.6!(probe.north east)$)
+  node[midway, auto, swap] {Q.Probe};
 
-  %
-  % probe to congestion avoidance
-  %
-  \coordinate (probe2congestionA) at ($(probe.east) + (+3em,0)$);
-  \coordinate (probe2congestionB) at ($(congestion.east) + (+3em,0)$);
-  \draw (probe.east) edge[stateEdgePortion] (probe2congestionA);
-  \draw (probe2congestionA)
-  edge[stateEdgePortion] node[edgeLabel, xshift=+2.5em]{Congestion}
-  (probe2congestionB);
-  \draw (probe2congestionB) edge[stateEdge] (congestion.east);
+  \draw [transition, <-] ($(steady.south west)!0.4!(steady.north west)$)
+  -- ($(probe.south east)!0.4!(probe.north east)$)
+  node[midway, auto, align=left] {Q.Congestion | \\ IO.ProbeDone};
 
 \end{tikzpicture}
+
 
 %%% Local Variables:
 %%% mode: latex
