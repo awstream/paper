@@ -1,89 +1,77 @@
-\begin{tikzpicture}
-  %
-  % Define basic styles
-  %
-  % Node
-  \tikzstyle{module} = [draw, very thick, rounded corners,
-  fill=white, minimum height=2.5em, inner sep=0.5em,
-  rectangle, font={\bfseries}, align=center]
-  \tikzstyle{cmodule} = [module, fill=black!20]
+\begin{tikzpicture}[
+  node distance = 1em, text height = 0.6em, text depth = 0.1em,
+  minimum height = 2em,
+  module/.style           = { draw, thick, rounded corners,
+    fill = white, minimum height = 2.5em, inner sep = 0.5em,
+    rectangle, font = {\bfseries}, align=center },
+  ctl module/.style   = { module, fill=black!20 },
+  edge/.style             = { black, thick },
+  data edge/.style        = { edge, -> },
+  ctl edge partial/.style = { edge, dashed },
+  ctl edge/.style         = { ctl edge partial, -> },
+  label/.style            = { text centered, font={\itshape}}
+  ]
 
-  % Edge
-  \tikzstyle{stateEdgePortion} = [black, thick];
-  \tikzstyle{dataEdge} = [stateEdgePortion, ->];
-  \tikzstyle{controlEdgePartial} = [stateEdgePortion, dashed];
-  \tikzstyle{controlEdge} = [controlEdgePartial, ->];
-  \tikzstyle{controlDoubleEdge} = [controlEdgePartial, <->];
-  \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\itshape}];
+  \node [module]         (source)                          { Source };
+  \node [ctl module] (degrade)   [right=of source]     { Degrade };
+  \node [ctl module] (queue)     [right=of degrade]    { Queue };
+  \node [ctl module] (socket)    [right=of queue]      { Socket };
+  \node [ctl module] (receiver)  [right=5em of socket] { Receiver }
+  (receiver.west) edge [<-, edge] node [auto, swap, label, yshift=-.4em] {data} (socket.east);
+  \node [module]         (analytics) [right=of receiver]   { Analytics };
+  \node [ctl module] (cc) [below=2em of queue, xshift=1.8em] {Congestion
+    Controller};
 
-  \node[name=client, draw, very thick, fill=white,
-  double copy shadow={shadow xshift=2pt, shadow yshift=-2pt, fill=white, draw},
-  text height=13em, text width=31.5em] {};
+  \draw [data edge] (source)    to (degrade);
+  \draw [data edge] (degrade)   to (queue);
+  \draw [data edge] (queue)     to (socket);
+  \draw [data edge] (receiver)  to (analytics);
 
-  \node[name=server, draw, very thick, fill=white, draw,
-  right=of client.north east, anchor=north west, xshift=1em,
-  text height=7em, text width=12.5em] {};
+  \draw [ctl edge] (queue.south) to (queue.south |- cc.north);
+  \draw [ctl edge] (socket.south) to (socket.south |- cc.north);
+  \draw [ctl edge partial] (cc.west) to (cc.west -| degrade.south);
+  \draw [ctl edge] (cc.west -| degrade.south) to (degrade.south);
 
-  \node[module, name=source, below right=of client.north west,
-  xshift=-1.5em, yshift=1.5em] {Source};
-  \node[module, name=transform, right of=source, xshift=3.5em] {Transform};
-  \node[cmodule, name=degrade, right of=transform, xshift=3.7em] {Degrade};
-  \node[cmodule, name=queue, right of=degrade, xshift=3em] {Queue};
-  \node[cmodule, name=socket, right of=queue, xshift=3em, text width=3em] {Socket};
-  \node[cmodule, name=receiver, right of=socket, xshift=7em] {Receiver};
-  \node[module, name=analytics, right of=receiver, xshift=3em] {Analytics};
+  \node [] (client) [below=4em of source] {Edge (Client)};
+  \node [] (server) [below=1em of analytics] {Server};
 
-  \node[cmodule, name=cc, at=($(queue)!0.5!(socket)$), yshift=-6em]
-  {Congestion\\Controller};
+  %%
+  %% Background box
+  %%
+  \begin{scope}[on background layer]
+    \coordinate (top right) at ($(socket.north east) + (.5em, 1em)$);
 
-  \draw ($(source.east)$) edge[dataEdge] ($(transform.west)$);
-  \draw ($(transform.east)$) edge[dataEdge] ($(degrade.west)$);
-  \draw ($(degrade.east)$) edge[dataEdge] ($(queue.west)$);
-  \draw ($(queue.east)$) edge[dataEdge] ($(socket.west)$);
-  \draw ($(socket.east)$) edge[dataEdge] node[edgeLabel, yshift=0.6em] {data}
-  ($(receiver.west)$);
-  \draw ($(receiver.east)$) edge[dataEdge] ($(analytics.west)$);
+    \node [draw, thick, fill=white,
+    double copy shadow={shadow xshift=2pt, shadow yshift=-2pt, fill=white, draw},
+    fit = (top right) (client)] {};
+  \end{scope}
 
-  %% Control path
-  \draw let
-  \p1 = ($(cc.center)$), \p2 = ($(degrade.center)$)
-  in ($(cc.west)$) edge[controlEdgePartial] (\x2, \y1)
-  (\x2, \y1) edge[controlEdge] ($(degrade.south)$);
+  \begin{scope}[on background layer]
+    \coordinate (top left) at ($(receiver.north west) + (-.5em, 1em)$);
+    \coordinate (top right) at ($(analytics.north east) + (.5em, 1em)$);
 
-  \draw let
-  \p1 = ($(queue.south)$), \p2 = ($(cc.north)$)
-  in ($(\x1, \y1) + (1em,0)$) edge[controlEdge] ($(\x1, \y2) + (1em,0)$);
-
-  \draw let
-  \p1 = ($(socket.south)$), \p2 = ($(cc.north)$)
-  in ($(\x1, \y1) + (-1em,0)$) edge[controlDoubleEdge] ($(\x1, \y2) + (-1em,0)$);
-
-  \node[name=clientlabel, above right=of client.south west, xshift=-2em, yshift=-2em] {Edge (Client)};
-  \node[name=clientlabel, above left=of server.south east, xshift=2em, yshift=-2em] {Server};
+    \node [draw, thick, fill=white, fit = (top left) (top right) (server)] {};
+  \end{scope}
 
   %%
   %% Legend
   %%
-  \node[name=datalegend, below=1.5em of server.south west, xshift=2em]
-  {\small Data Plane};
-  \draw ($(datalegend.west) + (-2em, 0)$) edge[dataEdge]
-  ($(datalegend.west) + (-0.5em, 0)$);
+  \begin{scope}[shift={($(receiver.south) + (-5em, -6em)$)},
+    node distance = 0.2em]
+    \draw [data edge] (0, 0) to (2em, 0) node [] (data edge) {};
+    \node [] (data legend) [right=of data edge] {Data Plane};
 
-  \node[name=controllegend, below=2.5em of datalegend.west, anchor=west]
-  {\small Control Plane};
-  \draw ($(controllegend.west) + (-2em, 0)$) edge[controlEdge]
-  ($(controllegend.west) + (-0.5em, 0)$);
+    \draw [ctl edge] (0, -2em) to (2em, -2em) node [] (control edge) {};
+    \node [] (control legend) [right=of control edge] {Control Plane};
 
-  \node[name=applegend, right=3em of datalegend.east]
-  {\small Application Logic};
-  \node[module, name=applegendbox, left=0.1em of applegend, text width=0.3em,
-  minimum height=0em] {};
+    \node [module, minimum width=3em, minimum height=1em] (app) [right=7em of data legend.west] {};
+    \node [] [right=of app] {Application};
 
-  \node[name=syslegend, below=2.5em of applegend.west, anchor=west]
-  {\small Runtime};
-  \node[cmodule, name=syslegendbox, left=0.1em of syslegend, text width=0.3em,
-  minimum size=0em] {};
+    \node [ctl module, minimum width=3em, minimum height=1em] (sys) [right=7em of control legend.west] {};
+    \node [] [right=of sys] {System};
+  \end{scope}
 
+  % \coordinate (legend) at ($(receiver.south) + (-3em, -6em)$);
 \end{tikzpicture}
 
 %%% Local Variables:
