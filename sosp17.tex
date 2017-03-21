@@ -7,15 +7,34 @@
 %% removes running headers
 %% \pagestyle{plain}
 
-\usepackage{tikz}
-\usetikzlibrary{calc,backgrounds}
+\usepackage[active,float]{preview}
+\PreviewEnvironment{tikzpicture}
+
 \usepackage[T1]{fontenc}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
 \usepackage{booktabs} % For formal tables
 \usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{multirow}
 \usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{varwidth}
+\usepackage{xcolor}
+
+\usetikzlibrary{calc, backgrounds, shadows, positioning}
+
+%%
+%% Define match case
+%%
+\algnewcommand\algorithmicmatch{\textbf{match}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+\algdef{SE}[MATCH]{Match}{EndMatch}[1]{\algorithmicmatch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicmatch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{#1 $\Rightarrow$}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndMatch}%
+\algtext*{EndCase}%
 
 \hypersetup{
   colorlinks=true,
@@ -36,8 +55,8 @@
   morekeywords={maybe_downsample, maybe_skip}
 }
 
-\setlength{\abovecaptionskip}{4pt}
-\captionsetup{belowskip=12pt,aboveskip=4pt}
+\captionsetup[figure]{belowskip=-8pt,aboveskip=7pt}
+\captionsetup[table]{belowskip=5pt,aboveskip=7pt}
 
 %% Copyright
 \setcopyright{none}

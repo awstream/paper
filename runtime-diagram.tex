@@ -1,0 +1,92 @@
+\begin{tikzpicture}
+  %
+  % Define basic styles
+  %
+  % Node
+  \tikzstyle{module} = [draw, very thick, rounded corners,
+  fill=white, minimum height=2.5em, inner sep=0.5em,
+  rectangle, font={\bfseries}, align=center]
+  \tikzstyle{cmodule} = [module, fill=black!20]
+
+  % Edge
+  \tikzstyle{stateEdgePortion} = [black, thick];
+  \tikzstyle{dataEdge} = [stateEdgePortion, ->];
+  \tikzstyle{controlEdgePartial} = [stateEdgePortion, dashed];
+  \tikzstyle{controlEdge} = [controlEdgePartial, ->];
+  \tikzstyle{controlDoubleEdge} = [controlEdgePartial, <->];
+  \tikzstyle{edgeLabel} = [pos=0.5, text centered, font={\itshape}];
+
+  \node[name=client, draw, very thick, fill=white,
+  double copy shadow={shadow xshift=2pt, shadow yshift=-2pt, fill=white, draw},
+  text height=13em, text width=31.5em] {};
+
+  \node[name=server, draw, very thick, fill=white, draw,
+  right=of client.north east, anchor=north west, xshift=1em,
+  text height=7em, text width=12.5em] {};
+
+  \node[module, name=source, below right=of client.north west,
+  xshift=-1.5em, yshift=1.5em] {Source};
+  \node[module, name=transform, right of=source, xshift=3.5em] {Transform};
+  \node[cmodule, name=degrade, right of=transform, xshift=3.7em] {Degrade};
+  \node[cmodule, name=queue, right of=degrade, xshift=3em] {Queue};
+  \node[cmodule, name=socket, right of=queue, xshift=3em, text width=3em] {Socket};
+  \node[cmodule, name=receiver, right of=socket, xshift=7em] {Receiver};
+  \node[module, name=analytics, right of=receiver, xshift=3em] {Analytics};
+
+  \node[cmodule, name=cc, at=($(queue)!0.5!(socket)$), yshift=-6em]
+  {Congestion\\Controller};
+
+  \draw ($(source.east)$) edge[dataEdge] ($(transform.west)$);
+  \draw ($(transform.east)$) edge[dataEdge] ($(degrade.west)$);
+  \draw ($(degrade.east)$) edge[dataEdge] ($(queue.west)$);
+  \draw ($(queue.east)$) edge[dataEdge] ($(socket.west)$);
+  \draw ($(socket.east)$) edge[dataEdge] node[edgeLabel, yshift=0.6em] {data}
+  ($(receiver.west)$);
+  \draw ($(receiver.east)$) edge[dataEdge] ($(analytics.west)$);
+
+  %% Control path
+  \draw let
+  \p1 = ($(cc.center)$), \p2 = ($(degrade.center)$)
+  in ($(cc.west)$) edge[controlEdgePartial] (\x2, \y1)
+  (\x2, \y1) edge[controlEdge] ($(degrade.south)$);
+
+  \draw let
+  \p1 = ($(queue.south)$), \p2 = ($(cc.north)$)
+  in ($(\x1, \y1) + (1em,0)$) edge[controlEdge] ($(\x1, \y2) + (1em,0)$);
+
+  \draw let
+  \p1 = ($(socket.south)$), \p2 = ($(cc.north)$)
+  in ($(\x1, \y1) + (-1em,0)$) edge[controlDoubleEdge] ($(\x1, \y2) + (-1em,0)$);
+
+  \node[name=clientlabel, above right=of client.south west, xshift=-2em, yshift=-2em] {Edge (Client)};
+  \node[name=clientlabel, above left=of server.south east, xshift=2em, yshift=-2em] {Server};
+
+  %%
+  %% Legend
+  %%
+  \node[name=datalegend, below=1.5em of server.south west, xshift=2em]
+  {\small Data Plane};
+  \draw ($(datalegend.west) + (-2em, 0)$) edge[dataEdge]
+  ($(datalegend.west) + (-0.5em, 0)$);
+
+  \node[name=controllegend, below=2.5em of datalegend.west, anchor=west]
+  {\small Control Plane};
+  \draw ($(controllegend.west) + (-2em, 0)$) edge[controlEdge]
+  ($(controllegend.west) + (-0.5em, 0)$);
+
+  \node[name=applegend, right=3em of datalegend.east]
+  {\small Application Logic};
+  \node[module, name=applegendbox, left=0.1em of applegend, text width=0.3em,
+  minimum height=0em] {};
+
+  \node[name=syslegend, below=2.5em of applegend.west, anchor=west]
+  {\small Runtime};
+  \node[cmodule, name=syslegendbox, left=0.1em of syslegend, text width=0.3em,
+  minimum size=0em] {};
+
+\end{tikzpicture}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sosp17"
+%%% End:
