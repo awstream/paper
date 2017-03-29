@@ -2,7 +2,7 @@
 \label{sec:system}
 
 \sysname{} addresses the application-specific adaptation by separating data
-processing from degradation operations with \texttt{maybe} APIs. Developers
+processing from adaptation operations with \texttt{maybe} APIs. Developers
 provide hints on potential operations that trade data fidelity with bandwidth
 demand without being exact on the numbers. Instead, \sysname{} learns the
 concrete degradation strategies using profiling data (either offline or online)
@@ -20,35 +20,62 @@ detail.
 \subsection{Structured Adaptation}
 \label{sec:struct-adapt}
 
-DAG: Applications are modelled as a directed acyclic graph (DAG) of
-computation.  \texttt{maybe} operators to express the specification of
-degradation. Our propose APIs do not require developers to be exact on the
-quantity; integrating this into existing applications requires minimal effort.
+\begin{table*}
+  \centering
+  \begin{tabular}{ c r l }
+    \toprule
+    \multirow{7}{*}{Normal Operators}
+    & \textit{map} (f: I $\Rightarrow$ O) & Stream<I> $\Rightarrow$ Stream<O> \\
+    & \textit{filter} (f: I $\Rightarrow$ bool) & Stream<I> $\Rightarrow$
+                                                 Stream<I> \\
+    & \textit{skip} n(i: Integer) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{sliding\_window} (count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                            Stream<O> \\
+    & \textit{tumbling\_window} (count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                             Stream<O> \\
+    & \textit{timed\_window} (time: Duration, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+                                                                          Stream<O> \\
+    & ... & ... \\
+    \midrule
+    \multirow{4}{*}{Degradation Operators}
+    & \textit{maybe} (knobs: Vec<T>, f:  (T, I) $\Rightarrow$ I) & Stream<I> $\Rightarrow$
+                                                                 Stream<I> \\
+    & \textit{maybe\_skip} (knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{maybe\_downsample} (knobs: Vec< (Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
+    & ... & ... \\
+    \bottomrule
+  \end{tabular}
+  \caption{A comparison between normal stream processing operators and our
+    degradation operators. \texttt{Vec<T>} represents a list of elements of type
+    T. \texttt{Option<T>} indicates an optional element of type T which is
+    either present \texttt{Some(T)} or absent \texttt{None}.}
+  \label{tab:operators}
+\end{table*}
 
 We first consider a strawman solution: manual policies for
-degradation. JetStream~\cite{rabkin2014aggregation} offers an example: ``if
+degradation. JetStream~\cite{rabkin2014aggregation} offers an example: \textit{``if
 bandwidth is insufficient, switch to sending images at 75\% fidelity, then 50\%
 if there still isn't enough bandwidth. Beyond that point, reduce the frame rate,
-but keep the images at 50\% fidelity.'' We identify the following issues with
+but keep the images at 50\% fidelity.''} We identify the following issues with
 this approach.
 
 \para{Lack of precision:} These policies are often developer heuristics and
 rarely backed up by measurements. First, there is no direct association of the
-application accuracy with the 75\% fidelity configuration. Besides, their impact
-on the data size is also not trivial.  While it seems intuitive that the level
-of degradation will affect the data size, the precise impact is not always
-straightforward. For example, one might think that reducing the frame rate by
-50\% will half the data rate. When video encoding is employed, the inter-frame
-difference will increased (P-frame size) when the frame rate is reduced. This
-leads to a larger data size for each frame. \autoref{fig:h264} illustrates this
-complex relationship with an example of H.264 encoding under four different
-frame rates.
+application accuracy with the 75\% fidelity configuration. Besides, it's unclear
+about how much the policy would affect the data size. For example, one might
+think that reducing the frame rate by 50\% will half the data rate. However if
+video encoding is employed, when the frame rate reduces, the inter-frame
+difference will increased, hence P-frame size. This leads to a larger data size
+for each frame.
 
-\para{Not scalable:} The strawman solution quickly leads to too many policies
-when multiple degradation operations are involved or a fine-grained control is
-desired. This manual process becomes tedious and error-prone. When too few rules
-are provided, the application may oscillate between two rules: one that's too
-aggressive (always faces insufficient bandwidth) and one that's too
+%% \autoref{fig:h264} illustrates this complex relationship with an example of
+%% H.264 encoding under four different frame rates.
+
+\para{Lack of scalablility:} The strawman solution quickly leads to too many
+policies when multiple degradation operations are involved or a fine-grained
+control is desired. This manual process becomes tedious and error-prone. When
+too few rules are provided, the application may oscillate between two rules: one
+that's too aggressive (always faces insufficient bandwidth) and one that's too
 conservative.
 
 \para{Fixed:} Implemented as part of the application processing, it's fixed and
@@ -57,6 +84,18 @@ cannot be updated easily.
 When using the above strawman solution, developers are forced to manually study
 and measure the impact of individual degradation policy, prohibiting its wide
 adoption in practice.
+
+
+Applications in \sysname{} are built with a \textit{continuous operator} model,
+where computations are constructed with operators and they form a directed
+graphs. \sysname{} implements many normal operators that are similar to existing
+stream processing systems, such as \texttt{map}, \texttt{filter},
+\texttt{sliding\_window} (see \autoref{tab:operators}).
+
+\texttt{maybe} operators to express the specification of degradation. Our
+propose APIs do not require developers to be exact on the quantity; integrating
+this into existing applications requires minimal effort.
+
 
 On the other extreme of the design spectrum, a completely developer-free
 solution is not practical. While static analysis has been shown to optimize
@@ -111,38 +150,6 @@ be chained.
 While the API itself has simplified the specification of degradation, the exact
 amount has to be known for precise rate adjustment at runtime. We then turn to
 the second stage of our system that performs automatic profiling.
-
-\begin{table*}
-  \centering
-  \begin{tabular}{ c r l }
-    \toprule
-    \multirow{7}{*}{Normal Operators}
-    & \textit{map}(f: I $\Rightarrow$ O) & Stream<I> $\Rightarrow$ Stream<O> \\
-    & \textit{filter}(f: I $\Rightarrow$ bool) & Stream<I> $\Rightarrow$
-                                                 Stream<I> \\
-    & \textit{skip}(i: Integer) & Stream<I> $\Rightarrow$ Stream<I> \\
-    & \textit{sliding\_window}(count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
-                                                                            Stream<O> \\
-    & \textit{tumbling\_window}(count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
-                                                                             Stream<O> \\
-    & \textit{timed\_window}(time: Duration, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
-                                                                          Stream<O> \\
-    & ... & ... \\
-    \midrule
-    \multirow{4}{*}{Degradation Operators}
-    & \textit{maybe}(knobs: Vec<T>, f: (T, I) $\Rightarrow$ I) & Stream<I> $\Rightarrow$
-                                                                 Stream<I> \\
-    & \textit{maybe\_skip}(knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
-    & \textit{maybe\_downsample}(knobs: Vec<(Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
-    & ... & ... \\
-    \bottomrule
-  \end{tabular}
-  \caption{A comparison between normal stream processing operators and our
-    degradation operators. \texttt{Vec<T>} represents a list of elements of type
-    T. \texttt{Option<T>} indicates an optional element of type T which is
-    either present \texttt{Some(T)} or absent \texttt{None}.}
-  \label{tab:operators}
-\end{table*}
 
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}

@@ -1,13 +1,17 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-The evaluation consists of four parts:
+In this section, we show our evaluations of \sysname{}.
 
-\begin{itemize}[leftmargin=16pt]
-\item Application profiles (\autoref{fig:all-profiles})
-\item Online Profiling (\autoref{fig:online-profiling-comparison},
-  \autoref{fig:parallel}, \autoref{fig:trigger})
-\item Runtime Adaptation (\autoref{fig:all-runtime})
+\begin{itemize}
+\item[\autoref{sec:application-profiles}] \sysname{} is able to generate
+  Pareto-optimal application profiles with precision and fine
+  granularity. (\autoref{fig:all-profiles})
+\item[\autoref{sec:online-profiling}] With our parallel profiling and selective
+  triggering, \sysname{} keeps the adaptation model up to date with only 10\%
+  GPU time. (\autoref{fig:parallel}, \autoref{fig:online-tricks})
+\item[\autoref{sec:runtime-adaptation}] The runtime adaptation system matches
+  application  (\autoref{fig:all-runtime})
 \item Multi-task Scheduling (\autoref{fig:multitask})
 \end{itemize}
 
@@ -34,21 +38,21 @@ differently.
 
 \begin{figure*}
   \centering
-  \begin{subfigure}[t]{0.33\textwidth}
+  \begin{subfigure}[t]{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/ped-profile.pdf}
     \caption{Pedestrian Detection}
     \label{fig:pd-profile}
   \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.33\textwidth}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/darknet-profile.pdf}
     \caption{Augmented Reality}
     \label{fig:ar-profile}
   \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.33\textwidth}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/topk-profile.pdf}
     \caption{Top-k}
@@ -146,24 +150,22 @@ Our run time adaptation achieves the balance between these two extremes: it has
 low-latency (under 1 seconds) and high accuracy (above 85\%).
 
 \begin{figure*}[!htb]
-  \centering
-  \begin{subfigure}[t]{0.33\textwidth}
+  \begin{subfigure}[t]{0.3\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/ped-runtime-verticle.pdf}
+    \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
     \caption{Pedestrian Detection}
     \label{fig:pd-runtime}
   \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.33\textwidth}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/ped-runtime-verticle.pdf}
+    \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
     \caption{Augmented Reality}
     \label{fig:ar-runtime}
   \end{subfigure}
-  ~
-  \begin{subfigure}[t]{0.33\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/topk-runtime-verticle.pdf}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
     \caption{Top-k}
     \label{fig:tk-runtime}
   \end{subfigure}
