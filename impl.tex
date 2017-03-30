@@ -40,10 +40,6 @@ pub trait Stream {
          // omitted
     }
 }
-
-pub trait IntoKnob {
-    fn into_knob(self) -> Knob;
-}
 \end{lstlisting}
 
 Developers can directly use the above API with user-defined functions. The
@@ -66,14 +62,6 @@ We've also extended the basic API for common operations. As we are building
 video processing applications, we implemented a specialized
 \texttt{maybe\_downsample} operator can that wraps \texttt{downsample} function
 internally.
-
-\begin{lstlisting}
-fn downsample(res: (usize, usize), image: Mat) -> Mat {
-
-    //  omitted
-
-}
-\end{lstlisting}
 
 Applications built with \sysname{} runs as a single process. The entire
 processing pipeline is often specified in a single main file. The execution mode

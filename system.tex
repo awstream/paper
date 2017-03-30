@@ -85,6 +85,22 @@ When using the above strawman solution, developers are forced to manually study
 and measure the impact of individual degradation policy, prohibiting its wide
 adoption in practice.
 
+On the other extreme of the design spectrum, a completely developer-free
+solution is not practical. While static analysis has been shown to optimize
+application execution adaptively in a certain context~\cite{chun2011clonecloud},
+they do not work well in our dataflow programming model. Static analysis is
+prone to false positives: exploring wrong or unnecessary parameters. For
+example, when the application is configured to generates statistics with a
+\texttt{timed\_window} operation, static analysis may falsely detect the
+duration parameter and alter the behavior of the application in an unexpected
+way. Besides, with each introduced parameter, the profiling time increases
+drastically as all parameters pose a combinatorial space.
+
+Our system take a middle ground between these two extremes: developers use a
+novel \texttt{maybe} API to annotate degradation operations without being exact
+on the values. Think of these APIs as hints from developers: this operation,
+when in use, will likely reduce the data size and affect the data fidelity;
+however the exact impact is not clear.
 
 Applications in \sysname{} are built with a \textit{continuous operator} model,
 where computations are constructed with operators and they form a directed
@@ -95,25 +111,6 @@ stream processing systems, such as \texttt{map}, \texttt{filter},
 \texttt{maybe} operators to express the specification of degradation. Our
 propose APIs do not require developers to be exact on the quantity; integrating
 this into existing applications requires minimal effort.
-
-
-On the other extreme of the design spectrum, a completely developer-free
-solution is not practical. While static analysis has been shown to optimize
-application execution adaptively in a certain context~\cite{chun2011clonecloud},
-they do not work well in our dataflow programming model. Static analysis is
-prone to false positives: exploring wrong or unnecessary parameters. For
-example, when the application is configured to generates statistics with a
-\texttt{timed\_window} operation, static analysis may falsely detect the
-duration parameter and alter the behavior of the application in an unexpected
-way. Also, as we will illustrate in~\autoref{sec:profiling}, with each
-introduced parameter, the profiling time increases drastically as all parameters
-pose a combinatorial space.
-
-Our system take a middle ground between these two extremes: developers use a
-novel \texttt{maybe} API to annotate degradation operations without being exact
-on the values. Think of these APIs as hints from developers: this operation,
-when in use, will likely reduce the data size and affect the data fidelity;
-however the exact impact is not clear.
 
 The basic form of \texttt{maybe} operator takes two arguments: a knob and a
 degradation function (see \autoref{tab:operators}). The knob indicates different
@@ -211,11 +208,16 @@ are turned off.
 \subsubsection{Offline Profiling}
 \label{sec:offline-profiling}
 
-Users provide a representative training data set. \para{Profiling is costly, ok
-  for offline.}
+To perform an automatic profiling, users provide a representative training data
+set and an application-specific accuracy functions.
+
+\para{Profiling is costly; but ok for offline.}
 
 \subsubsection{Online Profiling}
 \label{sec:online-profiling}
+
+The model generated offline is susceptible to model drift. Provide an example
+here. Hence online profiling is needed.
 
 When doing online profiling, we face two challenges: 1, lack of original data;
 2, efficient profiling.
@@ -224,25 +226,33 @@ When doing online profiling, we face two challenges: 1, lack of original data;
 it's often not feasible to get groundtruth labelled data. Even with the
 undegraded data may not be available.
 
-\begin{itemize}[leftmargin=16pt]
-\item Allocate some bandwidth for portions of undegraded data.
-\item Use current best data as reference.
-\end{itemize}
-
-Although the first scheme seems to be incurring unnecessary bandwidth
-consumption, when the runtime is probing for bandwidth, the data can enjoy a
-free ride.
+Allocate some bandwidth for portions of undegraded data. Although the first
+scheme seems to be incurring unnecessary bandwidth consumption, when the runtime
+is probing for bandwidth, the data can enjoy a free ride.
 
 \para{Efficient profiling.} When doing profiling online, exhaustive exploring
 all configurations is costly.
 
-\begin{itemize}[leftmargin=16pt]
-\item Parallel execution.
-\item Smaller chunk of data.
-\item Triggering profiling.
-\end{itemize}
+First, we could parallelize the profiling tasks. Better yet, degradation-aware
+parallel profiling. Normal job schedulers don't assume the knowledge of
+estimated task completion time, therefore the parallel execution suffers from
+sub-optimal assignments. Our degradation-aware parallel profiling uses the
+execution time information from the offline learned profile to assist
+scheduling. The profiling tasks are placed in a queue and all workers follow the
+fork–join model of parallel computation.
+
+Second, smaller chunk of data.
+
+Third, trigger-based profiling. To avoid continuous profiling that requires
+extensive CPU/GPU resources, our system only triggers profiling when it observed
+significant difference between probe configurations and current
+configurations. In our scheme, users can either configure the number of probe
+configurations, or configure the available resources (CPU-time) and our system
+will use offline profiles to calculate the corresponding trigger configurations.
 
 \input{runtime}
+
+\input{multitask}
 
 %%% Local Variables:
 %%% mode: latex
