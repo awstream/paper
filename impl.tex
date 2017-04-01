@@ -42,32 +42,11 @@ pub trait Stream {
 }
 \end{lstlisting}
 
-Developers can directly use the above API with user-defined functions. The
-snippet below shows how a quantization degradation can be implemented with our
-API. First, a vector of values is converted into a stream object. Then a
-\texttt{maybe} operator with a knob value (2 or 3) and a function that performs
-an interger division (quantization). Function \texttt{collect} will run this
-stream and hold the output in a vector. Depending on the degradation level, the
-output stream could either be [1, 2, 3, 4], [0, 1, 1, 2], or [0, 0, 1, 1].
-
-\begin{lstlisting}
-let quantized_stream = vec![1, 2, 3, 4]
-    .into_stream()
-    .maybe(vec![2, 3],
-             |knob, p| p / knob);
-    .collect();
-\end{lstlisting}
-
-We've also extended the basic API for common operations. As we are building
-video processing applications, we implemented a specialized
-\texttt{maybe\_downsample} operator can that wraps \texttt{downsample} function
-internally.
-
 Applications built with \sysname{} runs as a single process. The entire
 processing pipeline is often specified in a single main file. The execution mode
 (profiling, runtime as client or runtime as server) is configured with command
 line arguments or environment variables. Our deployment manager is currently a
-shell script using Docker container.
+shell script.
 
 \subsection{Building \sysname{} Applications}
 \label{sec:build-appl}
@@ -97,7 +76,7 @@ function and dataset
     Augmented Reality & resolution, framerate, quantizer
                         & F1 score & Video clips of office (training), home (testing) \\
     \hline
-    Top-K & head (N), local threshold (T) & Kendall's W & sec.gov access log
+    Top-K & head (N), local threshold (T) & Kendall's tau & sec.gov access log
                                                           (4 days training, 12 days testing)  \\
     \hline
   \end{tabular}
@@ -176,10 +155,11 @@ threshold \texttt{T} that further filters small entries. Obviously, these two
 operations are not orthognal to each other. Their impact on data size reduction
 and quality degradation depends on the distribution of the actual data.
 
-we use Kendall's W as the utility function here. It is a distance measure of the
-concordance between two ranked list. The function outputs a statistic measure
-ranging from 0 to 1, representing no agreement to complete aggrement,
-respectively~\cite{abdi2007kendall}.
+we use Kendall's $\tau$ as the utility function here. It is a correlation
+measure of the concordance between two ranked list. The function outputs the
+rank correlation ranging from -1 to 1, representing no agreement to complete
+aggrement, respectively~\cite{abdi2007kendall}. To integrate with \sysname{}, we
+convert the measure to the range of [0, 1].
 
 %%% Local Variables:
 %%% mode: latex

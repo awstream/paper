@@ -1,24 +1,37 @@
 \section{\sysname{}}
 \label{sec:system}
 
-\sysname{} addresses the application-specific adaptation by separating data
-processing from adaptation operations with \texttt{maybe} APIs. Developers
-provide hints on potential operations that trade data fidelity with bandwidth
-demand without being exact on the numbers. Instead, \sysname{} learns the
-concrete degradation strategies using profiling data (either offline or online)
-and controls the application execution adaptively. \autoref{fig:overview}
-provides an overview of the systems and we will then describe each stage in
-detail.
+In contrast to existing approaches that require developers to specify the
+concrete policies, \sysname{} uses a special operator \texttt{maybe} to express
+structured adaptation. The specifications are hints on potential operations
+without exact quantifications. \sysname{} then automatically learns concrete
+degradation strategies (the profile) using profiling data (either offline or
+online) and controls the application execution at runtime. The profiles also
+have additional benefits such as coordination among competing streaming
+flows. \autoref{fig:overview} provides an overview of the systems (in three
+stages) and we describe each stage in turn.
 
 \begin{figure}
   \centering
   \includegraphics[width=.9\linewidth]{figures/system.pdf}
-  \caption{\sysname{} Overview.}
+  \caption{\sysname{} overview and components.}
   \label{fig:overview}
 \end{figure}
 
-\subsection{Structured Adaptation}
+\subsection{APIs for Structured Adaptation}
 \label{sec:struct-adapt}
+
+%% Introduce graphs of operators model
+The vast majority of stream processing applications today are constructed as a
+directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized}).
+\sysname{} employs such a programming model that integration with existing
+applications will require minimal effort. \autoref{tab:operators} lists a few
+example operators that \sysname{} supports.
+
+In this model, each operator transforms existing streams into new
+streams. Operators are specializable by user-defined functions (UDF). Optionally
+developers can provide objects that implement a callable interface. Such objects
+can be used to hold application states.
 
 \begin{table*}
   \centering
@@ -41,7 +54,7 @@ detail.
     & \textit{maybe} (knobs: Vec<T>, f:  (T, I) $\Rightarrow$ I) & Stream<I> $\Rightarrow$
                                                                  Stream<I> \\
     & \textit{maybe\_skip} (knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
-    & \textit{maybe\_downsample} (knobs: Vec< (Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
+    & \textit{maybe\_downsample} (knobs: Vec<(Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
     & ... & ... \\
     \bottomrule
   \end{tabular}
@@ -52,81 +65,47 @@ detail.
   \label{tab:operators}
 \end{table*}
 
-We first consider a strawman solution: manual policies for
-degradation. JetStream~\cite{rabkin2014aggregation} offers an example: \textit{``if
-bandwidth is insufficient, switch to sending images at 75\% fidelity, then 50\%
-if there still isn't enough bandwidth. Beyond that point, reduce the frame rate,
-but keep the images at 50\% fidelity.''} We identify the following issues with
-this approach.
+\sysname{} offers a special operator \texttt{maybe} to annotate degradation
+operations. Developers use \texttt{maybe} with concrete operations that affect
+the data size as well as data fidelity: these are the knobs tunable by the
+system to explore performance trade-offs. The basic form of \texttt{maybe}
+operator takes two arguments: a knob and a function. The knob is a vector of
+values with type $T$ that encodes possible levels of degradation. The function
+performs the actual operation. By default, the function needs to satisfy the
+type constrain: $f(T, I) \Rightarrow I$. That is, only operations that does not
+alter the type of the data stream are allowed. In this way, downstream operators
+can work without the need to know if the degradation is in effect or not. A
+relaxed version, \texttt{maybe\_with\_default}, exists for flexibility; but care
+should be taken to use.
 
-\para{Lack of precision:} These policies are often developer heuristics and
-rarely backed up by measurements. First, there is no direct association of the
-application accuracy with the 75\% fidelity configuration. Besides, it's unclear
-about how much the policy would affect the data size. For example, one might
-think that reducing the frame rate by 50\% will half the data rate. However if
-video encoding is employed, when the frame rate reduces, the inter-frame
-difference will increased, hence P-frame size. This leads to a larger data size
-for each frame.
+We illustrate the idea of \texttt{maybe} operator with an example that quantizes
+a stream of integers in the Rust programming language. One possible
+implementation is as follows:
 
-%% \autoref{fig:h264} illustrates this complex relationship with an example of
-%% H.264 encoding under four different frame rates.
+\begin{lstlisting}
+    let quantized_stream = vec![1, 2, 3, 4].into_stream()
+        .maybe(vec![2, 4], |k, p| p.wrapping_div(k));
+        .collect();
+\end{lstlisting}
 
-\para{Lack of scalablility:} The strawman solution quickly leads to too many
-policies when multiple degradation operations are involved or a fine-grained
-control is desired. This manual process becomes tedious and error-prone. When
-too few rules are provided, the application may oscillate between two rules: one
-that's too aggressive (always faces insufficient bandwidth) and one that's too
-conservative.
-
-\para{Fixed:} Implemented as part of the application processing, it's fixed and
-cannot be updated easily.
-
-When using the above strawman solution, developers are forced to manually study
-and measure the impact of individual degradation policy, prohibiting its wide
-adoption in practice.
-
-On the other extreme of the design spectrum, a completely developer-free
-solution is not practical. While static analysis has been shown to optimize
-application execution adaptively in a certain context~\cite{chun2011clonecloud},
-they do not work well in our dataflow programming model. Static analysis is
-prone to false positives: exploring wrong or unnecessary parameters. For
-example, when the application is configured to generates statistics with a
-\texttt{timed\_window} operation, static analysis may falsely detect the
-duration parameter and alter the behavior of the application in an unexpected
-way. Besides, with each introduced parameter, the profiling time increases
-drastically as all parameters pose a combinatorial space.
-
-Our system take a middle ground between these two extremes: developers use a
-novel \texttt{maybe} API to annotate degradation operations without being exact
-on the values. Think of these APIs as hints from developers: this operation,
-when in use, will likely reduce the data size and affect the data fidelity;
-however the exact impact is not clear.
-
-Applications in \sysname{} are built with a \textit{continuous operator} model,
-where computations are constructed with operators and they form a directed
-graphs. \sysname{} implements many normal operators that are similar to existing
-stream processing systems, such as \texttt{map}, \texttt{filter},
-\texttt{sliding\_window} (see \autoref{tab:operators}).
-
-\texttt{maybe} operators to express the specification of degradation. Our
-propose APIs do not require developers to be exact on the quantity; integrating
-this into existing applications requires minimal effort.
-
-The basic form of \texttt{maybe} operator takes two arguments: a knob and a
-degradation function (see \autoref{tab:operators}). The knob indicates different
-degradation levels; the function performs the actual degradation operation with
-a configurable level. We restrict the type signature of the function that this
-API can accept: $f(T, I) \Rightarrow I$. That is, the degradation function
-should not alter the type of the stream. While this might seem a strong
-restriction, when combined with \texttt{map} operator, the system is still
-expressive enough. We describe our implementation and usage
-in~\autoref{sec:implementation}.
+The code creates a stream of integers [1, 2, 3, 4] and pass it through a
+degradation operation. In this example, the knob is chosen as [2, 4]. The
+degradation function performs a wrapping (modular) division where the divisor is
+the knob. Depending on the quantization level, the output will be either [1, 2,
+3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1] (k=4). The
+\texttt{collect} method will run this stream and hold the output in a vector.
+If the stream is subsequently encoded (e.g. run-length encoding as in
+JPEG~\cite{wallace1992jpeg}) for transmission, the data size will change
+according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers for common
 degradation operations. For example, \texttt{maybe\_skip} will optionally
 subsample a stream; and \texttt{maybe\_downsample} can adjust the image
-resolution to a configured target. With this API, the example mentioned earlier
-can now be implemented as follows:
+resolution to a configured target. \sysname{} provides a few such operations as
+libraries for developers.
+
+Using our APIs, the example mentioned in \autoref{sec:manual-policy} can now be
+implemented as follows:
 
 \begin{lstlisting}
    let app = Camera::new((1920, 1080, 30))
@@ -141,33 +120,37 @@ This snippet first instantiate a \texttt{Camera} source, which produces
 operations are chained after the source: one that downsample the resolution to
 either 1600x900 or 1280x720; the other skip the frame with a parameter of 2 or
 5, resulting in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS. After the degradation,
-images are shown on the display. In practice, further processing operators can
-be chained.
+images are shown on the display. In practice, further processing (such as
+encoding and transmission) operators can be chained.
 
-While the API itself has simplified the specification of degradation, the exact
-amount has to be known for precise rate adjustment at runtime. We then turn to
-the second stage of our system that performs automatic profiling.
+While \maybe{} itself has simplified the specification of degradation, the exact
+level of degradation has to be known for precise rate adjustment at runtime. The
+second stage of \sysname{} performs automatic profiling.
 
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}
 
-The goal of our profiling stage is to explore the bandwidth-accuracy trade-off
-and generate a \textit{profile} that is Pareto-optimal.
+The goal of the profiling is to learn how different levels of degradation
+affects the bandwidth demand and application accuracy. By exploring this
+trade-off space, \sysname{} generates a Pareto-optimal \textit{profile} for each
+application. We formulate the profiling and discuss the designs for offline and
+online profiling.
 
-\subsubsection{Profiling Formalism}
+\subsubsection{Profiling Formalism and Offline Profiling}
 \label{sec:formalize-profiling}
 
-We first define terms and notations we will use. Each \texttt{maybe} operator
-within an application corresponds to a knob $k$. Suppose the application has $n$
-knobs, their combination forms a configuration $c = [k_{1}, k_{2},
-... k_{n}]$. The set of all configurations $\mathbb{C}$ is the space that our
-profiling system need to explore.
+Suppose in a stream processing application that $n$ \maybe{} operators are
+used. Each introduces a knob $k_i$. We assume these operators are independent
+from each other; their combination forms a \textit{configuration}
+$c = [k_{1}, k_{2}, ... k_{n}]$. The set of all possible configurations
+$\mathbb{C}$ is the space that our profiling system needs to explore. For each
+configuration $c$, there are two mappings that our system needs to explore: a
+mapping from $c$ to its bandwidth requirement $B(c)$ and its accuracy measure
+$A(c)$. \autoref{tab:notations} summarizes the symbols used in this paper.
 
-There are two mappings that we are particularly interested: a mapping from a
-particular configuration to its bandwidth requirement $B(c)$ and the accuracy
-measure $A(c)$. The Pareto-optimal set $\mathbb{P}$ can then be defined
-(\autoref{eq:pareto}): for all $c \in \mathbb{P}$, there is no alternative
-configuration $c'$ that requires less bandwidth while giving a higher accuracy.
+The Pareto-optimal set $\mathbb{P}$ is then defined (\autoref{eq:pareto}): for
+all $c \in \mathbb{P}$, there is no alternative configuration $c'$ that requires
+less bandwidth while giving a higher accuracy.
 
 {\small
 \begin{equation}
@@ -198,60 +181,61 @@ configuration $c'$ that requires less bandwidth while giving a higher accuracy.
 \end{table}
 
 Since there is often no closed form relation for $B(c)$ and $A(c)$, our system
-takes a data-driven approach: with a representative dataset and an
+takes a data-driven approach: with a representative training dataset and an
 application-specific utility function, our system evaluates each configuration
-for their bandwidth demand and accuracy degradation. The degradation could
-either be measured against the groundtruth; or in the case when labelled dataset
-is not available, the system uses the reference results when all degradations
-are turned off.
+for its bandwidth and accuracy. The accuracy can either be measured against the
+groundtruth; or in the case when labelled dataset is not available, \sysname{}
+uses the results when all degradations are turned off as the reference.
 
-\subsubsection{Offline Profiling}
-\label{sec:offline-profiling}
-
-To perform an automatic profiling, users provide a representative training data
-set and an application-specific accuracy functions.
-
-\para{Profiling is costly; but ok for offline.}
+The profiling is expensive, because all possible configurations come from a
+combinatorial space of all knobs. When there is no a prior information about
+each configuration's impact, only an exhaustive search can find the optimal set.
+When done at \textit{offline}, the time required is accepted. However, this
+prohibits us from doing profiling naively at online.
 
 \subsubsection{Online Profiling}
 \label{sec:online-profiling}
 
-The model generated offline is susceptible to model drift. Provide an example
-here. Hence online profiling is needed.
+While the offline profiling generates one strategy based on the training data,
+the strategy is susceptible to a problem known as ``model drift''. When the
+required bandwidth is underestimated, data will be queued at the sender and
+application latency will increase. When the accuracy is incorrectly measured,
+the actual application performance will be suboptimal. The drift needs to be
+corrected online.
 
-When doing online profiling, we face two challenges: 1, lack of original data;
-2, efficient profiling.
+There are two particular challenges for online profiling.
 
-\para{Lack of groundtruth data or reference data.} During the online execution,
-it's often not feasible to get groundtruth labelled data. Even with the
-undegraded data may not be available.
+The first is the lack of groundtruth data or reference data. During the online
+execution, it's often infeasible to get labelled data as the groundtruth. For
+example, image labelling is known to be labor intensive and time
+consuming~\cite{russell2008labelme}. In addition, the original un-degraded data
+need to be transmitted from the sender.  \sysname{} addresses labelling by using
+the un-degraded data as the reference and allocate additional bandwidth for
+backhaulling portions of the un-degraded data. While the additional bandwidth
+seems a waste, in our design, during the runtime's probing phase, the original
+data can enjoy a free ride. Details of the probing is in \autoref{sec:runtime}.
 
-Allocate some bandwidth for portions of undegraded data. Although the first
-scheme seems to be incurring unnecessary bandwidth consumption, when the runtime
-is probing for bandwidth, the data can enjoy a free ride.
+The second challenge is how to profile efficiently. Naively profiling every
+configuration as the offline profiler does does not warrant a timely update. We
+use the offline profiling information as a prior to speed-up the online
+profiler. Specficially, we employ two techniques: degradation-aware
+parallelization and partial profiling.
 
-\para{Efficient profiling.} When doing profiling online, exhaustive exploring
-all configurations is costly.
+\para{Degradation-aware parallelization:} The profiling tasks of exploring all
+configurations are easily parallelizable. Normal job schedulers don't assume the
+knowledge of estimated task completion time, therefore the parallel execution
+suffers from sub-optimal assignments. Aided with the offline profiling
+statistics (the time it requires to profile a particular configuration), we can
+schedule the online profiling tasks with a longest first scheduling that
+minimizes the makespan.
 
-First, we could parallelize the profiling tasks. Better yet, degradation-aware
-parallel profiling. Normal job schedulers don't assume the knowledge of
-estimated task completion time, therefore the parallel execution suffers from
-sub-optimal assignments. Our degradation-aware parallel profiling uses the
-execution time information from the offline learned profile to assist
-scheduling. The profiling tasks are placed in a queue and all workers follow the
-fork–join model of parallel computation.
-
-Second, smaller chunk of data.
-
-Third, trigger-based profiling. To avoid continuous profiling that requires
-extensive CPU/GPU resources, our system only triggers profiling when it observed
-significant difference between probe configurations and current
-configurations. In our scheme, users can either configure the number of probe
-configurations, or configure the available resources (CPU-time) and our system
-will use offline profiles to calculate the corresponding trigger configurations.
+\para{Partial profiling:} In time domain, the profiling could use a smaller
+chunk of data to approximate the best strategy. Besides, we can profiling a
+subset of the total configurations and measures its difference from the current
+profile. If the difference exceeds a certain threshold, it triggers a full
+profiling.
 
 \input{runtime}
-
 \input{multitask}
 
 %%% Local Variables:

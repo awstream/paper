@@ -1,5 +1,5 @@
 \subsection{Runtime Adaptation}
-\label{sec:adaptation}
+\label{sec:runtime}
 
 \begin{figure}
   \centering
@@ -16,18 +16,21 @@ At runtime, the user program is automatically converted to a client half and
 server half; and \sysname{} abstracts the communication as well as rate
 adaptation. \autoref{fig:runtime} shows our runtime architecture.
 
-\para{Object-level queue:} The queue bridges data generation and
-the network capacity. It transmits data as fast as the network can handle and
-detects congestion when the queue grows.
+The data source with degradation is a module that supports \texttt{update}
+function. To handle insufficient bandwidth, an object-level queue bridges data
+generation (source) and the network IO. Followed by the queue is a socket module
+that abstracts the network communication. It transmits data as fast as possible
+and also supports traffic probing. The growth of the queue indicates congestions
+and will trigger the congestion controller. The socket module estimates actual
+available bandwidth. To avoid spikes in the bandwidth measurement, exponential
+smoothing is employed.
 
-\para{Congestion controller:} Our first prototype used the queue length as a
-signal for congestions, this turns out to be a bad match as the degradation
-operation may change object arrival rate (e.g.\,lower frame rate for video). Our
-next version uses data size, but it also leads to long latency when the
-degradation changes individual object size (e.g.\,lower resolution). Our current
-design uses an adaptive size: given current configuration and the profile, the
-queue learns the desired data generation rate (bps), and with a user configured
-latency, the queue derive the congestion watermark.
+The congestion controller (\autoref{fig:cc}) similar to the bottleneck congestion
+control~\cite{cardwell2017bbr}. Different from the pacing used in BBR, our
+system directly matches the data rate with measured bottleneck bandwidth. In the
+probing phase, to achieve a fine-granularity, the congestion controller inserts
+additional dummy packets for the purpose of probing additional bandwidth. When
+the congestion is resolved.
 
 \begin{figure}
   \centering
@@ -37,32 +40,6 @@ latency, the queue derive the congestion watermark.
   \caption{Congestion Control Algorithm}
   \label{fig:cc}
 \end{figure}
-
-\para{Bandwidth Measurement:} The receiver delivers the received data to
-application. In the meantime, it measures the effective throughput between each
-client-server pair as an indication of current bandwidth. To avoid spikes in the
-bandwidth measurement, exponential smoothing is employed. While the receiver
-performs bandwidth measurement every second, it does not send the information
-back to each client.  avoid unnecessary communication, the client requests the
-measurement only when congestion is detected.
-
-\para{Policy Manager:} Upon receiving signals from congestion controller, it
-performs an RPC request to the server for current bandwidth measurement. With
-the learned profile, it determines the degradation level and start the actual
-degradation strategy. The bandwidth specification in the learned profile is the
-required bandwidth, the policy manager usually takes a conservative approach:
-using a constant rate ALPHA to adjust the available bandwidth. When the
-congestion is resolved, the policy manager gradually reduce the degradation
-level (additive increase phase).
-
-\para{Degrade:} The actual degradation operation is rather simple. Operators
-based on the \texttt{maybe} API supports a \texttt{set} function that would
-change the internals of the operator. The \texttt{set} function is invoked when
-degradation is needed.
-
-We then outline the rate-based congestion control algorithm.
-
-It's based on bottleneck congestion control.
 
 %%% Local Variables:
 %%% mode: latex

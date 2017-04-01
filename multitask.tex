@@ -1,7 +1,23 @@
 \subsection{Multitask Adaptation}
 \label{sec:multitask-adaptation}
 
-Briefly discuss the issues without coordination.
+%% Problem
+When multiple heterogeneous streams are running on shared connections, it's
+important to guarantee fairness among flows. Traditional resource fairness (such
+as equal allocation of bandwidth) doesn't imply quality fairness. This problem
+is not possible to solve in the conventional case as there is no direct measure
+of quality. In our system, however, the profiles learned for each application
+can be combined to coordinate tasks.
+
+%% Formulation
+The congestion controller finds an allocation $c_i$ for all running tasks such
+that the total bandwidth demand does not exceed available bandwidth, while
+maximizing the minimal accuracy. This is expressed in~\autoref{eq:multitask}.
+
+\begin{equation}
+  max \min{A_i} s.t. \sum_i{B_i} < B
+  \label{eq:multitask}
+\end{equation}
 
 \newpage
 
