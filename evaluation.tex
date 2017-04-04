@@ -1,3 +1,29 @@
+\begin{figure*}[htb]
+  \centering
+  \begin{subfigure}[t]{0.33\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/profile-mot.pdf}
+    \caption{Pedestrian Detection}
+    \label{fig:pd-profile}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.33\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/profile-darknet.pdf}
+    \caption{Augmented Reality}
+    \label{fig:ar-profile}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.33\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/profile-topk.pdf}
+    \caption{Top-k}
+    \label{fig:tk-profile}
+  \end{subfigure}
+  \caption{Application profiles.}
+  \label{fig:all-profiles}
+\end{figure*}
+
 \section{Evaluation}
 \label{sec:evaluation}
 
@@ -41,32 +67,6 @@ If we compare two video analytics applications, pedestrian detection and
 augmented reality, we see how tuning each dimension affects the performance
 differently.
 
-\begin{figure*}
-  \centering
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/ped-profile.pdf}
-    \caption{Pedestrian Detection}
-    \label{fig:pd-profile}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/darknet-profile.pdf}
-    \caption{Augmented Reality}
-    \label{fig:ar-profile}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/topk-profile.pdf}
-    \caption{Top-k}
-    \label{fig:tk-profile}
-  \end{subfigure}
-  \caption{Application profiles.}
-  \label{fig:all-profiles}
-\end{figure*}
-
 \subsection{Efficient Online Profiling}
 \label{sec:online-profiling}
 
@@ -97,7 +97,7 @@ efficiency with 2x time reduction in comparison to baseline schedulers.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\columnwidth]{figures/parallel-placeholder.pdf}
+  \includegraphics[width=0.8\columnwidth]{figures/parallel.pdf}
   \caption{Degradation-aware parallel scheduling}
   \label{fig:parallel}
 \end{figure}
@@ -115,12 +115,61 @@ all configurations).
 
 Add subsample data (1 second duration vs. 5 seconds).
 
+%%
+%% Offline: 0
+%% Online: 1 frame (1852.21 GPU * seconds)
+%% Online (1/10)   (185.2 GPU * seconds)
+%% Trigger         ( GPU * seconds)
+
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/online-tricks.pdf}
+  \includegraphics[width=\columnwidth]{figures/online-profiling.pdf}
   \caption{Trigger-based profiling}
   \label{fig:online-tricks}
 \end{figure}
+
+\begin{table}
+  \centering
+  \begin{tabular}{c|c|c|c}
+    \hline
+    offline & online & online (partial) & online (trigger) \\
+    \hline
+    0       & 1852 (ms)   & 617 (ms)              & 223 (ms) \\
+    \hline
+  \end{tabular}
+  \caption{Online Profiling Time}
+  \label{tab:online}
+\end{table}
+
+\newpage
+
+another column
+
+\begin{figure*}[!htb]
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
+    \caption{Pedestrian Detection}
+    \label{fig:pd-runtime}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
+    \caption{Augmented Reality}
+    \label{fig:ar-runtime}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
+    \caption{Top-k}
+    \label{fig:tk-runtime}
+  \end{subfigure}
+  \caption{Application profiles.}
+  \label{fig:all-runtime}
+\end{figure*}
+
+\newpage
 
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
@@ -154,32 +203,14 @@ traffic shaping.
 Our run time adaptation achieves the balance between these two extremes: it has
 low-latency (under 1 seconds) and high accuracy (above 85\%).
 
-\begin{figure*}[!htb]
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
-    \caption{Pedestrian Detection}
-    \label{fig:pd-runtime}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
-    \caption{Augmented Reality}
-    \label{fig:ar-runtime}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
-    \caption{Top-k}
-    \label{fig:tk-runtime}
-  \end{subfigure}
-  \caption{Application profiles.}
-  \label{fig:all-runtime}
-\end{figure*}
+\newpage
 
-\subsection{Multi-task Scheduling}
-\label{sec:multi-task-sched}
+another column
+
+\newpage
+
+\subsection{Multi-task Allocation}
+\label{sec:multi-task-alloc}
 
 At last the profile is useful for scheduling multiple stream processing
 analytic. Applications doesn't behave well if they don't have the
@@ -194,10 +225,24 @@ total utility of the baseline scheme and our two scheduling schemes.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/multitask.pdf}
-  \caption{Multitask Scheduling}
+  \begin{subfigure}[t]{0.49\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-eq-bw.pdf}
+    \caption{Equal Bandwidth}
+    \label{fig:eq-bw}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-eq-acc.pdf}
+    \caption{Equal Acc}
+    \label{fig:eq-acc}
+  \end{subfigure}
+  \caption{Multitask Allocation.}
   \label{fig:multitask}
 \end{figure}
+
+\newpage
 
 %%% Local Variables:
 %%% mode: latex

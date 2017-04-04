@@ -14,6 +14,7 @@
 \usepackage{algpseudocode}
 \usepackage{amsmath}
 \usepackage{booktabs} % For formal tables
+\usepackage{caption}
 \usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -22,6 +23,8 @@
 \usepackage{tikz}
 \usepackage{varwidth}
 \usepackage{xcolor}
+
+\usepackage{lipsum}
 
 \usetikzlibrary{calc, backgrounds, shadows, positioning, fit, shapes,
   arrows, decorations.markings}
@@ -45,19 +48,24 @@
 }
 
 \lstset{
+  captionpos=b,
   showspaces=false,
   showtabs=false,
   breaklines=true,
   showstringspaces=false,
   breakatwhitespace=true,
   escapeinside={(*@}{@*)},
-  basicstyle=\scriptsize\ttfamily,
+  basicstyle=\footnotesize\ttfamily,
   columns=fullflexible,
-  morekeywords={maybe_downsample, maybe_skip}
+  morekeywords={maybe_downsample, maybe_skip, maybe}
 }
 
-%% \captionsetup[figure]{belowskip=-8pt,aboveskip=7pt}
-%% \captionsetup[table]{belowskip=5pt,aboveskip=7pt}
+\captionsetup[lstlisting]{font={footnotesize}}
+\renewcommand{\lstlistingname}{Example}
+
+\captionsetup[figure]{belowskip=1pt,aboveskip=7pt}
+\captionsetup[table]{belowskip=4pt, aboveskip=4pt}
+\setlength{\textfloatsep}{9pt}
 
 %% Copyright
 \setcopyright{none}
@@ -99,8 +107,9 @@
   approaches that adapt to network changes are often application-specific or
   require extensive developers' effort.
 
-  This paper presents \sysname{}, a stream processing system that adapts the
-  application execution with minimal developer efforts. To achieve this,
+  This paper presents \sysname{}, the first stream processing system that
+  simutaneously balanced system performance (throughput and latency) with
+  application accuracy with minimal developer efforts. To achieve this,
   \sysname{} employs three key ideas: (1) a novel set of APIs for structured
   adaptation; (2) a combination of offline and online profiling to construct a
   Pareto-optimal strategy; (3) a rate-based congestion control for runtime

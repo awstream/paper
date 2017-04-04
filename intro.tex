@@ -1,59 +1,78 @@
 \section{Introduction}
 
-In this paper, we study streaming analytics in the wide area. Although recent
-stream processing systems (such as Storm~\cite{toshniwal2014storm}, Spark
-Streaming~\cite{zaharia2013discretized}) can handle large streams of data in a
-single cluster, they are not designed to work in the wide area where the
-bandwidth is not sufficient to backhaul all the data to a central location.
+%% Background
+In this paper, we study streaming analytics in the wide area. With the emerging
+class of Internet of Things (IoT) applications, such as video surveillance and
+industrial monitoring, huge data volumes of data are generated at the edge.
+Large cities such as New York, Beijing and Seattle are deploying millions of
+cameras for traffic control~\cite{london.surveillance,skynet}. Retails stores,
+critical areas such as railway stations and residential homes are also being
+monitored for abnormal activities~\cite{connell2013retail, ronetti2000railway,
+  dropcam}. In addition to videos, industrial monitorings are gaining more
+capabilities. Buildings are increasingly equiped with a wide variety of sensors
+to improve building energy use, occupant comfort, reliability and
+maintenance~\cite{krioukov2012building}. In these streaming analytics, the data
+collection sites are different from the data processing sites.
 
-With the emerging class of Internet of Things (IoT) applications, such as video
-surveillance and industrial monitoring, huge data volumes of data are generated
-at the edge. In contrast, the Internet's available bandwidth is scarce and
-varying, making it impossible to back-haul all the data. And the demand is
-growing faster than the network capacity.
+Backhauling all the data is impossible. Existing stream processing (such as
+Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized})
+and specialized video analytics \cite{zhang2017live} are capable of handling
+large streams of data once data arrive in a single cluster.  In our context,
+it's often impossible to backhaul all the data to a central location, especially
+in a continuous fashion.  In contrast, the Internet's available bandwidth is
+scarce and varying, making it impossible to back-haul all the data. And the
+demand is growing faster than the network capacity.
 
-When the network resources become insufficient, applications have to choose
-between data freshness and data fidelity. Applications based on TCP ensures a
-reliable delivery of the data but the backlogged data will increase application
-latency. Applications based on UDP could minimize latency by sending packets as
-fast as possible, the uncontrolled packet loss along the network may devastate
-the application. Either option is not ideal for many streaming anlaytics.
+Edge processing is limited. GDA pushes queries out; cloudlet etc. But there are
+workloads that require data transmission. Use the power of the cloud;
+aggregation; etc.
 
-Previous work (JetStream~\cite{rabkin2014aggregation}) has explored the
-direction of reducing application's demand with degradation, but it relies on
-developers' manual policy, which lacks precision and faces scalability issue.
-There are also application-specific optimizations; but they do not
-generalize. For example, adaptive video streaming~\cite{yin2015control} is a
-well-studied topic but many adaptations aim at human consumption, focusing on
-Quality of Experience (QoE). This limits the adaptation space e.g. maintain
-25FPS.
+If transmission is necessary and the network is insufficient, applications need
+to make a trade-off between data freshness and data fidelity. Applications based
+on TCP ensures a reliable delivery of the data but the backlogged data will
+increase application latency. Applications based on UDP could minimize latency
+by sending packets as fast as possible, the uncontrolled packet loss along the
+network may devastate the application. Either option is not ideal for many
+streaming anlaytics.
 
-Making degradation practical and general across applications is challenging. The
-goal is to maximizing application accuracy under the constrain of available
-bandwidth with minimal developers' effort (with exhausting). It calls for the
-right level of abstraction with a system-level approach.
+Adapting data transmission to available bandwidth is far from trivial. Manual
+policy or application-specific solutions that doesn't generalize. Previous work
+(JetStream~\cite{rabkin2014aggregation}) explored the direction of reducing
+application's demand with degradation, but it relies on developers' manual
+policy, which lacks precision and faces scalability issue.  There are also
+application-specific optimizations; but they do not generalize. For example,
+adaptive video streaming~\cite{yin2015control} is a well-studied topic but many
+adaptations aim at human consumption, focusing on Quality of Experience
+(QoE). This limits the adaptation space e.g. maintain 25FPS.
 
 In this work, we present \sysname{}, which aims to empower developers with an
-easy-to-use framework for wide-area streaming analytics. We focus on the scarce
-and variable bandwidth and solve it with three ideas: (1) a novel set of APIs
-for structured adaptation; (2) a combination of offline and online profiling to
-construct a Pareto-optimal strategy; (3) a rate-based congestion control for
-runtime adaptation.
+easy-to-use framework for wide-area streaming analytics. The goal is to
+maximizing application accuracy under the constrain of available bandwidth with
+minimal developers' effort. Key to \sysname{} is a set of \maybe{} APIs that
+enabled \textit{structured adaptation}. The concrete adaptation policy can be
+learned with user-supplied training data (both offline and online). And the
+policy can be used for runtime adaptation and wide-area resource allocation.
 
-Our proposed API imposes a structure on the adaptation that each application can
-perform; although the API is narrow, when combined with other operators, we find
-the framework is expressive enough for many streaming analytics.
+\para{APIs:} Our proposed API imposes a structure on the adaptation that each
+application can perform; although the API is narrow, when combined with other
+stream processing operators, we find the framework is expressive enough for many
+streaming analytics.
 
-To liberate developers from specifying rules manually, our system employs a
-data-driven empirical-analysis approach. The profiling is done both offline and
-online. Offline profiling offers bootstrap information that makes online
-profiling more efficient. Online profiling alleviates the problem of
-\textit{model drift}.
+\para{Profiling:} To liberate developers from specifying rules manually, our
+system employs a data-driven empirical-analysis approach. The profiling is done
+both offline and online. Offline profiling offers bootstrap information that
+makes online profiling more efficient. Online profiling alleviates the problem
+of \textit{model drift}.
 
-The runtime adaptation automatically adjusts the applications' execution such
-that the streaming demand matches the available bandwidth. We employs a
-congestion-based congestion control scheme by measuring the bottleneck
+\para{Runtime:} The runtime adaptation automatically adjusts the applications'
+execution such that the streaming demand matches the available bandwidth. We
+employs a congestion-based congestion control scheme by measuring the bottleneck
 bandwidth; in steady state, the system probes for more available bandwidth.
+
+\para{Multitask:} The profile can also assist resource allocation among multiple
+flows when the network resource is insufficient. This permits fairness with
+respect to application accuracy instead of system measures such as application
+throughput.
 
 Using \sysname{}, we've built three applications: pedestrian detection,
 augmented reality and distributed top-k. We use real-world data for these
@@ -81,10 +100,6 @@ In summary, this paper makes the following contributions:
 \item We build three real-world applications and evaluate their behavior
   under different scenarios.
 \end{itemize}
-
-\newpage
-
-Another column is needed.
 
 \newpage
 

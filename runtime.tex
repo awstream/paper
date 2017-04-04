@@ -25,18 +25,45 @@ and will trigger the congestion controller. The socket module estimates actual
 available bandwidth. To avoid spikes in the bandwidth measurement, exponential
 smoothing is employed.
 
-The congestion controller (\autoref{fig:cc}) similar to the bottleneck congestion
-control~\cite{cardwell2017bbr}. Different from the pacing used in BBR, our
-system directly matches the data rate with measured bottleneck bandwidth. In the
-probing phase, to achieve a fine-granularity, the congestion controller inserts
-additional dummy packets for the purpose of probing additional bandwidth. When
-the congestion is resolved.
+At the core of our rate adjustment is a congestion control algorithms assisted
+with stream data generation rate. We describe each state in details. Some of the
+design is similar to BBR~\cite{cardwell2017bbr}.
+
+\para{Startup behavior:} When the application starts up, it performs its first
+(and most rapid) rate increase. On each \texttt{Q.NoQueue} received, it
+decreases the level of degradation, hence an increase of the data rate.
+
+\para{Reacting to congestion:} When congestion is detected by an increase of the
+queued item, TCP's send rate is used as an approximation of the bottleneck
+bandwidth of the current connection. \sysname{} then adjusts the level of
+degradation such that the expected data rate is below the estimated
+bandwidth. To allow the queue draining, we adjust the measured bandwidth with a
+factor ALPHA (often 0.8). After the queue is drained and there is no queued item
+for a configurable period, it fires \texttt{Q.NoQueue} event to the congestion
+controller, which then enters into the \texttt{Steady} state.
+
+\para{Steady state:} The steady state is the ideal state that the streaming
+application should stay in. If currently the application is operating at the
+maximum rate, then there is no need to probe. However, we might be in steady
+state with degradation, in this case, we need to probe to test if there is more
+bandwidth. Enter probe state.
+
+\para{Probe for available bandwidth:} In contrast to BBR that adjusts the pace
+of transmission, our probe is to send dummy traffic. If the application is
+configured to run online profiling, then the probe traffic is the raw data.
+
+% \begin{figure}
+%   \centering
+%   \resizebox{\columnwidth}{!}{
+%     \input{congestion-control}
+%   }
+%   \caption{Congestion Control Algorithm}
+%   \label{fig:cc}
+% \end{figure}
 
 \begin{figure}
   \centering
-  \resizebox{\columnwidth}{!}{
-    \input{congestion-control}
-  }
+  \includegraphics[width=\columnwidth]{figures/cc.pdf}
   \caption{Congestion Control Algorithm}
   \label{fig:cc}
 \end{figure}

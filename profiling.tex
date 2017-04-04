@@ -1,0 +1,125 @@
+\subsection{Automatic Profiling}
+\label{sec:automatic-profiling}
+
+The goal of the profiling is to learn how different levels of degradation
+affects the bandwidth demand and application accuracy. By exploring this
+trade-off space, \sysname{} generates a Pareto-optimal \textit{profile} for each
+application. We formulate the profiling and discuss the designs for offline and
+online profiling.
+
+\subsubsection{Profiling Formalism}
+\label{sec:formalize-profiling}
+
+Suppose in a stream processing application that $n$ \maybe{} operators are
+used. Each introduces a knob $k_i$. We assume these operators are independent
+from each other; their combination forms a \textit{configuration}
+$c = [k_{1}, k_{2}, ... k_{n}]$. The set of all possible configurations
+$\mathbb{C}$ is the space that our profiling system needs to explore. For each
+configuration $c$, there are two mappings that our system needs to explore: a
+mapping from $c$ to its bandwidth requirement $B(c)$ and its accuracy measure
+$A(c)$. \autoref{tab:notations} summarizes the symbols used in this paper.
+
+The Pareto-optimal set $\mathbb{P}$ is then defined (\autoref{eq:pareto}): for
+all $c \in \mathbb{P}$, there is no alternative configuration $c'$ that requires
+less bandwidth while giving a higher accuracy.
+
+{\small
+\begin{equation}
+  \mathbb{P} = \{ c \in \mathbb{C} : \{ c' \in \mathbb{C}: B(c') < B(c),
+  A(c') > A(c) \} = \varnothing\}
+  \label{eq:pareto}
+\end{equation}
+}%
+
+\begin{table}
+  \centering
+  \begin{tabular}{r l}
+    \toprule
+    \textbf{Symbol} & \textbf{Description} \\
+    \midrule
+    $n$ & number of degradation operations \\
+    $k_i$ & the \textit{i}-th degradation knob \\
+    $c = [k_{1}, k_{2}, ... k_{n}]$ & one specific configuration \\
+    $\mathbb{C}$ & the set of all configurations \\
+    \midrule
+    $B(c)$ & bandwidth requirement for $c$ \\
+    $A(c)$ & accuracy measure for $c$ \\
+    $\mathbb{P}$ & Pareto efficienct set \\
+    \bottomrule
+  \end{tabular}
+  \caption{Notations used in profiling.}
+  \label{tab:notations}
+\end{table}
+
+Since there is often no closed form relation for $B(c)$ and $A(c)$, our system
+takes a data-driven approach: with a representative training dataset and an
+application-specific utility function, our system evaluates each configuration
+for its bandwidth and accuracy. The accuracy can either be measured against the
+groundtruth; or in the case when labelled dataset is not available, \sysname{}
+uses the results when all degradations are turned off as the reference. We will
+discuss concrete knobs, configurations, $B(c)$ and $A(c)$ when we present the
+example applications in \autoref{sec:build-appl}.
+
+\subsubsection{Offline Profiling}
+\label{sec:offline-profiling}
+
+The offline profiling requires an exhaustive search. Developers using \sysname{}
+will first perform an offline profiling that generates the Pareto-optimal
+profile by supplying training dataset and application accuracy function. Because
+our APIs are general, there is no restriction in the values or functions
+provided for \maybe{}. Without \textit{a prior}, any configuration is possible
+to be inside the optimal profile.
+
+The exhaustive search is expensive. Therefore, the offline profiling requires to
+explore the entire parameter space, which is a combinatorial space of all
+knobs. For \textit{offline}, the time required is acceptable.
+
+We note that parallelism is usable for profiling. Except for the groundtruth (or
+reference label), two different configurations have no dependence over each
+other. Making the profiling an embarrassingly parallel task.
+
+\subsubsection{Online Profiling}
+\label{sec:online-profiling}
+
+The offline profile is susceptible to a problem known as ``model drift''. When
+the required bandwidth is underestimated, data will be queued at the sender and
+application latency will increase. When the accuracy is incorrectly measured,
+the actual application performance will be suboptimal. The drift needs to be
+corrected online.
+
+There are two particular challenges for online profiling.
+
+The first is the lack of groundtruth data or reference data. During the online
+execution, it's often infeasible to get labelled data as the groundtruth. For
+example, image labelling is known to be labor intensive and time
+consuming~\cite{russell2008labelme}. In addition, the original un-degraded data
+need to be transmitted from the sender.  \sysname{} addresses labelling by using
+the un-degraded data as the reference and allocate additional bandwidth for
+backhaulling portions of the un-degraded data. While the additional bandwidth
+seems a waste, in our design, during the runtime's probing phase, the original
+data can enjoy a free ride. Details of the probing is in \autoref{sec:runtime}.
+
+The second challenge is how to profile efficiently. Naively profiling every
+configuration as the offline profiler does does not warrant a timely update. We
+use the offline profiling information as a prior to speed-up the online
+profiler. Specficially, we employ two techniques: degradation-aware
+parallelization and partial profiling.
+
+\para{Degradation-aware parallelization:} The profiling tasks of exploring all
+configurations are easily parallelizable. Normal job schedulers don't assume the
+knowledge of estimated task completion time, therefore the parallel execution
+suffers from sub-optimal assignments. Aided with the offline profiling
+statistics (the time it requires to profile a particular configuration), we can
+schedule the online profiling tasks with a longest first scheduling that
+minimizes the makespan.
+
+\para{Partial profiling:} In time domain, the profiling could use a smaller
+chunk of data to approximate the best strategy. Besides, we can profiling a
+subset of the total configurations and measures its difference from the current
+profile. If the difference exceeds a certain threshold, it triggers a full
+profiling.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "sosp17"
+%%% End:
