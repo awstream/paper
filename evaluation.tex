@@ -24,26 +24,25 @@
   \label{fig:all-profiles}
 \end{figure*}
 
+\newpage
+
 \section{Evaluation}
 \label{sec:evaluation}
 
-In this section, we show our evaluations of \sysname{}.
+In this section, we show our evaluations of \sysname{}. The results are
+summarized as follows.
 
 \begin{itemize}
-\item[\autoref{sec:application-profiles}] \sysname{} is able to generate
-  Pareto-optimal application profiles with precision and fine
-  granularity. (\autoref{fig:all-profiles})
-\item[\autoref{sec:online-profiling}] With our parallel profiling and selective
-  triggering, \sysname{} keeps the adaptation model up to date with only 10\%
-  GPU time. (\autoref{fig:parallel}, \autoref{fig:online-tricks})
-\item[\autoref{sec:runtime-adaptation}] In comparison to applications built
-  without adaptation suffer from large lag (TCP) or severe performance
-  degradation (UDP), \sysname{} applications achieves bounded latency (1 seconds
-  for video analytics and 5 seconds for log analysis) while incurring little
-  accuracy loss. (\autoref{fig:all-runtime})
-\item[\autoref{sec:multi-task-sched}] The profiles we learned for each
-  application can also be used for allocating resources among multiple
-  tasks. (\autoref{fig:multitask})
+\item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
+  profiles with precision and fine granularity (\autoref{fig:all-profiles}).
+\item[\autoref{sec:online-profiling}] Our parallel and partial profiling enables
+  fast online profiling with about 10\% GPU time (\autoref{fig:parallel},
+  \autoref{fig:online-tricks}).
+\item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
+  achieve sub-second latency and little accuracy drop
+  (\autoref{fig:all-runtime}).
+\item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow equal-accuracy
+  bandwidth allocation among multiple streams (\autoref{fig:multitask}).
 \end{itemize}
 
 \subsection{Application Profiles}
@@ -53,47 +52,44 @@ Our system learned the application profiles for all three applications (shown in
 \autoref{fig:all-profiles}). From these profiles, we make the following three
 observations:
 
+\para{Little accuracy drop across three or four orders of magnitude}. This
+allows operating in an acceptable state even under bandwidth scarcity.
+
 \para{Optimal strategy is achieved with multiple dimensions.} In each profile,
 in addition to the Pareto-optimal strategies, we show the performance if only
 one dimension is tuned. As show in the figure, they almost always lead to a
 sub-optimal performance.
 
-\para{Different dimensions have different impact for the same application.}
-For pedestrian detection, tuning resolution leads to a quicker degradation in
-comparison to tuning frame rate.
+\para{The effect of each dimension is different}. Different dimensions have
+different impact for the same application. For pedestrian detection, tuning
+resolution leads to a quicker degradation in comparison to tuning frame
+rate. The same dimension has different impact for different applications. If we
+compare two video analytics applications, pedestrian detection and augmented
+reality, we see how tuning each dimension affects the performance differently.
 
-\para{The same dimension has different impact for different applications.}
-If we compare two video analytics applications, pedestrian detection and
-augmented reality, we see how tuning each dimension affects the performance
-differently.
+\lipsum[1-2]
 
 \subsection{Efficient Online Profiling}
 \label{sec:online-profiling}
 
-First, we validate the necessity for online profiling. We compare two adaptation
-scheme: one with the offline learned profile; the other enabled with online
-profiling. Initially, both schemes work similarly. Overtime, when the data
-distribution changes, the offline-learned profile doesn't match with the newly
-generated data, leading to accuracy deterioration. System enabled with online
-profiling is able to track the data and offers high accuracy.
+This section focuses on the AR application as a case study. First, we validate
+the necessity for online profiling. We compare two adaptation scheme: one with
+the offline learned profile; the other enabled with online
+profiling. \autoref{fig:online-tricks} offline and online. Initially, both
+schemes work similarly. Overtime, when the data distribution changes, the
+offline-learned profile doesn't match with the newly generated data, leading to
+accuracy deterioration. System enabled with online profiling is able to track
+the data and offers high accuracy.
 
-While online profiling is beneficial, doing it naively faces the combinatorial
-space search. This is different from the offline profiling that doesn't have
-much time or resource constrain. We evaluate our proposed solutions.
-
-\para{Degradation-aware parallel profiling:} Normal job schedulers don't assume
-the knowledge of estimated task completion time, therefore the parallel
-execution suffers from sub-optimal placement. Our degradation-aware parallel
-profiling uses the execution time information from the offline learned profile
-to assist scheduling. The profiling tasks are placed in a queue and all workers
-follow the fork–join model of parallel computation. Assuming the offline
-execution time is precise for the online profiling, a greedy method will yield
-optimal scheduling for parallel profiling. We compare this strategy with
-baseline schedulers that does random sharding or sequential scheduling.
 \autoref{fig:parallel} shows how much profiling is needed with more machines and
 use different schedulers. First, we see that the parallel execution reduces the
 execution time. Besides, our profiling scheduling improves the profiling
 efficiency with 2x time reduction in comparison to baseline schedulers.
+
+\autoref{fig:online-tricks} illustrates how the application behaves with
+different model. With partial profiling, such as every five seconds worth of
+data out of 30 seconds; there is a delay in reacting to model change. With
+triggering, the profile closesly resembles the always online case.
 
 \begin{figure}
   \centering
@@ -102,24 +98,12 @@ efficiency with 2x time reduction in comparison to baseline schedulers.
   \label{fig:parallel}
 \end{figure}
 
-\para{Trigger-based profiling:} To avoid continuous profiling that requires
-extensive CPU/GPU resources, our system only triggers profiling when it observed
-significant difference between probe configurations and current
-configurations. In our scheme, users can either configure the number of probe
-configurations, or configure the available resources (CPU-time) and our system
-will use offline profiles to calculate the corresponding trigger configurations.
-\autoref{fig:online-tricks} shows how different numbers of trigger
-configurations affects the profiling time. Notice that the continuous mode is
-effectively probing all configurations (trigger($N$), $N$ is the total number of
-all configurations).
-
-Add subsample data (1 second duration vs. 5 seconds).
-
-%%
 %% Offline: 0
 %% Online: 1 frame (1852.21 GPU * seconds)
 %% Online (1/10)   (185.2 GPU * seconds)
 %% Trigger         ( GPU * seconds)
+
+\lipsum[1-2]
 
 \begin{figure}
   \centering
@@ -128,7 +112,7 @@ Add subsample data (1 second duration vs. 5 seconds).
   \label{fig:online-tricks}
 \end{figure}
 
-\begin{table}
+\begin{table}[t]
   \centering
   \begin{tabular}{c|c|c|c}
     \hline
@@ -140,10 +124,6 @@ Add subsample data (1 second duration vs. 5 seconds).
   \caption{Online Profiling Time}
   \label{tab:online}
 \end{table}
-
-\newpage
-
-another column
 
 \begin{figure*}[!htb]
   \begin{subfigure}[t]{0.3\textwidth}
@@ -168,8 +148,6 @@ another column
   \caption{Application profiles.}
   \label{fig:all-runtime}
 \end{figure*}
-
-\newpage
 
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
@@ -203,9 +181,7 @@ traffic shaping.
 Our run time adaptation achieves the balance between these two extremes: it has
 low-latency (under 1 seconds) and high accuracy (above 85\%).
 
-\newpage
-
-another column
+\lipsum[1-2]
 
 \newpage
 
