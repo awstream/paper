@@ -1,39 +1,39 @@
 \section{Introduction}
 
 %% Background
-In this paper, we study streaming analytics in the wide area. With the emerging
-class of Internet of Things (IoT) applications, such as video surveillance and
-industrial monitoring, huge data volumes of data are generated at the edge.
-Large cities such as New York, Beijing and Seattle are deploying millions of
-cameras for traffic control~\cite{london.surveillance,skynet}. Retails stores,
-critical areas such as railway stations and residential homes are also being
-monitored for abnormal activities~\cite{connell2013retail, ronetti2000railway,
-  dropcam}. In addition to videos, industrial monitorings are gaining more
-capabilities. Buildings are increasingly equiped with a wide variety of sensors
-to improve building energy use, occupant comfort, reliability and
-maintenance~\cite{krioukov2012building}. In these streaming analytics, the data
-collection sites are different from the data processing sites.
+In this paper, we study streaming analytics in the wide area. The emerging class
+of Internet of Things (IoT) applications are generating huge volumes of data at
+the edge. Large cities such as New York, Beijing and Seattle are deploying
+millions of cameras for traffic control~\cite{london.surveillance,skynet}. In
+addition to videos, industrial monitorings also benefit from real-time stream
+processing. Buildings, for example, are increasingly equiped with a wide variety
+of sensors to improve building energy use, occupant comfort, reliability and
+maintenance~\cite{krioukov2012building}.
 
-Backhauling all the data is impossible. Existing stream processing (such as
-Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized})
-and specialized video analytics \cite{zhang2017live} are capable of handling
-large streams of data once data arrive in a single cluster.  In our context,
-it's often impossible to backhaul all the data to a central location, especially
-in a continuous fashion.  In contrast, the Internet's available bandwidth is
-scarce and varying, making it impossible to back-haul all the data. And the
-demand is growing faster than the network capacity.
+While existing stream processing systems (such as Spark
+Streaming~\cite{zaharia2013discretized}, Storm~\cite{toshniwal2014storm}) and
+specialized analytical engines (VideoStorm~\cite{zhang2017live}) are capable of
+handling large streams of data. They assume all the data are in a central
+location. In our wide-area streaming analytics, data collection sites differ
+from data processing sites.
 
-Edge processing is limited. GDA pushes queries out; cloudlet etc. But there are
-workloads that require data transmission. Use the power of the cloud;
-aggregation; etc.
+Backhauling all the data across the wide-area, however, is neither possible nor
+efficient. The Internet's available bandwidth is scarce and varying; and the
+capacity growth rate is slower than the data growth rate. On the efficiency
+side, raw data often contains large and less relevant details that can be pruned
+or compressed. Edge could improve efficiency (such as GDA pushes queries out;
+cloudlet etc). However, we still need data transmission for cloud off-loading or
+aggregation purpose.
 
-If transmission is necessary and the network is insufficient, applications need
-to make a trade-off between data freshness and data fidelity. Applications based
-on TCP ensures a reliable delivery of the data but the backlogged data will
+Transport protocols, without knowledge of the running applications, handle the
+insufficient network resources with one specific strategy. Applications based on
+TCP ensures a reliable delivery of the data but the backlogged data will
 increase application latency. Applications based on UDP could minimize latency
 by sending packets as fast as possible, the uncontrolled packet loss along the
-network may devastate the application. Either option is not ideal for many
-streaming anlaytics.
+network may devastate the application. Conceptually, this is a trade-off space
+between data freshness and data fidelity; and existing protocols operate in
+either extreme case. Allowing exploration of such a trade-off space is crucial
+for a resilient execution of wide-area streaming applications.
 
 Adapting data transmission to available bandwidth is far from trivial. Manual
 policy or application-specific solutions that doesn't generalize. Previous work
@@ -47,44 +47,47 @@ adaptations aim at human consumption, focusing on Quality of Experience
 
 In this work, we present \sysname{}, which aims to empower developers with an
 easy-to-use framework for wide-area streaming analytics. The goal is to
-maximizing application accuracy under the constrain of available bandwidth with
-minimal developers' effort. Key to \sysname{} is a set of \maybe{} APIs that
-enabled \textit{structured adaptation}. The concrete adaptation policy can be
-learned with user-supplied training data (both offline and online). And the
-policy can be used for runtime adaptation and wide-area resource allocation.
+maximizing application accuracy under the constrain of available bandwidth. Key
+to \sysname{} is a set of \maybe{} APIs. Developers use these APIs to construct
+applications with \textit{structured adaptation}, i.e., application's execution
+is parameterized with configurations that vary the data rate and application
+accuracy.
 
-\para{APIs:} Our proposed API imposes a structure on the adaptation that each
-application can perform; although the API is narrow, when combined with other
-stream processing operators, we find the framework is expressive enough for many
-streaming analytics.
+Each \maybe{} operator takes a list of knobs and a function that transforms the
+data item. \sysname{} also has a library of built-in functions for common data
+types, e.g. images. Developers are not assumed to be expert in the particular
+application domain. Even if they only have intuitions about how a particular
+parameter would affect the application, they can embed the intuition with
+\maybe{} operators.
 
-\para{Profiling:} To liberate developers from specifying rules manually, our
-system employs a data-driven empirical-analysis approach. The profiling is done
-both offline and online. Offline profiling offers bootstrap information that
-makes online profiling more efficient. Online profiling alleviates the problem
-of \textit{model drift}.
+\sysname{} then profiles the application with a user-supplied training dataset
+and measures bandwidth demand and application accuracy automatically exploring
+the parameter space. Because profiling can be expensive, we speed up the process
+with parallelism. For some applications, online profiling is needed to alleviate
+\textit{model drift}, where the previously learned profile doesn't match the
+current data distribution. \sysname{} supports online profiling; in addition, we
+use the offline profiling information to further speed up the online profiling
+phase with degradation-aware scheduling and partial profiling.
 
-\para{Runtime:} The runtime adaptation automatically adjusts the applications'
-execution such that the streaming demand matches the available bandwidth. We
-employs a congestion-based congestion control scheme by measuring the bottleneck
-bandwidth; in steady state, the system probes for more available bandwidth.
+The profile is used at runtime for two folds. As an individual application,
+\sysname{} adapts the application execution according to estimated bottle-neck
+bandwidth to avoid queueing, leading to bounded latency. Our congestion control
+employs a novel probe-based rate adaptation that allows fine-tuning egress data
+rate. When multiple streams share the same bottle-neck link, our system is able
+to allocate bandwith resources to maxmize the minimal accuracy (a different
+fairness goal from equal bandwidth allocation).
 
-\para{Multitask:} The profile can also assist resource allocation among multiple
-flows when the network resource is insufficient. This permits fairness with
-respect to application accuracy instead of system measures such as application
-throughput.
+Using \sysname{}, we've built three streaming applications: pedestrian detection
+(PD), augmented reality (AR) and a distributed Top-k analysis. We use real-world
+data to evaluate these applications for our profiling tool and runtime
+systems. We also study in depth of the online profiling for AR.
 
-Using \sysname{}, we've built three applications: pedestrian detection,
-augmented reality and distributed top-k. We use real-world data for these
-applications to evaluate our systems.
-
-The evaluation shows the generated profile for the three applications. Then for
-each application, We show how they adapt the behavior at runtime. Under a
-controlled experiment, even with only transient network capacity drop, our
-system is able to maintain an end-to-end delay for 1 seconds in the wide-area
-and accuracy level above 80\%. Application-agnostic protocols creates
-significant backlogged data (TCP for about 100 seconds) or unusable accuracy
-(UDP).
+Our evaluation shows that \sysname{} generates Pareto-optimal profiles with
+precision and fine granularity for all three applications. Our parallel and
+partial profiling enables fast online profiling with about 10\% GPU time. At
+runtime, \sysname{} applications achieve sub-second latency and little accuracy
+drop. \sysname{} profiles allow equal-accuracy bandwidth allocation among
+multiple streams.
 
 In summary, this paper makes the following contributions:
 

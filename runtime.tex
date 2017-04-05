@@ -14,7 +14,7 @@
 
 At runtime, the user program is automatically converted to a client half and
 server half; and \sysname{} abstracts the communication as well as rate
-adaptation. \autoref{fig:runtime} shows our runtime architecture.
+adaptation (\autoref{fig:runtime}).
 
 The data source with degradation is a module that supports \texttt{update}
 function. To handle insufficient bandwidth, an object-level queue bridges data
@@ -26,8 +26,7 @@ available bandwidth. To avoid spikes in the bandwidth measurement, exponential
 smoothing is employed.
 
 At the core of our rate adjustment is a congestion control algorithms assisted
-with stream data generation rate. We describe each state in details. Some of the
-design is similar to BBR~\cite{cardwell2017bbr}.
+with stream data generation rate (\autoref{fig:cc}).
 
 \para{Startup behavior:} When the application starts up, it performs its first
 (and most rapid) rate increase. On each \texttt{Q.NoQueue} received, it
@@ -36,11 +35,11 @@ decreases the level of degradation, hence an increase of the data rate.
 \para{Reacting to congestion:} When congestion is detected by an increase of the
 queued item, TCP's send rate is used as an approximation of the bottleneck
 bandwidth of the current connection. \sysname{} then adjusts the level of
-degradation such that the expected data rate is below the estimated
-bandwidth. To allow the queue draining, we adjust the measured bandwidth with a
-factor ALPHA (often 0.8). After the queue is drained and there is no queued item
-for a configurable period, it fires \texttt{Q.NoQueue} event to the congestion
-controller, which then enters into the \texttt{Steady} state.
+degradation such that the expected data rate is below the estimated bandwidth
+(often with a factor to allow the queue draining). After the queue is drained
+and there is no queued item for a configurable period, it fires
+\texttt{Q.NoQueue} event to the congestion controller, which then enters into
+the \texttt{Steady} state.
 
 \para{Steady state:} The steady state is the ideal state that the streaming
 application should stay in. If currently the application is operating at the

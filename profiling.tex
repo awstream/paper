@@ -32,6 +32,7 @@ less bandwidth while giving a higher accuracy.
 }%
 
 \begin{table}
+  \small
   \centering
   \begin{tabular}{r l}
     \toprule
@@ -47,7 +48,7 @@ less bandwidth while giving a higher accuracy.
     $\mathbb{P}$ & Pareto efficienct set \\
     \bottomrule
   \end{tabular}
-  \caption{Notations used in profiling.}
+  \caption{Notations used in profiling (keep?).}
   \label{tab:notations}
 \end{table}
 
@@ -81,29 +82,25 @@ other. Making the profiling an embarrassingly parallel task.
 \subsubsection{Online Profiling}
 \label{sec:online-profiling}
 
-The offline profile is susceptible to a problem known as ``model drift''. When
-the required bandwidth is underestimated, data will be queued at the sender and
-application latency will increase. When the accuracy is incorrectly measured,
-the actual application performance will be suboptimal. The drift needs to be
-corrected online.
-
-There are two particular challenges for online profiling.
+The offline profile is susceptible to ``model drift''. When the required
+bandwidth is underestimated, data will be queued at the sender and application
+latency will increase. When the accuracy is incorrectly measured, the actual
+application performance will be suboptimal. The drift needs to be corrected
+online. There are two particular challenges for online profiling.
 
 The first is the lack of groundtruth data or reference data. During the online
 execution, it's often infeasible to get labelled data as the groundtruth. For
 example, image labelling is known to be labor intensive and time
 consuming~\cite{russell2008labelme}. In addition, the original un-degraded data
-need to be transmitted from the sender.  \sysname{} addresses labelling by using
+need to be transmitted from the sender. \sysname{} addresses labelling by using
 the un-degraded data as the reference and allocate additional bandwidth for
 backhaulling portions of the un-degraded data. While the additional bandwidth
 seems a waste, in our design, during the runtime's probing phase, the original
 data can enjoy a free ride. Details of the probing is in \autoref{sec:runtime}.
 
-The second challenge is how to profile efficiently. Naively profiling every
-configuration as the offline profiler does does not warrant a timely update. We
-use the offline profiling information as a prior to speed-up the online
-profiler. Specficially, we employ two techniques: degradation-aware
-parallelization and partial profiling.
+The second challenge is how to profile efficiently. We use the offline profiling
+information as a prior to speed-up the online profiler. Specficially, we employ
+two techniques: degradation-aware parallelization and partial profiling.
 
 \para{Degradation-aware parallelization:} The profiling tasks of exploring all
 configurations are easily parallelizable. Normal job schedulers don't assume the

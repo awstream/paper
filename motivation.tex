@@ -1,11 +1,17 @@
+\begin{figure}
+  \centering
+  \includegraphics[width=.9\linewidth]{figures/motiv-aws.pdf}
+  \caption{Bandwidth measurement between Amazon EC2 sites (from Ireland to
+    California). Note the time-series plot has a resolution of 30 minutes.}
+  \label{fig:bw}
+\end{figure}
+
 \section{Motivation}
 \label{sec:motivation}
 
-In this section, we make the case for an adaptive stream processing system in
-the wide area by examining the gap between application demands (high) and the
-existing infrastructure (scarce and varying). At last, we show that
-application-specific optimizations don't generalize across applications, instead
-a system-level approach is desired.
+In this section, we examine the gap between application demands (high) and the
+existing infrastructure (scarce and varying). We then show that
+application-specific optimizations and manual policies don't solve the problem.
 
 \subsection{Wide-area Streaming Applications}
 \label{sec:wide-area-streaming}
@@ -13,45 +19,34 @@ a system-level approach is desired.
 \paraf{Video Surveillance:} We envisage a city-wide monitoring system that
 aggregates camera feeds (both stationary ground cameras and moving aerial
 vehicles) and analyzes video streams in real-time for surveillance, anomaly
-detection or business intelligence~\cite{oh2011large}. While traditionally human
-labors are involved in analyzing abnormal activities, recent advances in
-computer vision and deep learning has dramatically increased the accuracy for
-automatic analysis of visual scenes, such as pedestrian
-detection~\cite{dollar2012pedestrian}, vehicle tracking~\cite{coifman1998real},
-or facial recognition to locate people of interest~\cite{parkhi2015deep,
-  Lu:2015:SHF:2888116.2888245}.
+detection or business intelligence~\cite{oh2011large}. Traditionally, humans are
+involved in analyzing abnormal activities. Recent advances in computer vision
+and deep learning has dramatically increased the accuracy for visual scenes
+analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
+tracking~\cite{coifman1998real}, or facial recognition to locate people of
+interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}.
 
-\para{High-frequency IoT Sensors:} Although traditional environmental sensors
-are slow and not data-intensive~\cite{atzori2010internet}, we are seeing an
-increasing trend with high-frequency, high-precision sensors being deployed. For
-example, the uPMU monitoring system for the electrical grid consists of a
-network of 1000 devices; each produces 12 streams of 120 Hz high-precision
-values accurate to 100 ns. This amounts to 1.4 million points per second that
-requires specialized timeseries database~\cite{andersen2016btrdb}.
+\para{High-frequency IoT Sensors:} Traditionally, environmental sensors are slow
+and not data-intensive~\cite{atzori2010internet}. Increasingly, high-frequency,
+high-precision sensors are being deployed. For example, the uPMUs monitor the
+electrical grid with a network of 1000 devices; each produces 12 streams of 120
+Hz high-precision values accurate to 100 ns. This amounts to 1.4 million points
+per second that requires specialized timeseries
+database~\cite{andersen2016btrdb}.
 
-\para{Log Monitoring:} Large organizations today are managing 10--100s of
+\para{Industrial Monitoring:} Large organizations today are managing 10--100s of
 datacenters (DCs) and edge clusters worldwide~\cite{calder2013mapping}. While
 most log analysis today runs in a batch mode and on a daily basis, there is
 trend in analyzing logs in real-time for quicker optimization. For example, a
 content distribution network (CDN) can improve the overall efficiency by
 optimizing data placement if the access logs can be processed in real-time.
 
-\vspace{0.5em}
-
-We consider the practical issues with deploying these applications in the
-wide-area. Our stand is that these applications face a bigger network challenge.
-Data generated from the edge often fail to be delivered to the the processing
-site because of the scarce and variable bandwidth capacity in the
-wide-area. Once they arrive, existing stream processing systems can easily
-manage a large cluster and perform data analytics at real-time.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=.95\linewidth]{figures/motiv-aws.pdf}
-  \caption{Bandwidth measurement between Amazon EC2 sites (from Ireland to
-    California). Note the time-series plot has a resolution of 30 minutes.}
-  \label{fig:bw}
-\end{figure}
+% We consider the practical issues with deploying these applications in the
+% wide-area. Our stand is that these applications face a bigger network challenge.
+% Data generated from the edge often fail to be delivered to the the processing
+% site because of the scarce and variable bandwidth capacity in the
+% wide-area. Once they arrive, existing stream processing systems can easily
+% manage a large cluster and perform data analytics at real-time.
 
 \begin{figure*}
   \centering
@@ -78,24 +73,11 @@ challenge to the realization and successful deployment of wide-area streaming
 applications.
 
 Similar variations have also been reported in wireless
-network~\cite{biswas2015large}, ISP network~\cite{grover2013peeking}, cellular
-network~\cite{nikravesh2014mobile}.
-
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=.95\linewidth]{figures/motiv-aws.pdf}
-%   \caption{Bandwidth measurement between Amazon EC2 sites (from Ireland to
-%     California). Note the time-series plot has a resolution of 30 minutes.}
-%   \label{fig:bw}
-% \end{figure}
+network~\cite{biswas2015large}, ISP network~\cite{grover2013peeking} and
+cellular network~\cite{nikravesh2014mobile}.
 
 \subsection{Making the Case for a System Approach}
 \label{sec:bat}
-
-When facing insufficient resources, applications that do not adapt will suffer
-severe performance penalty: such as a backlog of data for TCP or uncontrolled
-packet loss for UDP. We argue that applications should be made adaptive to the
-varying resource.
 
 While adaptive streaming exist in certain application domain, there has not been
 a general solution. Consider video streaming applications that have been
@@ -106,20 +88,20 @@ their primary goal is to optimize end-user quality of experience (QoE).  When
 end users consume a video clip, a smooth video is often more enjoyable than
 videos with intermittent pauses, even though with crisp images.
 
-Video streaming analytics often have different goals, therefore entail different
-adaptive strategies. For example, many computer vision detection algorithms rely
-on the edge information~\cite{canny1986computational, lowe2004distinctive,
-  viola2001rapid} while object tracking applications works best when the
-inter-frame difference is small~\cite{allen2004object}.
-
-Further, even the same query, when used in different context, requires different
-strategies. For example, pedestrian detection can be deployed with a ground
-stationary camera. When taking pedestrian walking speed into consideration, it's
-not necessary to guarantee a high frame rate. But because these surveillance
-cameras are far from the target, it's crucial to have a high-resolution and
-sharp image. On the other hand, when deployed with a mobile phone, due to the
-movement of the camera, reducing frame rate will introduce significant
-errors.
+\autoref{fig:app-specific} illustrates one adaptation strategy doesn't carry
+over to a different application context. Video streaming analytics often have
+different goals, therefore entail different adaptive strategies. For example,
+many computer vision detection algorithms rely on the edge
+information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
+while object tracking applications works best when the inter-frame difference is
+small~\cite{allen2004object}. Further similar applications but different context
+requires different strategies. For example, object detection deployed with a
+ground stationary camera. When taking pedestrian walking speed into
+consideration, a high frame rate is not necessary. But because these
+surveillance cameras are far from the target, it's crucial to have a
+high-resolution and sharp image. On the other hand, when deployed with a mobile
+phone, due to the movement of the camera, reducing frame rate will introduce
+significant errors.
 
 This motivates us to take a system-level approach that synthesize different
 adaptation strategies for different queries and contexts.
@@ -127,39 +109,33 @@ adaptation strategies for different queries and contexts.
 \subsection{Manual Policy}
 \label{sec:manual-policy}
 
-We first consider a strawman solution: manual policies for
-degradation. JetStream~\cite{rabkin2014aggregation} offers an example: \textit{``if
-bandwidth is insufficient, switch to sending images at 75\% fidelity, then 50\%
-if there still isn't enough bandwidth. Beyond that point, reduce the frame rate,
-but keep the images at 50\% fidelity.''} We identify the following issues with
-this approach.
+We consider manual policies for
+adaptation. JetStream~\cite{rabkin2014aggregation} offers an example:
+\textit{``if bandwidth is insufficient, switch to sending images at 75\%
+  fidelity, then 50\% if there still isn't enough bandwidth. Beyond that point,
+  reduce the frame rate, but keep the images at 50\% fidelity.''} This approach
+has the following issues.
 
-\para{Lack of precision:} These policies are often developer heuristics and
-rarely backed up by measurements. First, there is no direct association of the
-application accuracy with the 75\% fidelity configuration. Besides, it's unclear
-about how much the policy would affect the data size. For example, one might
-think that reducing the frame rate by 50\% will half the data rate. However if
-video encoding is employed, when the frame rate reduces, the inter-frame
-difference will increased, hence P-frame size. This leads to a larger data size
-for each frame.
+Precision. These policies are developer heuristics and not backed up by
+measurements. There is no direct association of the application accuracy with
+the 75\% fidelity configuration. Besides, it's unclear about how much the policy
+would affect the data size. For example, reducing the frame rate by 50\%
+\textit{seems} to half the data rate. But when the video is encoded with H.264,
+frame rate's reduction leads to bigger inter-frame differences, resulting in a
+larger P-frame size.
 
 %% \autoref{fig:h264} illustrates this complex relationship with an example of
 %% H.264 encoding under four different frame rates.
 
-\para{Lack of scalablility:} The strawman solution quickly leads to too many
-policies when multiple degradation operations are involved or a fine-grained
-control is desired. This manual process becomes tedious and error-prone. When
-too few rules are provided, the application may oscillate between two rules: one
-that's too aggressive (always faces insufficient bandwidth) and one that's too
-conservative.
+It's not scalable. The strawman solution quickly leads to too many policies when
+multiple degradation operations are involved or a fine-grained control is
+desired. This manual process becomes tedious and error-prone. When too few rules
+are provided, the application may oscillate between aggressive rules and
+conservative rules.
 
-\para{Lack of flexibility:} Policies like this tend to be implemented as part of
-the application processing (specified in the source code). Such a fixed policy
-prohibits flexible updates in the precense of model drift.
-
-\para{Too low-level:} When using the above strawman solution, developers are
-forced to manually study and measure the impact of individual degradation
-policy, prohibiting its wide adoption in practice.
+The abstraction is too low-level. Developers are forced to manually study and
+measure the impact of individual degradation policy, prohibiting its wide
+adoption in practice.
 
 %%% Local Variables:
 %%% mode: latex

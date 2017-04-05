@@ -37,12 +37,13 @@ prototype framework and three non-trivial wide-area streaming applications.
 \label{sec:framework}
 
 While our proposed APIs are general and not language specific, we chose a safe
-language, Rust, for the core framework for the following reasons. First, Rust's
-memory safety guarantee can ensure applications running continously for an
-extended period of time. Besides, the zero-cost abstraction removes the
-possibilities of tail latencies caused by uncoordinated garbage
-collection~\cite{maas2016taurus}. In addition, we rely on Rust's type system to
-enforce the type match on \texttt{maybe} operations.
+language, Rust, for the core framework for the following reasons.
+
+% First, Rust's memory safety guarantee can ensure applications running
+% continously for an extended period of time. Besides, the zero-cost abstraction
+% removes the possibilities of tail latencies caused by uncoordinated garbage
+% collection~\cite{maas2016taurus}. In addition, we rely on Rust's type system to
+% enforce the type match on \texttt{maybe} operations.
 
 % All operators implement the \texttt{Stream} trait which has an associate type
 % \texttt{Item} and a core function \texttt{next} that returns
@@ -89,27 +90,20 @@ summarizes the application specific part: knobs, utility function and dataset
 % \end{figure*}
 
 \para{Pedestrian Detection:} This application analyzes video streams from
-installed CCTV cameras and detect pedestrians inside. The detection result is a
-list of bounding boxes representing pedestrian's relative location within the
-view. Variant of this application can be used for safety monitoring, anomaly
-detection or waiting line counting.
-
-We implement most image-related operations with OpenCV
-3.1~\cite{opencvlibrary}. Pedestrians are detected using histogram of oriented
-gradients (HOG)~\cite{dalal2005histograms} with the default linear SVM
-classifier. To ensure real-time processing of frames, GPU-accelerated
-implementation is used in favor of the CPU-based implementation. For video
-encoding, H.264 scheme is chosen for its prevalence in existing systems. Our
-implemenation is based on GStreamer~\cite{gstreamer}, using \texttt{x264enc}
-plugin. To integrate with \sysname{}, we first create a pipeline that exposes
-\texttt{appsrc} (to feed raw image data) and \texttt{appsink} (to get encoded
-bytes). The GStreamer main loop is managed in a separate thread and \sysname{}
-communicates with it via Rust's channel. The \texttt{x264enc} is configured with
-\texttt{zerolatency} present and runs using four threads. It uses constant
-quality encoding and the quantizer is exported as a parameter that can be tuned.
-
-This application has three degradation operations: reducing image resolution,
-dropping frame rate or lower video encoding quality.
+installed CCTV cameras and detect pedestrians inside. We implement most
+image-related operations with OpenCV 3.1~\cite{opencvlibrary}. Pedestrians are
+detected using histogram of oriented gradients (HOG)~\cite{dalal2005histograms}
+with the default linear SVM classifier. To ensure real-time processing of
+frames, GPU-accelerated implementation is used in favor of the CPU-based
+implementation. For video encoding, H.264 scheme is chosen for its prevalence in
+existing systems. Our implemenation is based on GStreamer~\cite{gstreamer},
+using \texttt{x264enc} plugin. To integrate with \sysname{}, we first create a
+pipeline that exposes \texttt{appsrc} (to feed raw image data) and
+\texttt{appsink} (to get encoded bytes). The GStreamer main loop is managed in a
+separate thread and \sysname{} communicates with it via Rust's channel. The
+\texttt{x264enc} is configured with \texttt{zerolatency} present and runs using
+four threads. It uses constant quality encoding and the quantizer is exported as
+a parameter that can be tuned.
 
 The detection returns a list of bounding boxes; it's compared against a
 reference result (either the groundtruth or the one without degradation). A
@@ -127,10 +121,7 @@ We use a similar setup as the pedestrian detection application except the actual
 function that analyzes the stream. To recognize objects, we use a a pre-trained
 neural network~\cite{darknet13} that's trained with
 Imagenet~\cite{krizhevsky2012imagenet}. Similar to our first application,
-GPU-accelerated implementation is use in favor for real-time processing. The
-utility function here is more strict than the pedestrian detection:
-true-positive depends not only on IOU criteria, but also on the type of objects
-(a correct identification).
+GPU-accelerated implementation is use in favor for real-time processing.
 
 \para{Distributed Top-K:} Many monitoring applications require to answer the
 ``top-k'' question~\cite{babcock2003distributed}, such as the top-k most popular
@@ -150,15 +141,15 @@ large-but-irrelevant tail that is unnecessary to send.
 \end{figure}
 
 We consider two degradation operations that individual worker nodes can perform:
-(1) a local Top-\texttt{N} operation that shortens the list first; (2) a local
-threshold \texttt{T} that further filters small entries. Obviously, these two
-operations are not orthognal to each other. Their impact on data size reduction
-and quality degradation depends on the distribution of the actual data. We use
-Kendall's $\tau$ as the utility function here. It is a correlation measure of
-the concordance between two ranked list. The function outputs the rank
-correlation ranging from -1 to 1, representing no agreement to complete
-aggrement, respectively~\cite{abdi2007kendall}. To integrate with \sysname{}, we
-convert the measure to the range of [0, 1].
+(1) a head (\texttt{N}) operation that shortens the list first; (2) a threshold
+\texttt{T} that further filters small entries. These two operations are not
+orthognal to each other. Their impact on data size reduction and quality
+degradation depends on the distribution of the actual data. We use Kendall's
+$\tau$ as the utility function here. It is a correlation measure of the
+concordance between two ranked list. The function outputs the rank correlation
+ranging from -1 to 1, representing no agreement to complete aggrement,
+respectively~\cite{abdi2007kendall}. To integrate with \sysname{}, we convert
+the measure to the range of [0, 1].
 
 %%% Local Variables:
 %%% mode: latex
