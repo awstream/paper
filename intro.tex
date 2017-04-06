@@ -53,12 +53,15 @@ applications with \textit{structured adaptation}, i.e., application's execution
 is parameterized with configurations that vary the data rate and application
 accuracy.
 
-Each \maybe{} operator takes a list of knobs and a function that transforms the
-data item. \sysname{} also has a library of built-in functions for common data
-types, e.g. images. Developers are not assumed to be expert in the particular
-application domain. Even if they only have intuitions about how a particular
-parameter would affect the application, they can embed the intuition with
-\maybe{} operators.
+Scope. Comarison with unstructured (manual, heuristic) solutions. Each \maybe{}
+operator takes a list of knobs and a function that transforms the data
+item. \sysname{} also has a library of built-in functions for common data types,
+e.g. images. (1) Developers are not assumed to be expert in the particular
+application domain. Not manual heuristic solutions. Even if they only have
+intuitions about how a particular parameter would affect the application, they
+can embed the intuition with \maybe{} operators. (2) incorporate other libraries
+and system integration. Transit to benefits (automatic profiling systematically,
+runtime adaptation).
 
 \sysname{} then profiles the application with a user-supplied training dataset
 and measures bandwidth demand and application accuracy automatically exploring
@@ -82,12 +85,12 @@ Using \sysname{}, we've built three streaming applications: pedestrian detection
 data to evaluate these applications for our profiling tool and runtime
 systems. We also study in depth of the online profiling for AR.
 
-Our evaluation shows that \sysname{} generates Pareto-optimal profiles with
-precision and fine granularity for all three applications. Our parallel and
-partial profiling enables fast online profiling with about 10\% GPU time. At
-runtime, \sysname{} applications achieve sub-second latency and little accuracy
-drop. \sysname{} profiles allow equal-accuracy bandwidth allocation among
-multiple streams.
+Put evaluation into contribution. Our evaluation shows that \sysname{} generates
+Pareto-optimal profiles with precision and fine granularity for all three
+applications. Our parallel and partial profiling enables fast online profiling
+with about 10\% GPU time. At runtime, \sysname{} applications achieve sub-second
+latency and little accuracy drop. \sysname{} profiles allow equal-accuracy
+bandwidth allocation among multiple streams.
 
 In summary, this paper makes the following contributions:
 
