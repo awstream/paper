@@ -20,7 +20,10 @@
     \caption{Top-k}
     \label{fig:tk-profile}
   \end{subfigure}
-  \caption{Application profiles.}
+  \caption{Application profiles of three applications. Each cross point
+    indicates one configuration $c$'s performance $(B(c), A(c))$. All figures
+    show the Pareto boundary as well as the performance if only one dimension is
+    tuned.}
   \label{fig:all-profiles}
 \end{figure*}
 
@@ -34,7 +37,8 @@ summarized as follows.
 
 \begin{itemize}
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
-  profiles with precision and fine granularity (\autoref{fig:all-profiles}).
+  profiles across multiple dimensions with precision
+  (\autoref{fig:all-profiles}).
 \item[\autoref{sec:online-profiling}] Our parallel and partial profiling enables
   fast online profiling with about 10\% GPU time (\autoref{fig:parallel},
   \autoref{fig:online-tricks}).
@@ -48,48 +52,51 @@ summarized as follows.
 \subsection{Application Profiles}
 \label{sec:application-profiles}
 
-Our system learned the application profiles for all three applications (shown in
-\autoref{fig:all-profiles}). From these profiles, we make the following three
-observations:
+Our system learned the application profiles for all three applications using the
+dataset specified in~\autoref{tab:apps}. We show the profiling results of all
+configurations and the learned Pareto-optimal boundary
+(\autoref{fig:all-profiles}). In addition, we highlight the configurations from
+tune only one dimension. These profiles suggest the following:
 
-\para{Little accuracy drop across three or four orders of magnitude}. This
-allows operating in an acceptable state even under bandwidth scarcity.
+\para{Large variation for bandwidth demand:} There is three to four orders of
+magnitude of difference in their bandwidth requirements (note the x-axis is in
+log scale). For PD and AR, the most expensive configuration transmits videos
+with 1080p and 30FPS, using minimal quantization; it takes 230 mbps. In
+constrast to the variation in bandwidth, there is a smaller variation in
+accuracy. In PD, for example, even after the bandwidth is 1 mbps (less than 1\%
+of the maximum), the accuracy is still above 75\%. This allows \sysname{}
+applications running continuously with acceptable accuracy even under severe
+network deterioration.
 
-\para{Optimal strategy is achieved with multiple dimensions.} In each profile,
-in addition to the Pareto-optimal strategies, we show the performance if only
-one dimension is tuned. As show in the figure, they almost always lead to a
-sub-optimal performance.
+\para{Optimal configuration needs multiple dimensions.} We compare the
+Pareto-optimal boundary with lines that indicates the performance of tuning one
+knob. For PD and AR, the optimal configuration is only achieved with a
+combination of tuning resolution, frame rate and quantizer. Tuning only one
+dimension leads to sub-optimal performance. In Top-K, the Pareto-optimal is
+mostly achieved with tuning \texttt{N}. While \texttt{T} doesn't contribute much
+with this particular dataset, if another dataset is used with a different
+distribution, we will see a different profile.
 
-\para{The effect of each dimension is different}. Different dimensions have
-different impact for the same application. For pedestrian detection, tuning
-resolution leads to a quicker degradation in comparison to tuning frame
-rate. The same dimension has different impact for different applications. If we
-compare two video analytics applications, pedestrian detection and augmented
-reality, we see how tuning each dimension affects the performance differently.
+\para{Each dimension affects differently}. Within a single profile, we see how
+different dimensions affect the bandwidth and accuracy differently. For PD,
+tuning resolution (purple line) leads to a quicker accuracy drop in comparison
+to tuning frame rate (green line). Across PD and AR, the same dimension has
+different impact. Tuning resolution is less harmful in AR than PD; tuning frame
+rate is more harmful in AR than PD. This echoes our initial observation that
+application- and context-specfic strategy doesn't generalize
+in~\autoref{sec:making-case-sys-approach}.
 
-\lipsum[1-2]
+\para{Quantification with precision}. All the generated profiles come with
+precise measures on how the configurations affect the bandwidth demand and
+application accuracy. This saves developers from laboriously analyzing their
+application to compute manual policies.
 
-\subsection{Efficient Online Profiling}
+\newpage
+
+\subsection{Profiling Efficiency and Online Profiling}
 \label{sec:online-profiling}
 
-This section focuses on the AR application as a case study. First, we validate
-the necessity for online profiling. We compare two adaptation scheme: one with
-the offline learned profile; the other enabled with online
-profiling. \autoref{fig:online-tricks} offline and online. Initially, both
-schemes work similarly. Overtime, when the data distribution changes, the
-offline-learned profile doesn't match with the newly generated data, leading to
-accuracy deterioration. System enabled with online profiling is able to track
-the data and offers high accuracy.
-
-\autoref{fig:parallel} shows how much profiling is needed with more machines and
-use different schedulers. First, we see that the parallel execution reduces the
-execution time. Besides, our profiling scheduling improves the profiling
-efficiency with 2x time reduction in comparison to baseline schedulers.
-
-\autoref{fig:online-tricks} illustrates how the application behaves with
-different model. With partial profiling, such as every five seconds worth of
-data out of 30 seconds; there is a delay in reacting to model change. With
-triggering, the profile closesly resembles the always online case.
+This section focuses on the AR application as a case study.
 
 \begin{figure}
   \centering
@@ -98,19 +105,82 @@ triggering, the profile closesly resembles the always online case.
   \label{fig:parallel}
 \end{figure}
 
+\para{Parallelism reduces the profiling time}. In AR, we have 216 configurations
+to evaluate: 6 resolutions, 6 frame rates and 6 different quantizers. Processing
+each frame with Yolo takes about 33 ms per frame. But different configurations
+takes different amount of time. A configuration with 10FPS only needs to process
+1/3 of the images of a configuration with 30FPS. In our experiments, the total
+amortized processing time per frame is 1852 ms. When we perform the offline
+profiling, we assign tasks randomly to each worker. While parallelism helps,
+it's still often a suboptimal scheduling as two expensive configurations may be
+assigned to the same worker. During the online profiling, we use the offline
+profiling information to schedule tasks using the offline profiling.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/online1.pdf}
+    \caption{Offline}
+    \label{fig:offline}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/online2.pdf}
+    \caption{Online}
+    \label{fig:online}
+  \end{subfigure}
+  \\
+  \vspace{1.5em}
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \includegraphics[width=\textwidth]{figures/online3.pdf}
+    \caption{Online (Partial)}
+    \label{fig:online-partial}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \includegraphics[width=\textwidth]{figures/online4.pdf}
+    \caption{Online (Trigger)}
+    \label{fig:online-trigger}
+  \end{subfigure}
+  \caption{Evaluation of various online profiling schemes. The accuracy across
+    four schemes are similar (omitted).}
+  \label{fig:online-tricks}
+\end{figure}
+
+\para{Online profiling address model drift}. First we show that the offline
+learned model can fail to match the test data. The profile is generated against
+a video clip of the office environment. Suppose there is 11 mbps available
+bandwidth, according to the profile, the application should operate at a
+configuration of 1280x720 resolution, 30FPS and a quantization factor of 20. We
+run this configuration over a test video clip collected at the first author's
+home. At about 100 seconds, the camera points out of the window to detect
+objects on the street. Because of the scene change, the configuration fails to
+predict the actual bandwidth demand. \autoref{fig:offline} shows the bandwidth
+requirement over time; and the increase at 100 seconds is due to the data
+change. To correct the misprediction, if we continuously run online profiling
+and update the profile model, we will be able to capture the data distribution
+change and predict the bandwidth demand more precisely (\autoref{fig:online}).
+
+\para{Partial Profiling reduces profiling cost}. In practice, we only get holds
+to a fraction of data. \autoref{fig:online-partial} evaluates the behavior if
+only one third of the data is used for profiling. We notice there are two main
+differences in comparison to \autoref{fig:online}. Between 80-100 seconds, it's
+because of the limited data, hence an inaccurate profiling. At 110-140 seconds,
+the profiling is not running, hence a delayed reaction.
+
+\para{Trigger profiling is enough}. We trigger a full profiling if the bandwidth
+estimation is off by 1 mbps or the accuracy is off by
+10\%. \autoref{fig:online-trigger} shows that this is enough to track drastic
+changes in the data distribution. Because a subset of all configurations can be
+a significant saving, when we configure it with 5 profiling, the amortized cost
+for each frame is 223 ms (~12\% of the GPU time)
+
 %% Offline: 0
 %% Online: 1 frame (1852.21 GPU * seconds)
 %% Online (1/10)   (185.2 GPU * seconds)
 %% Trigger         ( GPU * seconds)
-
-\lipsum[1-2]
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/online-profiling.pdf}
-  \caption{Trigger-based profiling}
-  \label{fig:online-tricks}
-\end{figure}
 
 \begin{table}[t]
   \centering
@@ -126,6 +196,12 @@ triggering, the profile closesly resembles the always online case.
 \end{table}
 
 \begin{figure*}[!htb]
+  \begin{subfigure}[t]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/runtime-legend.pdf}
+  \end{subfigure}
+  \\
+  \vspace{1em}
   \begin{subfigure}[t]{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
@@ -149,72 +225,86 @@ triggering, the profile closesly resembles the always online case.
   \label{fig:all-runtime}
 \end{figure*}
 
+\newpage
+
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
 
-To evaluate the runtime behavior, we conduct controlled experiments using four
-geo-distributed worker nodes from Amazon EC2 (t2.large instances) and an
-aggregation server from our institute. For each experiment, worker nodes
-transmit test data for about 10 mins. During each session, we use Linux
-\texttt{tc} utility to adjust outgoing bandwidth to experiment with network
-resource variation.
+This section presents the evaluation of the runtime behavior of three
+applications. We conduct controlled experiments using five geo-distributed
+servers from Amazon EC2 (different AWS region). Four act as worker nodes
+(\textit{t2.micro} instances) and one acts as the aggregation server
+(\textit{m4.xlarge} instance). For each experiment, the worker nodes transmit
+test data for about 10 mins. We measure three aspects of the system: throughput,
+latency and application accuracy.
 
-We show three aspects of the system: throughput, latency and application
-accuracy. We compare our system with baseline systems that directly uses TCP and
-UDP. In all three applications, the raw data streams are orders of magnitude
-larger. While our system can adapt the rate, it could be unfair to baseline
-solutions. We adjust the default degradation operation so that TCP and UDP would
-work just fine when in normal cases; in this way, we make fair comparison. In
-the case of UDP, shaping at the source doesn't emulate the packet loss behavior
-with out-of-order delivery. We use \texttt{netem} to control packet loss rate to
-match the desired shaping bandwidth.
+We compare \sysname{} applications with baseline applications built with vanilla
+TCP and UDP. Notice that the raw data streams are prohibitively large (230 mbps
+for video streams). For a fair comparison, we pick a reasonable configuration as
+the maximum rate for the baseline applications.
 
-From the throughput figure, we see how traffic shaping start, more severe
-traffic shaping and traffic shaping stop affect the throughput. Notice that
-after the traffic shaping stops, TCP has a ``catch-up'' phase where it's sending
-all the queued items as fast as possible. Because of the queuing, TCP suffers
-from an increased latency (as seen in the latency figure). But the data is
-maintained at high fidelity in TCP, so the accuracy is always high. For UDP,
-there is no explicit latency increase, but the accuracy drop is drastic during
-traffic shaping.
+During the experiment session, we use Linux \texttt{tc} utility with
+HTB~\cite{lartc} to adjust outgoing bandwidth to experiment with network
+resource variation. At time 200 seconds, we impose the first traffic shaping. At
+time 380 seconds, we impose a more severe shaping. At time 440 seconds, we clear
+all the traffic shaping. Because of the different capacity of any pair-wise
+connection, we always have a 25mbps cap for all PD and AR and 2.5 mbps for
+TK. When evaluating UDP traffic, we use \texttt{netem} to emulate the packet
+loss behavior with out-of-order delivery.
 
-Our run time adaptation achieves the balance between these two extremes: it has
-low-latency (under 1 seconds) and high accuracy (above 85\%).
+The results are shown in \autoref{fig:all-runtime}. Throughput figures reflect
+the effect of our traffic shaping. Notice that after the traffic shaping stops,
+TCP has a ``catch-up'' phase where it's sending all the queued items as fast as
+possible (hitting the cap we set). Because of the queuing during the shaping
+period, TCP suffers from an increased latency (as seen in the latency
+figures). But the data is maintained at high fidelity in TCP, so the accuracy is
+always high. For UDP, the latencies are constant. But during the phase of
+traffic shaping, packet drop leads to drastic accuracy drop. In both PD and AR,
+the accuracy are almost 0\%. For TK, it's below 50\% and getting worse in
+between 380 and 440.
 
-\lipsum[1-2]
+\para{\sysname{}'s adaptation achieves low latency and high accuracy}. We
+achieve worse-case sub-second latency for PD and AR and 5 seconds latency for
+TK. Because TK aggregates data every seconds, the queued object and the react is
+at a granularity of at least 1 seconds. We also guarantee a relatively high
+accuracy with across all applications in the face of bandwidth degradation.
 
 \newpage
 
-\subsection{Multi-task Allocation}
+\subsection{Resource Allocation and Multitask Fairness}
 \label{sec:multi-task-alloc}
 
-At last the profile is useful for scheduling multiple stream processing
-analytic. Applications doesn't behave well if they don't have the
-adaptation. When their adaptation is turned on, but multiple tasks are
-competing, some will suffer from the fair adaptation. This motivates us to
-explore the multi-task scheduling.
-
-There are mainly two schemes we are considering: (1) maximize the
-\textit{minimum} utility (for \textit{MaxMin} fairness); (2) maximize the total
-utility (for \textit{MaxTotal} performance). \autoref{fig:multitask} shows the
-total utility of the baseline scheme and our two scheduling schemes.
+We evaluate the resource allocation and multitask fairness with an example of
+the pedestrian detection and augmented reality running along the same link. Both
+applications starts with sufficient bandwidth. At 60 seconds, we start traffic
+shaping to limit the total bandwidth at 6 mbps. With a resource fair
+allocation~\autoref{fig:eq-bw}, PD runs with a higher accuracy (85\%) while AR
+runs at (77\%). If we enable accuracy fairness, the resource allocation will
+choose configurations that maximize the minimal accuracy, leading to both
+operate at about 80\% accuracy~\autoref{fig:eq-acc}.
 
 \begin{figure}
-  \centering
+  \begin{subfigure}[t]{0.8\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-legend.pdf}
+  \end{subfigure}
+  \\
+  \vspace{1em}
   \begin{subfigure}[t]{0.49\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/multitask-eq-bw.pdf}
-    \caption{Equal Bandwidth}
+    \caption{Resource Fairness}
     \label{fig:eq-bw}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{0.49\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/multitask-eq-acc.pdf}
-    \caption{Equal Acc}
+    \caption{Utility Fairness}
     \label{fig:eq-acc}
   \end{subfigure}
-  \caption{Multitask Allocation.}
+  \caption{Comparison between different schemes of resource allocations:
+    resource fairness and utility fairness.}
   \label{fig:multitask}
 \end{figure}
 

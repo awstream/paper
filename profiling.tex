@@ -7,17 +7,15 @@ trade-off space, \sysname{} generates a Pareto-optimal \textit{profile} for each
 application. We formulate the profiling and discuss the designs for offline and
 online profiling.
 
-\subsubsection{Profiling Formalism}
-\label{sec:formalize-profiling}
-
-Suppose in a stream processing application that $n$ \maybe{} operators are
-used. Each introduces a knob $k_i$. We assume these operators are independent
-from each other; their combination forms a \textit{configuration}
-$c = [k_{1}, k_{2}, ... k_{n}]$. The set of all possible configurations
-$\mathbb{C}$ is the space that our profiling system needs to explore. For each
-configuration $c$, there are two mappings that our system needs to explore: a
-mapping from $c$ to its bandwidth requirement $B(c)$ and its accuracy measure
-$A(c)$. \autoref{tab:notations} summarizes the symbols used in this paper.
+\para{Profiling formalism:} Suppose in a stream processing application that $n$
+\maybe{} operators are used. Each introduces a knob $k_i$. We assume these
+operators are independent from each other; their combination forms a
+\textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all possible
+configurations $\mathbb{C}$ is the space that our profiling system needs to
+explore. For each configuration $c$, there are two mappings that our system
+needs to explore: a mapping from $c$ to its bandwidth requirement $B(c)$ and its
+accuracy measure $A(c)$. \autoref{tab:notations} summarizes the symbols used in
+this paper.
 
 The Pareto-optimal set $\mathbb{P}$ is then defined (\autoref{eq:pareto}): for
 all $c \in \mathbb{P}$, there is no alternative configuration $c'$ that requires
@@ -61,34 +59,31 @@ uses the results when all degradations are turned off as the reference. We will
 discuss concrete knobs, configurations, $B(c)$ and $A(c)$ when we present the
 example applications in \autoref{sec:build-appl}.
 
-\subsubsection{Offline Profiling}
-\label{sec:offline-profiling}
-
-The offline profiling requires an exhaustive search. Developers using \sysname{}
-will first perform an offline profiling that generates the Pareto-optimal
-profile by supplying training dataset and application accuracy function. Because
-our APIs are general, there is no restriction in the values or functions
-provided for \maybe{}. Without \textit{a prior}, any configuration is possible
-to be inside the optimal profile.
+\para{Offline Profiling:} At the level of being a general API, our profiling
+requires an exhaustive search. Developers using \sysname{} will first perform an
+offline profiling that generates the Pareto-optimal profile by supplying
+training dataset and application accuracy function. Because our APIs are
+general, there is no restriction in the values or functions provided for
+\maybe{}. Without \textit{a prior}, any configuration is possible to be inside
+the optimal profile.
 
 The exhaustive search is expensive. Therefore, the offline profiling requires to
 explore the entire parameter space, which is a combinatorial space of all
-knobs. For \textit{offline}, the time required is acceptable.
+knobs. For \textit{offline}, the time required is acceptable. We note that
+parallelism is usable for profiling. Except for the groundtruth (or reference
+label), two different configurations have no dependence over each other. Making
+the profiling an embarrassingly parallel task.
 
-We note that parallelism is usable for profiling. Except for the groundtruth (or
-reference label), two different configurations have no dependence over each
-other. Making the profiling an embarrassingly parallel task.
+If degradation operations' impact is can be predicted with a prediction
+framework (such as Ernest~\cite{venkataraman2016ernest}), the profiler can
+estimate a subset of the configuration space.
 
-cite ernest experiment design.
-
-\subsubsection{Online Profiling}
-\label{sec:online-profiling}
-
-The offline profile is susceptible to ``model drift''. When the required
-bandwidth is underestimated, data will be queued at the sender and application
-latency will increase. When the accuracy is incorrectly measured, the actual
-application performance will be suboptimal. The drift needs to be corrected
-online. There are two particular challenges for online profiling.
+\para{Online Profiling:} The offline profile is susceptible to ``model
+drift''. When the required bandwidth is underestimated, data will be queued at
+the sender and application latency will increase. When the accuracy is
+incorrectly measured, the actual application performance will be suboptimal. The
+drift needs to be corrected online. There are two particular challenges for
+online profiling.
 
 The first is the lack of groundtruth data or reference data. During the online
 execution, it's often infeasible to get labelled data as the groundtruth. For

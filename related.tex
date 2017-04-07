@@ -5,20 +5,11 @@
 Storm~\cite{toshniwal2014storm}, Streaming~\cite{zaharia2013discretized}.
 MacroBase
 
-\para{Approximate analytics:} The idea of adapting the computation and
-communication is also explored in other
-context. BlinkDB~\cite{agarwal2013blinkdb} for database operations and adaptive
-video streaming~\cite{yin2015control}. Our work recognizes the increasing
-streams in the IoT context and aims to empower more general applications to
-benefit from adaptation. \cite{heintz2015towards} we examined the problem of
-optimizing modern analytics services that process large quantities of
-geodistributed data. We presented empirical results with grouped, windowed
-aggregation on PlanetLab using Akamai log data, and highlighted the complexity
-of tradeoffs that we show are driven by several factors such as query, data, and
-resource characteristics.
+\para{Approximate analytics:} BlinkDB~\cite{agarwal2013blinkdb} for database
+operations and adaptive video streaming~\cite{yin2015control}.
 
-\para{Scheduling:} Dolly~\cite{ananthanarayanan2013effective}.
-\lipsum[1]
+\para{Scheduling:} VideoStorm~\cite{zhang2017live},
+Dolly~\cite{ananthanarayanan2013effective}.
 
 \para{WAN-aware:} Clarinet~\cite{viswanathan2016clarinet}, GDA~\cite{pu2015low}
 on geo-distributed data analytics, but not on
@@ -29,11 +20,11 @@ bandwidth fluctuation. However, JetStream didn't explore how to automatically
 synthesize the degradation strategy for each application.
 
 \para{Adaptive Streaming:} Argue that these are only for video viewing (not even
-video processing) and the difference. Also HLS, DASH works best with
-video-on-demand. For live video, RTMP is typically used; but suffer the accuracy
-drop.
+video processing) and the difference. Also HLS~\cite{pantos2016http},
+DASH~\cite{michalos2012dynamic} works best with video-on-demand. For live video,
+RTMP is typically used; but suffer the accuracy drop.
 
-\para{Program Synthesis:} \lipsum[1]
+%% \para{Program Synthesis:}
 
 
 %%% Local Variables:

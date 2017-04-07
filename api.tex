@@ -14,14 +14,14 @@ developers can provide objects that implement a callable interface. Such objects
 can be used to hold application states.
 
 \begin{table*}
+  \small
   \centering
   \begin{tabular}{ c r l }
     \toprule
     \multirow{7}{*}{Normal Operators}
     & \textit{map} (f: I $\Rightarrow$ O) & Stream<I> $\Rightarrow$ Stream<O> \\
-    & \textit{filter} (f: I $\Rightarrow$ bool) & Stream<I> $\Rightarrow$
-                                                 Stream<I> \\
-    & \textit{skip} n(i: Integer) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{skip} (i: Integer) & Stream<I> $\Rightarrow$
+                                   Stream<I> \\
     & \textit{sliding\_window} (count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
                                                                             Stream<O> \\
     % & \textit{tumbling\_window} (count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$

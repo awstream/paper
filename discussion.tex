@@ -1,16 +1,29 @@
 \section{Discussion}
 \label{sec:discussion}
 
-We presented \sysname{}.
+We have presented \sysname{}, a stream processing system specialized to the
+wide-area and focuses on addressing the insufficient network resources. By
+enabling structured adaptation, applications achieves low latency and high
+accuracy at the same time.
 
-It currently is only able to adapt parameterized processing blocks but not alter
-the program structure.
+\para{Expressiveness}: Our system currently limits the scope of adaptation. Only
+processing modules parameterized with a set of knobs. While we do not alter
+program structure, users could easily implement a branch degradation.
 
-The clients don't have fault-tolerance.
+\para{Fault-tolerance:} Currently our system focuses on adaptation. We have not
+explored fault-tolerance.
 
-\lipsum[1-2]
+\para{Performance modelling:} In this work, we focus on presenting a general
+framework that allows the explicit trade-off. We do not make assumptions about
+the functions used in the degradation. This forces our profiling to perform an
+exhaustive search. If we could have some performance modelling of the operation,
+we may only profile a subset and interpolate or extrapolate the rest of the
+configurations. We leave such a performance modelling as future optimization.
 
-Future work.
+\para{Context detection:} distribution clusters: avoid online profiling;
+instead, recognize the data distribution pattern and use trained profile.
+
+\para{Predicting bandwidth changes:} Use model predictive control (MPC).
 
 %%% Local Variables:
 %%% mode: latex
