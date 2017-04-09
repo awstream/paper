@@ -1,5 +1,5 @@
 \begin{table}[h]
-  \small
+  \footnotesize
   \centering
   \begin{tabular}{c c c c}
     \toprule
@@ -11,13 +11,13 @@
     \midrule
     \specialcell{Augmented\\Reality}
                 & \specialcell{resolution \\ frame rate \\ quantizer }
-                & F1 score & \specialcell{training: office video\\testing: home
-    video} \\
+                & F1 score & \specialcell{iPhone video clips\\training: office (24 s)\\testing: home
+    (246 s)} \\
     \midrule
     \specialcell{Top-k}
                 & \specialcell{head (N) \\ threshold (T) }
                 & \specialcell{Kendall's $\tau$}
-                & \specialcell{sec.gov access log \\ training: 4 days \\
+                        & \specialcell{sec.gov access log~\cite{edgarlog} \\ training: 4 days \\
     testing: 16 days} \\
     \bottomrule
   \end{tabular}
@@ -114,9 +114,9 @@ wireless communication link is also susceptible to capacity variation.
 
 We use a similar setup (OpenCV and GStreamer) as the pedestrian detection except
 the actual analytical functions. To recognize objects, we use a a pre-trained
-neural network~\cite{darknet13} with the GPU-accelerated implementation for
-real-time processing. Here, a successful detection also requires matching the
-object type in addition to the IOU criterion.
+neural network~\cite{darknet13, redmon2016yolo9000} with the GPU-accelerated
+implementation for real-time processing. Here, a successful detection also
+requires matching the object type in addition to the IOU criterion.
 
 \para{Distributed Top-K:} Many monitoring applications need to answer the
 ``top-k'' question~\cite{babcock2003distributed}, such as the top-k most popular
