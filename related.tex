@@ -6,61 +6,62 @@ analytics, WAN-aware system, adaptive streaming and scheduling.
 
 \paraf{Stream processing systems:}
 Spark-Streaming~\cite{zaharia2013discretized},
-MillWheel~\cite{akidau2013millwheel}, Storm~\cite{toshniwal2014storm} are
-systems for large-scale stream processing within datacenters.  All these systems
-rely on an underlying fault-tolerant storage system, respectively HDFS,
-BigTable, or a reli- able message queue. but are orthogonal to our concerns of
-efficiency and low latency across the wide area.
+MillWheel~\cite{akidau2013millwheel}, Storm~\cite{toshniwal2014storm}, Apache
+Flink~\cite{carbone2015apache} are systems for large-scale stream processing
+within datacenters. While they differ from each in the model of computation
+(batch vs. streaming), they primarily focus on fault-tolerance; and assume
+sufficient bandwidth among worker nodes. Our work aims at low latency across the
+wide area; once data arrive at a central location, we could use these systems
+for processing.
 
-Borealis~\cite{abadi2005design},
-Storm~\cite{toshniwal2014storm}, Streaming~\cite{zaharia2013discretized}.
-MacroBase
+\para{Approximate analytics:} The idea of trading application accuracy with
+approximate has been explored elsewhere, such as database
+(BlinkDB~\cite{agarwal2013blinkdb}), real-time processing
+(MEANTIME~\cite{farrell2016meantime}), video processing
+(VideoStorm~\cite{zhang2017live}). Fully embracing the idea of resource-accuracy
+trade-off, this paper explores how to use approximate analytics in the face of
+bandwidth scarcity.
 
-
-\para{Approximate analytics:} BlinkDB~\cite{agarwal2013blinkdb} for database
-operations BlinkDB [4] deploys sampling-based approximations on top of MapRe-
-duce and Hive to reduce latency. In BlinkDB, the data is carefully pre-sampled
-probing jobs are used to estimate query run-time. In con- trast, streaming
-wide-area analytics systems such as ours have to measure and adapt to available
-bandwidth, with- out the benefit of a prior data-import step. We also support a
-range of degradation techniques, not just sampling. with specific statistical
-goals; small
-
-and adaptive video streaming~\cite{yin2015control}.
-
-energy and timeliness with approximate computing~\cite{farrell2016meantime}
-
-\para{WAN-aware:} Clarinet~\cite{viswanathan2016clarinet} a novel WAN-aware
-query optimizer. Deriving a WAN-aware QEP requires working jointly with the
-execution layer of analytics frameworks that places tasks to sites and performs
-scheduling. GDA~\cite{pu2015low} on geo-distributed data analytics, but not on
-streaming. JetStream~\cite{rabkin2014aggregation} studies streaming analytics in
-wide area network. Using structured storage for data aggregation and explicit
-degradation, it demonstrates how to achieve responsiveness in the presence of
-bandwidth fluctuation. However, JetStream didn't explore how to automatically
-synthesize the degradation strategy for each application.
-
-WAN-aware file system~\cite{muthitacharoen2001low}.
-
-Vivace~\cite{cho2012surviving} is a key-value storage system for web
+\para{WAN-aware:} Historically, researches extend systems from LAN to WAN, and
+started to address low bandwidth, such as file system over
+WAN~\cite{muthitacharoen2001low}. Then system researches focuses on a single
+cluster.  Recently we've seen a return of WAN-aware
+research. Vivace~\cite{cho2012surviving} is a key-value storage system for web
 applications that span many geographically-distributed sites; it assumes the
 ability to prioritize messages in the network. We do not assume. They are
 targeted at strong consistency and replicates, we target at streaming analytics
-that can tolerate accuracy drop.
+that can tolerate accuracy drop. GDA~\cite{pu2015low},
+Clarinet~\cite{viswanathan2016clarinet} proposes to execute queries at the data
+sites and incorporate bandwidth information into the query
+optimization. Geode~\cite{vulimiri2015global} and
+WANalytics~\cite{wanalytics2015vulimiri} focuses on batch analytics.
+\cite{heintz2015towards} discusses the complex tradeoffs involved in wide-area
+analytics. JetStream~\cite{rabkin2014aggregation} is perhaps the first work
+focuses on wide-area streaming analytics. It proposes to use aggregation and
+\textit{explicit} degradation to achieve responsiveness in the presence of
+bandwidth fluctuation.
 
-\para{Adaptive Streaming:} Argue that these are only for video viewing (not even
-video processing) and the difference. Also HLS~\cite{pantos2016http},
-DASH~\cite{michalos2012dynamic} works best with video-on-demand. For live video,
-RTMP is typically used; but suffer the accuracy drop.
+\para{Adaptive streaming protocols:} Adaptive video streaming has been a
+well-studied topic; especially in video-on-demand, we have
+HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic}. For live video, RTMP
+is typically used; but suffer the accuracy drop. Recent work also improves
+quality of user experience~\cite{yin2015control}, but these adaptive techniques
+primarily focus on human consumption. Adaptive TCP~\cite{wu2013adaptive}
+modifies the congestion control behavior in TCP based on the flow
+size. BBR~\cite{cardwell2017bbr} adapts the transmission rate to the bottleneck
+bandwidth. Goel et al.~\cite{goel2008low} proposes an adaptive buffer-size
+tuning that reduces the latency.
 
-Adaptive TCP~\cite{wu2013adaptive}. BBR~\cite{cardwell2017bbr}, low latency
-adaptive streaming ~\cite{goel2008low}.
+\para{Scheduling and allocation:} MediaNet~\cite{hicks2003user} uses both local
+and online global resource scheduling to improve user performance and network
+utilization, and adapts without requiring underlying support for resource
+reservations. VideoStorm~\cite{zhang2017live} primarily focuses on cluster
+resource allocation among video queries. For wide-area, the resource allocation
+is limited. We do not control the capacity; but still we can allocate the
+available bandwidth.
 
-\para{Scheduling:} VideoStorm~\cite{zhang2017live},
-Dolly~\cite{ananthanarayanan2013effective}.
-MediaNet~\cite{hicks2003user}. MediaNet uses both local and online global
-resource scheduling to improve user performance and network utilization, and
-adapts without requiring underlying support for resource reservations.
+%% Dolly~\cite{ananthanarayanan2013effective}.
+
 
 %% \para{Program Synthesis:}
 
