@@ -60,6 +60,13 @@ optimizing data placement if the access logs can be processed in real-time.
 \subsection{Wide-Area Bandwidth Characteristics}
 \label{sec:wide-area-bandwidth}
 
+
+\cite{hsieh17gaia} First, the WAN bandwidth between data centers is 15× smaller
+than the LAN bandwidth within a data center on average, and up to 60× smaller in
+the worst case (for Singapore and São Paulo). the scarcity and variation of the
+WAN bandwidth can significantly degrade the performance
+
+
 To understand the bandwidth characteristics in the wide-area, we conducted a
 simple measurement using Amazon EC2. We use iPerf~\cite{iperf3} to measure the
 pair-wise bandwidth between four geo-distributed sites throughout the day. We
@@ -105,9 +112,6 @@ significant errors.
 
 This motivates us to take a system-level approach that synthesize different
 adaptation strategies for different queries and contexts.
-
-\subsection{Manual Policy}
-\label{sec:manual-policy}
 
 We consider manual policies for
 adaptation. JetStream~\cite{rabkin2014aggregation} offers an example:

@@ -4,23 +4,29 @@
 We divide prior related work into stream processing systems, approximate
 analytics, WAN-aware system, adaptive streaming and scheduling.
 
-\paraf{Stream processing systems:}
-Spark-Streaming~\cite{zaharia2013discretized},
-MillWheel~\cite{akidau2013millwheel}, Storm~\cite{toshniwal2014storm}, Apache
-Flink~\cite{carbone2015apache} are systems for large-scale stream processing
-within datacenters. While they differ from each in the model of computation
-(batch vs. streaming), they primarily focus on fault-tolerance; and assume
-sufficient bandwidth among worker nodes. Our work aims at low latency across the
-wide area; once data arrive at a central location, we could use these systems
-for processing.
+\paraf{Stream processing systems:} Streaming databases, such as
+Borealis~\cite{abadi2005design},
+TelegraphCQ~\cite{chandrasekaran2003telegraphcq}, are the early academic
+explorations. They pioneered the usage of dataflow models with specialized
+operators for stream processing. Recent research projects and open-source
+systems, such as MillWheel~\cite{akidau2013millwheel},
+Storm~\cite{toshniwal2014storm}], Heron~\cite{sanjeev2015twitter}, Spark
+Streaming~\cite{zaharia2013discretized}, Apache Flink~\cite{carbone2015apache},
+primary focus on fault-tolerant streaming in the context of a single
+cluster. While our work has a large debt to the prior streaming work, \sysname{}
+is designed for the wide area and explicitly trades data fidelity for data
+freshness. In contrast, these stream processing systems often choose to throttle
+the source when backpressure happens.
 
-\para{Approximate analytics:} The idea of trading application accuracy with
-approximate has been explored elsewhere, such as database
-(BlinkDB~\cite{agarwal2013blinkdb}), real-time processing
-(MEANTIME~\cite{farrell2016meantime}), video processing
-(VideoStorm~\cite{zhang2017live}). Fully embracing the idea of resource-accuracy
-trade-off, this paper explores how to use approximate analytics in the face of
-bandwidth scarcity.
+\para{Approximate analytics:} The idea of degrading computation fidelity for
+responsiveness has also been explored in other contexts. For SQL queries, online
+aggregation~\cite{hellerstein1997online}, BlinkDB~\cite{agarwal2013blinkdb} and
+GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
+on a statistical model of SQL operators. For real-time processing,
+MEANTIME~\cite{farrell2016meantime} ??. Also for video processing,
+VideoStorm~\cite{zhang2017live}. JetStream~\cite{rabkin2014aggregation} is the
+closest to our work that studies streaming analytics in wide area and uses
+approximation to address the bandwidth scarcity.
 
 \para{WAN-aware:} Historically, researches extend systems from LAN to WAN, and
 started to address low bandwidth, such as file system over
@@ -30,16 +36,29 @@ research. Vivace~\cite{cho2012surviving} is a key-value storage system for web
 applications that span many geographically-distributed sites; it assumes the
 ability to prioritize messages in the network. We do not assume. They are
 targeted at strong consistency and replicates, we target at streaming analytics
-that can tolerate accuracy drop. GDA~\cite{pu2015low},
-Clarinet~\cite{viswanathan2016clarinet} proposes to execute queries at the data
-sites and incorporate bandwidth information into the query
-optimization. Geode~\cite{vulimiri2015global} and
+that can tolerate accuracy drop.
+
+
+ Geode~\cite{vulimiri2015global} and
 WANalytics~\cite{wanalytics2015vulimiri} focuses on batch analytics.
 \cite{heintz2015towards} discusses the complex tradeoffs involved in wide-area
 analytics. JetStream~\cite{rabkin2014aggregation} is perhaps the first work
 focuses on wide-area streaming analytics. It proposes to use aggregation and
 \textit{explicit} degradation to achieve responsiveness in the presence of
 bandwidth fluctuation.
+
+Pixida~\cite{kloudas2015pixida} a scheduler that aims to minimize data movement
+across resource constrained links.  GDA~\cite{pu2015low} minimizes latency.
+Clarinet~\cite{viswanathan2016clarinet} proposes to execute queries at the data
+sites and incorporate bandwidth information into the query optimization.
+
+Other recent work have explored low-layer optimizations to improve GDA query
+performance. Iridium [35] develops WAN-aware input data and task placement for
+two-stage MapReduce jobs. Geode [43] develops input data movement and join
+algorithm selection strategies to minimize WAN bandwidth usage.  Finally,
+Jetstream [36] proposes using adaptive filtering and local aggregation of data
+to improve latency. SWAG~\cite{hung2015scheduling} coordinates compute task
+scheduling across DCs.
 
 \para{Adaptive streaming protocols:} Adaptive video streaming has been a
 well-studied topic; especially in video-on-demand, we have
