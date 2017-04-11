@@ -1,8 +1,15 @@
 \section{Related Work}
 \label{sec:related-work}
 
-We divide prior related work into stream processing systems, approximate
-analytics, WAN-aware system, adaptive streaming and scheduling.
+The works most closely related to \sysname{}'s problem is
+JetStream~\cite{rabkin2014aggregation}. Both works focus on wide-area streaming
+analytics. JetStream proposes to use aggregation and \textit{explicit}
+degradation to achieve responsiveness in the presence of bandwidth fluctuation.
+We've discussed the drawbacks with the manual degradation policies.
+
+We divide other related works into stream processing systems, approximate
+analytics, WAN-aware systems, adaptive streaming protocols and resource
+allocation.
 
 \paraf{Stream processing systems:} Streaming databases, such as
 Borealis~\cite{abadi2005design},
@@ -24,41 +31,29 @@ aggregation~\cite{hellerstein1997online}, BlinkDB~\cite{agarwal2013blinkdb} and
 GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
 on a statistical model of SQL operators. For real-time processing,
 MEANTIME~\cite{farrell2016meantime} ??. Also for video processing,
-VideoStorm~\cite{zhang2017live}. JetStream~\cite{rabkin2014aggregation} is the
-closest to our work that studies streaming analytics in wide area and uses
-approximation to address the bandwidth scarcity.
+VideoStorm~\cite{zhang2017live}.
 
-\para{WAN-aware:} Historically, researches extend systems from LAN to WAN, and
-started to address low bandwidth, such as file system over
-WAN~\cite{muthitacharoen2001low}. Then system researches focuses on a single
-cluster.  Recently we've seen a return of WAN-aware
-research. Vivace~\cite{cho2012surviving} is a key-value storage system for web
-applications that span many geographically-distributed sites; it assumes the
-ability to prioritize messages in the network. We do not assume. They are
-targeted at strong consistency and replicates, we target at streaming analytics
-that can tolerate accuracy drop.
+\para{WAN-aware systems:} There has been recent interest in designing
+geo-distributed across multiple data centers. Much of the challenge is around
+the high latency and limited bandwidth. Some of them assume certain capabilities
+of the wide network, for example, Vivace~\cite{cho2012surviving} is a key-value
+storage system but assumes the ability to prioritize messages. Others mainly
+optimize systems with the awareness of the wide
+area. LBFS~\cite{muthitacharoen2001low} is a network file system that exploits
+similarities between files or versions of the same file to save bandwidth across
+the wide-area.  Pixida~\cite{kloudas2015pixida} a scheduler that aims to
+minimize data movement across resource constrained links.
+Iridium~\cite{pu2015low} reduces the latency for MapReduce jobs by optimizing
+data and task placement. Clarinet~\cite{viswanathan2016clarinet} incorporate
+wide-area bandwidth information into the query
+optimization. Geode~\cite{vulimiri2015global} develops input data movement and
+join algorithm selection strategies to minimize WAN bandwidth
+usage. WANalytics~\cite{vulimiri2015wananlytics} focuses on batch
+analytics. SWAG~\cite{hung2015scheduling} coordinates compute task scheduling
+across DCs. We focus on streaming analytics.
 
-
- Geode~\cite{vulimiri2015global} and
-WANalytics~\cite{wanalytics2015vulimiri} focuses on batch analytics.
-\cite{heintz2015towards} discusses the complex tradeoffs involved in wide-area
-analytics. JetStream~\cite{rabkin2014aggregation} is perhaps the first work
-focuses on wide-area streaming analytics. It proposes to use aggregation and
-\textit{explicit} degradation to achieve responsiveness in the presence of
-bandwidth fluctuation.
-
-Pixida~\cite{kloudas2015pixida} a scheduler that aims to minimize data movement
-across resource constrained links.  GDA~\cite{pu2015low} minimizes latency.
-Clarinet~\cite{viswanathan2016clarinet} proposes to execute queries at the data
-sites and incorporate bandwidth information into the query optimization.
-
-Other recent work have explored low-layer optimizations to improve GDA query
-performance. Iridium [35] develops WAN-aware input data and task placement for
-two-stage MapReduce jobs. Geode [43] develops input data movement and join
-algorithm selection strategies to minimize WAN bandwidth usage.  Finally,
-Jetstream [36] proposes using adaptive filtering and local aggregation of data
-to improve latency. SWAG~\cite{hung2015scheduling} coordinates compute task
-scheduling across DCs.
+%% \cite{heintz2015towards} discusses the complex tradeoffs involved in
+%% wide-area analytics.
 
 \para{Adaptive streaming protocols:} Adaptive video streaming has been a
 well-studied topic; especially in video-on-demand, we have
