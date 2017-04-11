@@ -1,15 +1,17 @@
 \section{\sysname{}}
 \label{sec:system}
 
-In contrast to existing approaches that require developers to specify the
-concrete policies, \sysname{} uses a special operator \texttt{maybe} to express
-structured adaptation. The specifications are hints on potential operations
-without exact quantifications. \sysname{} then automatically learns concrete
-degradation strategies (the profile) using profiling data (either offline or
-online) and controls the application execution at runtime. The profiles also
-have additional benefits such as coordination among competing streaming
-flows. \autoref{fig:overview} provides an overview of the systems (in three
-stages) and we describe each stage in turn.
+In contrast to existing application-specific approaches or manual policies,
+\sysname{} integrates structured adaptation as a first-class
+abstraction. Developers embed data degradation operations with \maybe{} APIs
+along with other stream processing operations. Our APIs do not require
+developers to specify exact quantification. Instead, \sysname{} automatically
+learns the concrete profile empirically, either at offline or online. At
+runtime, structured adaptation allows a fine-grained control to achieve low
+latency and high accuracy simultaneously. The profiles also have additional
+benefits such as resource allocation and multitask
+coordination. \autoref{fig:overview} provides an overview of the systems (in
+three stages) and we describe each stage in turn.
 
 \begin{figure}
   \centering

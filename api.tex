@@ -14,7 +14,7 @@ developers can provide objects that implement a callable interface. Such objects
 can be used to hold application states.
 
 \begin{table*}
-  \footnotesize
+  \small
   \centering
   \begin{tabular}{ c r l }
     \toprule
@@ -54,9 +54,10 @@ values with type $T$ that encodes possible levels of degradation. The function
 performs the actual operation. By default, the function needs to satisfy the
 type constrain: $f(T, I) \Rightarrow I$. That is, only operations that does not
 alter the type of the data stream are allowed. In this way, downstream operators
-can work without the need to know if the degradation is in effect or not. A
-relaxed version, \texttt{maybe\_with\_default}, exists for flexibility; but care
-should be taken to use.
+can work without the need to know if the degradation is in effect or not.
+\todo{Relaxed version necessary?} A relaxed version,
+\texttt{maybe\_map}, exists for flexibility; but care should be taken
+to use.
 
 We illustrate the idea of \texttt{maybe} operator with an example that quantizes
 a stream of integers in the Rust programming language. One possible
@@ -79,14 +80,14 @@ If the stream is subsequently encoded (e.g. run-length encoding as in
 JPEG~\cite{wallace1992jpeg}) for transmission, the data size will change
 according to the level of degradation.
 
-Based on the \texttt{maybe} primitive, one can implement wrappers for common
-degradation operations. For example, \texttt{maybe\_skip} will optionally
-subsample a stream; and \texttt{maybe\_downsample} can adjust the image
-resolution to a configured target. \sysname{} provides a few such operations as
-libraries for developers.
+Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
+operations for common data types. For instance, \texttt{maybe\_skip} will
+optionally subsample a stream; and \texttt{maybe\_downsample} can adjust the
+image resolution to a configured target. \sysname{} provides a few such
+operations as libraries for developers (\autoref{tab:operators}).
 
-Using our APIs, the example mentioned in \autoref{sec:manual-policy} can now be
-implemented as follows:
+Using our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
+can now be implemented as follows:
 
 \vspace{-2pt}
 \begin{lstlisting}[caption={Video Processing Example}, label={lst:ex}]
