@@ -55,9 +55,8 @@ performs the actual operation. By default, the function needs to satisfy the
 type constrain: $f(T, I) \Rightarrow I$. That is, only operations that does not
 alter the type of the data stream are allowed. In this way, downstream operators
 can work without the need to know if the degradation is in effect or not.
-\todo{Relaxed version necessary?} A relaxed version,
-\texttt{maybe\_map}, exists for flexibility; but care should be taken
-to use.
+\todo{Is the relaxed version necessary?} A relaxed version, \texttt{maybe\_map},
+exists for flexibility; but care should be taken to use.
 
 We illustrate the idea of \texttt{maybe} operator with an example that quantizes
 a stream of integers in the Rust programming language. One possible

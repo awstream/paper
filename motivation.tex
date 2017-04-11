@@ -12,7 +12,7 @@
   \caption{Application-specific optimizations don't generalize. Adaptations
     designed for stationary cameras will work poorly for mobile cameras. The
     accuracy here is defined as F1 score~\cite{Rijsbergen:1979:IR:539927} for
-    all detections. A detection is successful when the intersection over union
+    all detection. A detection is successful when the intersection over union
     (IOU) is larger than 50\%~\cite{everingham2010pascal}.}
   \label{fig:app-specific}
 \end{figure*}
@@ -39,23 +39,23 @@ interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}.
 
 \para{High-frequency IoT Sensors:} Traditionally, environmental sensors are slow
 and not data-intensive~\cite{atzori2010internet}. Increasingly, high-frequency,
-high-precision sensors are being deployed. For example, the uPMUs monitor the
+high-precision sensors are being deployed. For example, uPMUs monitor the
 electrical grid with a network of 1000 devices; each produces 12 streams of 120
 Hz high-precision values accurate to 100 ns. This amounts to 1.4 million points
-per second that requires specialized timeseries
+per second that requires specialized time-series
 database~\cite{andersen2016btrdb}.
 
 \para{Industrial Monitoring:} Large organizations today are managing 10--100s of
-datacenters (DCs) and edge clusters worldwide~\cite{calder2013mapping}. While
+data centers (DCs) and edge clusters worldwide~\cite{calder2013mapping}. While
 most log analysis today runs in a batch mode and on a daily basis, there is
 trend in analyzing logs in real-time for quicker optimization. For example, a
 content distribution network (CDN) can improve the overall efficiency by
 optimizing data placement if the access logs can be processed in real-time.
 
 % We consider the practical issues with deploying these applications in the
-% wide-area. Our stand is that these applications face a bigger network challenge.
-% Data generated from the edge often fail to be delivered to the the processing
-% site because of the scarce and variable bandwidth capacity in the
+% wide-area. Our stand is that these applications face a bigger network
+% challenge.  Data generated from the edge often fail to be delivered to the
+% processing site because of the scarce and variable bandwidth capacity in the
 % wide-area. Once they arrive, existing stream processing systems can easily
 % manage a large cluster and perform data analytics at real-time.
 
@@ -64,20 +64,21 @@ optimizing data placement if the access logs can be processed in real-time.
 
 Recent work on WAN-aware systems have all demonstrated the insufficiency and
 cost nature of wide area bandwidth~\cite{pu2015low, vulimiri2015global}. Figure
-2 in Gaia~\cite{hsieh17gaia} shows that the WAN bandwidth is 15x smaller than
-the LAN bandwidth on average, and up to 60x smaller in the worst case.
+2 in Gaia~\cite{hsieh17gaia} shows that the WAN bandwidth capacity is 15x
+smaller than the LAN bandwidth on average, and up to 60x smaller in the worst
+case.
 
 In addition to the scarcity, WAN bandwidth also has great variability. We
 conducted a day-long measurements using iPerf~\cite{iperf3} to measure the
 pair-wise bandwidth between four Amazon EC2 sites. We observed large variance in
 the measured bandwidth and one such pair of sites is shown
-in~\autoref{fig:bw}. There exist occasions when the available bandwidth is
-almost halved.
+in~\autoref{fig:bw}. There are occasions that available bandwidth is below 25\%
+of the maximum bandwidth.
 
-The back-haul links between EC2 sites are better (if not at least
-representative) in comparison to the general wide-area links. Similar variations
-have also been reported in wireless network~\cite{biswas2015large}, ISP
-network~\cite{grover2013peeking} and cellular
+The back-haul links between EC2 sites are better---if not at least
+representative---in comparison to the general wide area links. Similar
+variations have also been reported in wireless network~\cite{biswas2015large},
+ISP network~\cite{grover2013peeking} and cellular
 network~\cite{nikravesh2014mobile}. The scarce and varying nature poses real
 challenge to the realization and successful deployment of wide-area streaming
 applications.
@@ -129,7 +130,7 @@ in a larger P-frame size.
 %% \autoref{fig:h264} illustrates this complex relationship with an example of
 %% H.264 encoding under four different frame rates.
 
-The specification is not scalable. The strawman solution quickly leads to too
+The specification is not scalable. The straw-man solution quickly leads to too
 many policies when multiple dimensions are involved or a fine-grained control is
 desired. Writing many policies is tedious and error-prone.
 
