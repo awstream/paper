@@ -98,6 +98,19 @@ operators makes it easy to integrate with existing stream processing systems.
 We name our approach \textit{structured adaptation} to contrast from existing
 adaptations with ad-hoc policies.
 
+
+\sysname{} uses a data-driven approach to automatically build application
+performance profiles with minimal developer efforts. The profiles accurately
+capture the relationship between application accuracy and bandwidth consumption
+under different combinations of data degradation operations. We use an offline
+process to bootstrap our system with developer-supplied training data, and
+continuously refine the profiles online to handle potential model drifts. We
+exploit parallelism and partial profiling to efficiently explore the
+configuration space and learn a Pareto-optimal adaptation strategy.
+
+
+
+
 \sysname{} then uses a data-driven approach to learn the application performance
 for different levels of degradation. The combination of all \maybe{} operators
 form a \textit{configuration} that affects bandwidth demand and application
