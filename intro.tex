@@ -106,23 +106,18 @@ bandwidth to reduce WAN cost or allocate bandwidth among competing tasks for
 utility-fairness, i.e. maximizing the minimal accuracy.
 
 To evaluate \sysname{}, we've built three streaming applications: pedestrian
-detection (PD), augmented reality (AR) and a distributed Top-K (TK) analysis. We
-use real-world data (existing or collected) to evaluate these applications for
-the profiling and runtime systems. The evaluation results and our contributions
-are summarized as follows:
-
-To evaluate \sysname{}, we've built three streaming applications: pedestrian
 detection (PD), augmented reality (AR) and a distributed Top-K (TK). We use
 real-world data to profile these applications and evaluate their runtime
-performance with a controlled experiments. Our contributions and evaluation
-results are summarized as follows:
+performance with controlled experiments using geo-distributed
+infrastructure. Our contributions and evaluation results are summarized as
+follows:
 
 \begin{itemize}[leftmargin=16pt]
 
 \item We propose to incorporate structured adaptation as a first-class citizen
-  in stream processing model. Such a programming abstraction is simple, modular
-  and extensible. We implement SA in \sysname{} and evaluate the idea with three
-  real-world applications.
+  in the stream processing model. Such a programming abstraction is simple,
+  modular and extensible. We implement SA in \sysname{} and evaluate the idea
+  with three real-world applications.
 
 \item Our profiler learns an accurate and precise profile for each
   application. We show that parallelism and partial profiling can speed up the
