@@ -1,41 +1,37 @@
 \section{Introduction}
 
 %% Background
-In this paper, we study streaming analytics in the wide area, where the data
-generating sites are different from data processing sites. Such data is most
-valuable if we can transport, distill and analyze in real time. For example, a
-content distribution network (CDN) analyzes the logs from geo-distributed
-infrastructure to optimize content placement. Recently, the emerging class of
-Internet of Things (IoT) applications makes the wide-area streaming analytical
-workload even more important. Large cities such as New York, Beijing and Seattle
-have deployed millions of cameras for traffic
-control~\cite{london.surveillance,skynet}. Our buildings are increasingly
+Wide-area streaming analytics are becoming pervasive, especially with the
+emerging class of Internet of Things (IoT) applications.  Large cities such as
+London and Beijing have deployed millions of cameras for surveillance and
+traffic control~\cite{london.surveillance, skynet}. Buildings are increasingly
 equipped with a wide variety of sensors to improve building energy use, occupant
-comfort, reliability and maintenance~\cite{krioukov2012building}.
+comfort, reliability and
+maintenance~\cite{krioukov2012building}. Geo-distributed infrastructure, such as
+content delivery network (CDN) analyzes user requests from machine logs over the
+globe~\cite{mukerjee2015practical}. These applications need to transport,
+distill and analyze streams of data in real time.
 
-While existing stream processing systems, such as Spark
-Streaming~\cite{zaharia2013discretized}, and specialized analytical engines,
-such as VideoStorm~\cite{zhang2017live}, are capable of handling large streams
-of data, they are designed to work within a single cluster. Within a single
-cluster, there is sufficient bandwidth between worker nodes; in contrast the
-wide area has scarce and variable bandwidth~\cite{hsieh17gaia,
-  vulimiri2015global}. Back-hauling all the data across the wide-area is neither
-viable nor efficient. The growth of the wide-area bandwidth has been
-decelerating for many years~\cite{global2016telegeography} while the traffic
-grows at a staggering rate~\cite{index2013zettabyte}. On the efficiency side,
-raw data often contains large and less relevant details that can be aggregated,
-pruned or compressed~\cite{rabkin2014aggregation}.
+While existing stream processing systems and specialized analytical engines,
+such as Spark Streaming~\cite{zaharia2013discretized} and
+VideoStorm~\cite{zhang2017live}, are capable of handling large streams of data,
+they are designed to work inside a high-bandwidth network, such as a single data
+center (DC). The bandwidth across the wide-area is significantly
+limited~\cite{hsieh17gaia, vulimiri2015global}. Recent studies show that the
+growth of the WAN bandwidth has been decelerating for many
+years~\cite{global2016telegeography} while traffic demands grows at a staggering
+rate~\cite{index2013zettabyte}.
 
-Pushing computations towards the edge is a key techinque to reduce bandwidth
-requirement in recent WAN-aware systems~\cite{satyanarayanan2009case,
-  rabkin2014aggregation, pu2015low}. However, communications are not entirely
-avoidable for the following reasons: (i) the analytics require joining or
-aggregating data from multiple geo-distributed
-sites~\cite{viswanathan2016clarinet}; (ii) the edge can benefit significantly
-from central computing resources such as GPU or TPU~\cite{norm2016google} in the
-cloud; (iii) end-devices, such as cameras or mobile devices, also suffer from
-the bandwidth in the last-hop wireless link~\cite{zhang2015design,
-  abari2017enabling}.
+Back-hauling all the data is not only impractical, but also inefficient. Recent
+works on WAN-aware systems promote pushing computations towards the
+edge~\cite{satyanarayanan2009case, rabkin2014aggregation, pu2015low}. However,
+communications are not entirely avoidable for the following reasons: (i) some
+analytics require joining or aggregating data from multiple geo-distributed
+sites~\cite{pu2015low, viswanathan2016clarinet}; (ii) the edge benefits
+significantly from central computing resources such as GPU or
+TPU~\cite{norm2016google} in the cloud; (iii) end-devices such as cameras or
+mobile devices suffer from the bandwidth in last-hop wireless
+links~\cite{zhang2015design, abari2017enabling}.
 
 % could improve efficiency (such as GDA pushes queries out; cloudlet
 % etc). However, we still need data transmission for cloud off-loading or
@@ -54,52 +50,43 @@ decision within the design space of data freshness and data fidelity
   \vspace{-1em}
 \end{figure}
 
-(i) Existing transport protocols often choose one extreme point in the design
-space. Building applications with TCP ensures a reliable delivery of the data
-but the backlogged data will increase application latency. Building applications
-with UDP minimizes latency by sending packets as fast as possible, but the
-uncontrolled packet loss along the network may devastate the application.
+Widely-used protocols often work at one extreme point in the design space. TCP
+ensures a reliable data delivery but the backlogged data increases application
+latency. UDP minimizes the latency by sending packets as fast as possible, but
+uncontrolled packet loss devastates application behavior.
 
-(ii) Manual policies, such as sampling, can trade data fidelity for
-freshness~\cite{rabkin2014aggregation}. However, these policies are often
-developer heuristics without measurements backing up. An accurate policy often
-requires extensive developer efforts or domain expertise. Inaccurate policies,
-in practice, provide sub-optimal performance in both freshness and fidelity.
+Manual policies, such as sampling~\cite{rabkin2014aggregation}, allows
+developers to trade data fidelity for freshness. But it's non-trivial to write
+accurate policies. In practice, these policies are developer heuristics without
+measurements backing up, leading to sub-optimal performance for both freshness
+and fidelity.
 
-(iii) Application-specific optimizations do not generalize. One trade-off
-strategy designed to work well for one application under one condition renders
-sub-optimal performances when the scenario changes. For example, video streaming
-delivers videos for human consumption and focuses on Quality of Experience
-(QoE)~\cite{yin2015control}. As a consequence, optimal adaptations favor
-smoothness over image quality, i.e., 25 frames per second (FPS) or higher. Such
-strategies fail to explore adaptations with a smaller FPS for machine-based
-video analytics.
+Application-specific optimizations do not generalize. While developers may tune
+policies or algorithms for a specific application, these solutions will work
+poorly when the application goal or data distribution changes. Video streaming,
+for example, has primarily focused on improving quality of experience
+(QoE)~\cite{yin2015control}. Because humans favor smoothness over image quality,
+video streaming maintains a high frame rate, e.g. 25FPS. Such a restriction is
+unnecessary for machine-based video processing.
 
-In this paper, we present \sysname{}, the first stream processing system for the
-wide area that addresses the bandwidth limitations with a system-level
-solution. At the core, \sysname{} integrates application adaptation as a
-first-class abstraction within the stream processing model and allows an
-accurate trade-off exploration between data fidelity and freshness.
+To address the bandwidth limitations from a system level, we propose to augment
+existing stream processing models with \textit{structured
+  adaptation~(SA)}. Instead of developers writing manual policies or tuning
+individual applications, SA defines a set of operators that does not need to be
+exact, and synthesizes an accurate policy (profile) automatically. In this
+paper, we present the design and evaluation of \sysname{} that achieves SA.
 
-We propose an \maybe{} operator as part of the stream processing
-application. \maybe{} takes a list of values as a knob and a function that
-transforms an input stream into a degraded stream. Our APIs offer a number of
-advantages over existing approaches. (i) Developers are not assume to be experts
-in the application domain. Instead of writing exact policies, developers only
-need to hint at potential operations. For example, while a developer may not
-understand how downsampling the video affects either data rate or object
-detection accuracy, she can express the downsample operation with a few
-resolution options using \maybe APIs. (ii) \sysname{}'s APIs are modular and
-extensible. Custom functions from external libraries be embedded inside the
-operator. We can also specialize the basic operator by providing degradation
-functions for common data types, such as \texttt{maybe\_head} for a list or
-\texttt{maybe\_downsample} for images.  (iii) The similarity with other
-operators makes it easy to integrate with existing stream processing systems.
-We name our approach \textit{structured adaptation} to contrast from existing
-adaptations with ad-hoc policies.
+In \sysname{}, along with normal stream processing operators, we add a set of
+\maybe{} operators. The basic form takes a list of values as a knob and a
+function that degrades the input stream. We also provide a library of
+specialized operators for common data types, such as \texttt{maybe\_downsample}
+for images.  Our APIs are simple, modular and extensible. Developers do not need
+to be an expert in the application domain as the knobs tolerate approximate
+specifications. Multiple operators can be chained to form a configuration that
+affects the adaptation jointly. Arbitrary functions, including external
+libraries can be embedded with the operator.
 
-
-\sysname{} uses a data-driven approach to automatically build application
+\sysname{} then uses a data-driven approach to automatically build application
 performance profiles with minimal developer efforts. The profiles accurately
 capture the relationship between application accuracy and bandwidth consumption
 under different combinations of data degradation operations. We use an offline
@@ -108,28 +95,15 @@ continuously refine the profiles online to handle potential model drifts. We
 exploit parallelism and partial profiling to efficiently explore the
 configuration space and learn a Pareto-optimal adaptation strategy.
 
-
-
-
-\sysname{} then uses a data-driven approach to learn the application performance
-for different levels of degradation. The combination of all \maybe{} operators
-form a \textit{configuration} that affects bandwidth demand and application
-accuracy. By profiling with representative training data and an
-application-specific accuracy function, \sysname{} explores the configuration
-space automatically to learn a Pareto-optimal adaptation strategy. The strategy,
-or \textit{profile}, contains configurations that can achieve the highest
-accuracy for a given bandwidth constrain. We support both offline and online
-profiling; and speed up using a number of techniques, such as parallelism and
-reduce the profiling workload with partial profiling.
-
-At runtime, \sysname{} monitors the application execution and adapt the
-application execution such that the application's data rate matches the
-available bandwidth. Because the learned profile consists of discrete
-configurations, the level of data rate changes may be coarse. We propose a novel
-probe-based control for fine-grain bandwidth estimation. When multiple streams
-share the same bottle-neck link, the learned profiles can be used for allocating
-bandwidth resources. While existing systems can only achieve bandwidth-fairness,
-\sysname{} supports utility-fairness that maximizes the minimal accuracy.
+At runtime, \sysname{} achieves low latency by matching data rate to available
+bandwidth, and high accuracy by using the Pareto-optimal configuration from the
+profile. Upon network congesting, our rate adaptation algorithm increases the
+degradation level such that no persistent queue builds up. To recover, it probes
+for more bandwidth in a fine-grain manner and decreases the degradation level
+progressively. The runtime can control application behaviors based on the
+profile in other ways. For instance, developers can limit the maximum allowed
+bandwidth to reduce WAN cost or allocate bandwidth among competing tasks for
+utility-fairness, i.e. maximizing the minimal accuracy.
 
 To evaluate \sysname{}, we've built three streaming applications: pedestrian
 detection (PD), augmented reality (AR) and a distributed Top-K (TK) analysis. We
@@ -137,21 +111,27 @@ use real-world data (existing or collected) to evaluate these applications for
 the profiling and runtime systems. The evaluation results and our contributions
 are summarized as follows:
 
+To evaluate \sysname{}, we've built three streaming applications: pedestrian
+detection (PD), augmented reality (AR) and a distributed Top-K (TK). We use
+real-world data to profile these applications and evaluate their runtime
+performance with a controlled experiments. Our contributions and evaluation
+results are summarized as follows:
+
 \begin{itemize}[leftmargin=16pt]
-\item We design and implement \sysname{}, the first stream processing system
-  that simultaneously achieves low latency and high accuracy. We build three
-  real-world applications and evaluate the performance extensively.
-\item We propose to integrate adaptation as a first-class abstraction in stream
-  processing. Such a programming abstraction requires minimal developer efforts,
-  is extensible and allows easy integration with existing frameworks.
-\item We employ a data-driven approach to learn an accurate and precise profile
-  both at offline and online. To allow an efficient profiling without losing
-  generality, we evaluate the potential speed ups with parallelism and partial
-  profiling.
-\item We demonstrate the profile allows the runtime to adapt application
-  execution to match available bandwidth, achieving low latency while
-  maintaining high accuracy. In our experiments, \sysname{} applications achieve
-  sub-second latency with nominal accuracy drop.
+
+\item We propose to incorporate structured adaptation as a first-class citizen
+  in stream processing model. Such a programming abstraction is simple, modular
+  and extensible. We implement SA in \sysname{} and evaluate the idea with three
+  real-world applications.
+
+\item Our profiler learns an accurate and precise profile for each
+  application. We show that parallelism and partial profiling can speed up the
+  profiling substantially, up to 29X and 8X respectively.
+
+\item Our runtime achieves low latency and high accuracy simultaneously for all
+  applications: sub-second latency and 5\% accuracy drop for video analytics,
+  4-second latency and 6\% accuracy drop for TK.
+
 \end{itemize}
 
 %%% Local Variables:
