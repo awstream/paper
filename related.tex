@@ -60,14 +60,14 @@ across DCs. We focus on streaming analytics.
 
 \para{Adaptive streaming protocols:} Adaptive video streaming has been a
 well-studied topic; especially in video-on-demand, we have
-HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic}. For live video, RTMP
-is typically used; but suffer the accuracy drop. Recent work also improves
-quality of user experience~\cite{yin2015control}, but these adaptive techniques
-primarily focus on human consumption. Adaptive TCP~\cite{wu2013adaptive}
-modifies the congestion control behavior in TCP based on the flow
-size. BBR~\cite{cardwell2017bbr} adapts the transmission rate to the bottleneck
-bandwidth. Goel et al.~\cite{goel2008low} proposes an adaptive buffer-size
-tuning that reduces the latency.
+HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg, michalos2012dynamic}. For
+live video, RTMP is typically used; but suffer the accuracy drop. Recent work
+also improves quality of user experience~\cite{yin2015control}, but these
+adaptive techniques primarily focus on human consumption. Adaptive
+TCP~\cite{wu2013adaptive} modifies the congestion control behavior in TCP based
+on the flow size. BBR~\cite{cardwell2017bbr} adapts the transmission rate to the
+bottleneck bandwidth. Goel et al.~\cite{goel2008low} proposes an adaptive
+buffer-size tuning that reduces the latency.
 
 \para{Scheduling and allocation:} MediaNet~\cite{hicks2003user} uses both local
 and online global resource scheduling to improve user performance and network
