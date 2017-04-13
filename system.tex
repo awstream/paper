@@ -1,17 +1,14 @@
 \section{\sysname{} Design}
 \label{sec:system}
 
-In contrast to existing application-specific approaches or manual policies,
-\sysname{} integrates structured adaptation as a first-class
-abstraction. Developers embed data degradation operations with \maybe{} APIs
-along with other stream processing operations. Our APIs do not require
-developers to specify exact quantification. Instead, \sysname{} automatically
-learns the concrete profile empirically, either at offline or online. At
-runtime, structured adaptation allows a fine-grained control to achieve low
-latency and high accuracy simultaneously. The profiles also have additional
-benefits such as resource allocation and multitask
-coordination. \autoref{fig:overview} provides an overview of the systems (in
-three stages) and we describe each stage in turn.
+\sysname{} avoids the problems with manual policies or application-specific
+solutions by structuring adaptation as a set of approximate, modular and
+extensible specifications, or APIs. The well-defined structure allows us to
+build a generic profiling tool that learns an accurate relationship (the
+profile) between bandwidth consumption and application accuracy. The accurate
+profile then allows us to build a reactive runtime that achieves low latency and
+high accuracy in the face of bandwidth variation. \autoref{fig:overview} shows
+the high-level design of \sysname{} and we then discuss each stage in turn.
 
 \begin{figure}
   \centering

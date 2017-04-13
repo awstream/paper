@@ -128,40 +128,6 @@ durign the online profiling. We use the profiling time measure collected during
 the offline profiling to schedule the assignment. With LPT assignment, the
 overhead is reduced to 1.75X with 30 GPUs.
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[t]{0.48\columnwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/online1.pdf}
-    \caption{Offline only}
-    \label{fig:offline}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\columnwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/online2.pdf}
-    \caption{Online (continuous)}
-    \label{fig:online}
-  \end{subfigure}
-  \\
-  \vspace{1.5em}
-  \begin{subfigure}[t]{0.48\columnwidth}
-    \includegraphics[width=\textwidth]{figures/online3.pdf}
-    \caption{Online (partial)}
-    \label{fig:online-partial}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.48\columnwidth}
-    \includegraphics[width=\textwidth]{figures/online4.pdf}
-    \caption{Online (trigger)}
-    \label{fig:online-trigger}
-  \end{subfigure}
-  \caption{The bandwidth estimation of various profiling schemes. The horizontal
-    reference line is 11 mbps, the target bandwidth. We omit the accuracy
-    prediction since all schemes are similarly high (~90\%).}
-  \label{fig:online-tricks}
-\end{figure}
-
 \para{Partial and trigger-based online profiling.} Before we evaluate these two
 schemes, we validate the \textit{model drift} issue with real-world data. We use
 the profile trained over a video clip of the office environment. Suppose there
@@ -204,6 +170,41 @@ further reduce the profiling overhead. For example, scheduling five GPUs running
 5 configurations continuously to check for model drift will reduce the overhead
 to almost 1X. How much resource to use will depend on the budget and the
 importance of the job.
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/online1.pdf}
+    \caption{Offline only}
+    \label{fig:offline}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/online2.pdf}
+    \caption{Online (continuous)}
+    \label{fig:online}
+  \end{subfigure}
+  \\
+  \vspace{1.5em}
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \includegraphics[width=\textwidth]{figures/online3.pdf}
+    \caption{Online (partial)}
+    \label{fig:online-partial}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\columnwidth}
+    \includegraphics[width=\textwidth]{figures/online4.pdf}
+    \caption{Online (trigger)}
+    \label{fig:online-trigger}
+  \end{subfigure}
+  \caption{The bandwidth estimation of various profiling schemes. The horizontal
+    reference line is 11 mbps, the target bandwidth. We omit the accuracy
+    prediction since all schemes are similarly high (~90\%).}
+  \label{fig:online-tricks}
+\end{figure}
 
 %% Offline: 0
 %% Online: 1 frame (1852.21 GPU * seconds)

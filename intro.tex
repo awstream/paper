@@ -74,17 +74,18 @@ existing stream processing models with \textit{structured
   adaptation~(SA)}. Instead of developers writing manual policies or tuning
 individual applications, SA defines a set of operators that tolerate approximate
 specifications, and synthesizes an accurate policy (profile) automatically. In
-this paper, we present the design and evaluation of \sysname{} that achieves SA.
+this paper, we present the design and evaluation of \sysname{} that implements
+SA.
 
-In \sysname{}, along with normal stream processing operators, we add \maybe{}
-operator. The basic form takes a list of values as a knob and a function that
-degrades the input stream. We extend the basic form with a library of
-specialized operators for common data types, such as \texttt{maybe\_downsample}
-for images.  Our APIs are simple, modular and extensible. Developers do not need
-to be an expert in the application domain as the knobs tolerate approximate
-specifications. Multiple operators can be chained to form a configuration that
-affects the adaptation jointly. Arbitrary functions including external libraries
-can be embedded with our operators.
+Along with with normal stream processing operators, \sysname{} has a new
+\maybe{} operator, whose basic form takes a list of values as a knob and a
+function that degrades the input stream. We extend the basic form with a library
+of specialized operators for common data types, such as
+\texttt{maybe\_downsample} for images.  Our APIs are simple, modular and
+extensible. Developers do not need to be an expert in the application domain as
+the knobs tolerate approximate specifications. Multiple operators can be chained
+to form a configuration that affects the adaptation jointly. Arbitrary functions
+including external libraries can be embedded with our operators.
 
 \sysname{} then uses a data-driven approach to automatically build application
 performance profiles with minimal developer efforts. The profiles accurately

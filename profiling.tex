@@ -1,28 +1,29 @@
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}
 
-The goal of the profiling is to learn how different levels of degradation
-affects the bandwidth demand and application accuracy. By exploring this
-trade-off space, \sysname{} generates a Pareto-optimal \textit{profile} for each
-application. We formulate the profiling and discuss the designs for offline and
-online profiling.
+With structured adaptation, \sysname{} automatically learns an application
+profile from \maybe{} operators. The profile accurately captures the
+relationship between application accuracy and bandwidth consumption under
+different combinations of data degradation operations. We describe the
+formalism, followed by techniques that efficiently perform offline and online
+profiling.
 
-\para{Profiling formalism:} Suppose in a stream processing application that $n$
-\maybe{} operators are used. Each introduces a knob $k_i$. We assume these
-operators are independent from each other; their combination forms a
-\textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all possible
-configurations $\mathbb{C}$ is the space that our profiling system needs to
-explore. For each configuration $c$, there are two mappings that our system
-needs to explore: a mapping from $c$ to its bandwidth requirement $B(c)$ and its
-accuracy measure $A(c)$. \autoref{tab:notations} summarizes the symbols used in
-this paper.
+\para{Profiling formalism:} Suppose a stream processing application has $n$
+\maybe{} operators. Each operator introduces a knob $k_i$ and their combination
+forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
+possible configurations $\mathbb{C}$ is the space that the profiling
+explores. For each configuration $c$, there are two mappings that are of
+particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
+its accuracy measure $A(c)$. \autoref{tab:notations} summarizes notations used
+in this paper.
 
-The Pareto-optimal set $\mathbb{P}$ is then defined (\autoref{eq:pareto}): for
-all $c \in \mathbb{P}$, there is no alternative configuration $c'$ that requires
-less bandwidth while giving a higher accuracy.
+The Pareto-optimal set $\mathbb{P}$ is defined as \autoref{eq:pareto}: it's the
+set of all $c$ such that there is no alternative configuration $c'$ that
+requires less bandwidth while giving a higher accuracy.
 
 {\small
-\begin{equation}
+  \vspace{-1em}
+  \begin{equation}
   \mathbb{P} = \{ c \in \mathbb{C} : \{ c' \in \mathbb{C}: B(c') < B(c),
   A(c') > A(c) \} = \varnothing\}
   \label{eq:pareto}
@@ -43,75 +44,67 @@ less bandwidth while giving a higher accuracy.
     \midrule
     $B(c)$ & bandwidth requirement for $c$ \\
     $A(c)$ & accuracy measure for $c$ \\
-    $\mathbb{P}$ & Pareto efficienct set \\
+    $\mathbb{P}$ & Pareto-optimal set \\
+    \midrule
+    $t(c)$ & offline processing time for $c$ \\
     \bottomrule
   \end{tabular}
   \caption{Notations used in this paper.}
   \label{tab:notations}
 \end{table}
 
-Since there is often no closed form relation for $B(c)$ and $A(c)$, our system
-takes a data-driven approach: with a representative training dataset and an
-application-specific utility function, our system evaluates each configuration
-for its bandwidth and accuracy. The accuracy can either be measured against the
-groundtruth; or in the case when labelled dataset is not available, \sysname{}
-uses the results when all degradations are turned off as the reference. We will
-discuss concrete knobs, configurations, $B(c)$ and $A(c)$ when we present the
-example applications in \autoref{sec:build-appl}.
+\sysname{} targets at using arbitrary functions as the degradation
+functions. Instead of assuming a closed-form relation for $B(c)$ and $A(c)$,
+\sysname{} takes a data-driven approach: profiling applications with
+developer-supplied training data.  We measure $B(c)$ at the point of
+transmission. The accuracy $A(c)$ is measured either against the groundtruth, or
+the reference results when all degradation operations are off.  We discuss
+examples of concrete knobs, configurations, $B(c)$ and $A(c)$ when we present
+applications in \autoref{sec:build-appl}.
 
-\para{Offline Profiling:} At the level of being a general API, our profiling
-requires an exhaustive search. Developers using \sysname{} will first perform an
-offline profiling that generates the Pareto-optimal profile by supplying
-training dataset and application accuracy function. Because our APIs are
-general, there is no restriction in the values or functions provided for
-\maybe{}. Without \textit{a prior}, any configuration is possible to be inside
-the optimal profile.
+\para{Offline Profiling:} We first use an offline process to build a bootstrap
+profile (or default profile). While all knobs form a combinatorial space,
+\sysname{} currently performs an exhaustive profiling because this is a one-time
+offline process. Future work would explore statistical methods to build
+performance models with only a few training
+samples~\cite{venkataraman2016ernest}. \sysname{} exploits parallelism within
+the configurations profiling task. Without any \textit{a prior} knowledge, all
+configurations are assigned randomly to all available machines.
 
-The exhaustive search is expensive. Therefore, the offline profiling requires to
-explore the entire parameter space, which is a combinatorial space of all
-knobs. For \textit{offline}, the time required is acceptable. We note that
-parallelism is usable for profiling. Except for the groundtruth (or reference
-label), two different configurations have no dependence over each other. Making
-the profiling an embarrassingly parallel task.
+\para{Online Profiling:} \sysname{} runs an online profiling process
+continuously to refine the profile. The refinement handles concept drifts, a
+problem when the learned profile fails to predict the actual performance
+accurately. Online profiling has two challenges:
 
-If degradation operations' impact is can be predicted with a prediction
-framework (such as Ernest~\cite{venkataraman2016ernest}), the profiler can
-estimate a subset of the configuration space.
+The first is the lack of groundtruth labels or reference data to compute
+accuracy. It's infeasible to label data at runtime as labelling is labor
+intensive and time consuming~\cite{russell2008labelme}. One could use raw data
+as the reference, but the runtime may be transmitting degraded data due to
+bandwidth limits.
 
-\para{Online Profiling:} The offline profile is susceptible to ``model
-drift''. When the required bandwidth is underestimated, data will be queued at
-the sender and application latency will increase. When the accuracy is
-incorrectly measured, the actual application performance will be suboptimal. The
-drift needs to be corrected online. There are two particular challenges for
-online profiling.
+\sysname{} currently uses raw data as the reference and allocate additional
+bandwidth to back-haul raw data. Allocating additional bandwidth seems a waste
+of resources, in our runtime design (see details in \autoref{sec:runtime}), the
+raw data can enjoy a free ride during the bandwidth probing.
 
-The first is the lack of groundtruth data or reference data. During the online
-execution, it's often infeasible to get labelled data as the groundtruth. For
-example, image labelling is known to be labor intensive and time
-consuming~\cite{russell2008labelme}. In addition, the original un-degraded data
-need to be transmitted from the sender. \sysname{} addresses labelling by using
-the un-degraded data as the reference and allocate additional bandwidth for
-backhaulling portions of the un-degraded data. While the additional bandwidth
-seems a waste, in our design, during the runtime's probing phase, the original
-data can enjoy a free ride. Details of the probing is in \autoref{sec:runtime}.
+The second challenge is the efficiency of online profiling. When taking too much
+time, the newly-learned profile may already be stale. \sysname{} uses a
+combination of parallelism and sampling techniques to speed up this process.
 
-The second challenge is how to profile efficiently. We use the offline profiling
-information as a prior to speed-up the online profiler. Specficially, we employ
-two techniques: degradation-aware parallelization and partial profiling.
+(i) Degradation-aware parallelization: Evaluating each configuration takes a
+different amount of time. Typically, an increase in the level of degradation
+leads to a decrease in computation, e.g. the smaller the FPS, the fewer images
+to process. Therefore, we collect processing time for each configuration from
+the offline process and use them for scheduling---such as longest first schedule
+(LFS)~\cite{karger2010scheduling}---in parallelization.
 
-\para{Degradation-aware parallelization:} The profiling tasks of exploring all
-configurations are easily parallelizable. Normal job schedulers don't assume the
-knowledge of estimated task completion time, therefore the parallel execution
-suffers from sub-optimal assignments. Aided with the offline profiling
-statistics (the time it requires to profile a particular configuration), we can
-schedule the online profiling tasks with a longest first scheduling that
-minimizes the makespan.
-
-\para{Partial profiling:} In time domain, the profiling could use a smaller
-chunk of data to approximate the best strategy. Besides, we can profiling a
-subset of the total configurations and measures its difference from the current
-profile. If the difference exceeds a certain threshold, it triggers a full
-profiling.
+(ii) Sampling-based profiling: Instead of profiling \textit{all} the data of
+\textit{all} configurations, online profiling can speed up if only done
+partially. We can process portions of the raw data; this reduces computation at
+the cost of a less accurate profile. Alternatively, we can evaluate a subset of
+the configurations and compare the performance with the existing profile. If a
+substantial difference is observed, such as more than 1 mbps of bandwidth
+estimation, we trigger a full profiling to learn a more accurate profile.
 
 %%% Local Variables:
 %%% mode: latex

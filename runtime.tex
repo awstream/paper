@@ -1,16 +1,6 @@
 \subsection{Runtime Adaptation}
 \label{sec:runtime}
 
-\begin{figure}
-  \centering
-  % \resizebox{\columnwidth}{!}{
-  %   \input{runtime-diagram}
-  % }
-  \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
-  \caption{Runtime adaptation system architecture.}
-  \label{fig:runtime}
-\end{figure}
-
 At runtime, \sysname{} creates additional modules and controls to facillitate
 the runtime adaptation (\autoref{fig:runtime}).
 
@@ -37,6 +27,16 @@ configuration $c_i$ such that $B(c_i) < \alpha R$ ($\alpha \in (0, 1)$). A
 smaller $\alpha$ allows a quicker drain of the queue. After there is no more
 queued objects, AC receives \texttt{Q.NoQueue} signal and enters \texttt{Steady}
 state.
+
+\begin{figure}
+  \centering
+  % \resizebox{\columnwidth}{!}{
+  %   \input{runtime-diagram}
+  % }
+  \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
+  \caption{Runtime adaptation system architecture.}
+  \label{fig:runtime}
+\end{figure}
 
 \para{Steady: achieving low latency delivery.} Applications achieve low latency
 by spending most of its time in this \texttt{Steady} state. If the network

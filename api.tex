@@ -1,24 +1,9 @@
-\subsection{APIs for Structured Adaptation}
-\label{sec:struct-adapt}
-
-%% Introduce graphs of operators model
-The vast majority of stream processing applications today are constructed as a
-directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized}).
-\sysname{} employs such a programming model that integration with existing
-applications will require minimal effort. \autoref{tab:operators} lists a few
-example operators that \sysname{} supports.
-
-In this model, each operator transforms existing streams into new
-streams. Operators are specializable by user-defined functions (UDF). Optionally
-developers can provide objects that implement a callable interface. Such objects
-can be used to hold application states.
-
 \begin{table*}
   \small
   \centering
   \begin{tabular}{ c r l }
     \toprule
-    \multirow{7}{*}{Normal Operators}
+    \multirow{5}{*}{Normal Operators}
     & \textit{map} (f: I $\Rightarrow$ O) & Stream<I> $\Rightarrow$ Stream<O> \\
     & \textit{skip} (i: Integer) & Stream<I> $\Rightarrow$
                                    Stream<I> \\
@@ -30,37 +15,46 @@ can be used to hold application states.
                                                                           Stream<O> \\
     & ... & ... \\
     \midrule
-    \multirow{4}{*}{Degradation Operators}
+    \multirow{5}{*}{Degradation Operators}
     & \textit{maybe} (knobs: Vec<T>, f:  (T, I) $\Rightarrow$ I) & Stream<I> $\Rightarrow$
                                                                  Stream<I> \\
     & \textit{maybe\_skip} (knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
+    & \textit{maybe\_head} (knobs: Vec<Integer>) & Stream<Vec<I>{}> $\Rightarrow$
+                                                   Stream<Vec<I>{}> \\
     & \textit{maybe\_downsample} (knobs: Vec<(Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
     & ... & ... \\
     \bottomrule
   \end{tabular}
-  \caption{A comparison between normal stream processing operators and our
-    degradation operators. \texttt{Vec<T>} represents a list of elements of type
-    T. \texttt{Option<T>} indicates an optional element of type T which is
-    either present \texttt{Some(T)} or absent \texttt{None}.}
+  \caption{Stream processing operators in \sysname{}. \texttt{Vec<T>} represents
+    a list of elements with type \texttt{T}.}
   \label{tab:operators}
 \end{table*}
 
-\sysname{} offers a special operator \texttt{maybe} to annotate degradation
-operations. Developers use \texttt{maybe} with concrete operations that affect
-the data size as well as data fidelity: these are the knobs tunable by the
-system to explore performance trade-offs. The basic form of \texttt{maybe}
-operator takes two arguments: a knob and a function. The knob is a vector of
-values with type $T$ that encodes possible levels of degradation. The function
-performs the actual operation. By default, the function needs to satisfy the
-type constrain: $f(T, I) \Rightarrow I$. That is, only operations that does not
-alter the type of the data stream are allowed. In this way, downstream operators
-can work without the need to know if the degradation is in effect or not.
-\todo{Is the relaxed version necessary?} A relaxed version, \texttt{maybe\_map},
-exists for flexibility; but care should be taken to use.
+\subsection{APIs for Structured Adaptation}
+\label{sec:struct-adapt}
 
-We illustrate the idea of \texttt{maybe} operator with an example that quantizes
-a stream of integers in the Rust programming language. One possible
-implementation is as follows:
+%% Introduce graphs of operators model
+The majority of stream processing applications today are constructed as a
+directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized},
+where each operator transforms input streams into new streams. \sysname{}
+borrows the same computation model. We list some example operators, such as
+\texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
+
+Along with normal operators, \sysname{} integrates special \maybe{} operators
+that degrades the data quality, yielding potential bandwidth savings. Our design
+has the following goals: (i) to free developers from specifying exact rules, the
+API should tolerate approximate specifications; (ii) to allow combining multiple
+dimensions, the API should be modular: each operator is a unit and developer can
+chain multiple operators; (iii) to support flexible integration with arbitrary
+degradation functions, the API should take user-defined functions
+(UDFs). Therefore, our API is,
+\vspace{-2pt}
+\begin{lstlisting}
+        maybe(knobs: Vec<T>, f: (T, I) => I)
+\end{lstlisting}
+
+We illustrate the usage of \texttt{maybe} operator with an example that
+quantizes a stream of integers in Rust:
 
 \vspace{-2pt}
 \begin{lstlisting}
@@ -69,23 +63,23 @@ implementation is as follows:
         .collect();
 \end{lstlisting}
 
-The code creates a stream of integers [1, 2, 3, 4] and pass it through a
-degradation operation. In this example, the knob is chosen as [2, 4]. The
+The snippet creates a stream of integers, chains a degradation operation and
+collects the execution result. In this example, the knob is [2, 4], and the
 degradation function performs a wrapping (modular) division where the divisor is
-the knob. Depending on the quantization level, the output will be either [1, 2,
-3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1] (k=4). The
-\texttt{collect} method will run this stream and hold the output in a vector.
-If the stream is subsequently encoded (e.g. run-length encoding as in
-JPEG~\cite{wallace1992jpeg}) for transmission, the data size will change
-according to the level of degradation.
+the chosen knob. The knob value modifies the quantization level, affecting the
+output: [1, 2, 3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1]
+(k=4). If the stream is subsequently encoded---for example, run-length encoding
+as in JPEG~\cite{wallace1992jpeg}---for transmission, the bandwidth consumption
+will change according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
-operations for common data types. For instance, \texttt{maybe\_skip} will
-optionally subsample a stream; and \texttt{maybe\_downsample} can adjust the
-image resolution to a configured target. \sysname{} provides a few such
-operations as libraries for developers (\autoref{tab:operators}).
+operations for common data types. For instance, \texttt{maybe\_head} will
+optionally takes the top values of the \textit{list}; and
+\texttt{maybe\_downsample} can adjust the \textit{image} resolution to a
+configured target. \sysname{} provides a few such operations as libraries for
+developers (\autoref{tab:operators}).
 
-Using our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
+With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
 can now be implemented as follows:
 
 \vspace{-2pt}
@@ -97,17 +91,18 @@ can now be implemented as follows:
       .compose();
 \end{lstlisting}
 
-This snippet first instantiate a \texttt{Camera} source, which produces
+This snippet first instantiates a \texttt{Camera} source, which produces
 \texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS. Two degradation
-operations are chained after the source: one that downsample the resolution to
-either 1600x900 or 1280x720; the other skip the frame with a parameter of 2 or
-5, resulting in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS. After the degradation,
-images are shown on the display. In practice, further processing (such as
-encoding and transmission) operators can be chained.
+operations follow the source: one that downsamples image to either 1600x900 or
+1280x720 resolution; one that skips frames with a parameter of 2 or 5, resulting
+in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS. In this example, degraded images are
+shown on the display, while in practice, further processing, such as encoding
+and transmission, operators can be chained.
 
-While \maybe{} itself has simplified the specification of degradation, the exact
-level of degradation has to be known for precise rate adjustment at runtime. The
-second stage of \sysname{} performs automatic profiling.
+Structured adaptation not only simplifies the specifications of degradation, the
+structure also facilitates learning an accurate profile
+(\autoref{sec:automatic-profiling}) and reacting at runtime
+(\autoref{sec:runtime}).
 
 %%% Local Variables:
 %%% mode: latex
