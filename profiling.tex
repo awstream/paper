@@ -21,8 +21,7 @@ The Pareto-optimal set $\mathbb{P}$ is defined as \autoref{eq:pareto}: it's the
 set of all $c$ such that there is no alternative configuration $c'$ that
 requires less bandwidth while giving a higher accuracy.
 
-{\small
-  \vspace{-1em}
+{\small \vspace{-1em}
   \begin{equation}
   \mathbb{P} = \{ c \in \mathbb{C} : \{ c' \in \mathbb{C}: B(c') < B(c),
   A(c') > A(c) \} = \varnothing\}
@@ -46,7 +45,8 @@ requires less bandwidth while giving a higher accuracy.
     $A(c)$ & accuracy measure for $c$ \\
     $\mathbb{P}$ & Pareto-optimal set \\
     \midrule
-    $t(c)$ & offline processing time for $c$ \\
+    $c_i$, $c_{i+1}$, $c_{max}$ & current/next/maximal configuration at runtime \\
+    $R$ & network delivery rate (estimated bandwidth) \\
     \bottomrule
   \end{tabular}
   \caption{Notations used in this paper.}
