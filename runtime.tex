@@ -11,13 +11,6 @@
   \label{fig:runtime}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/cc.pdf}
-  \caption{The Adaptation Algorithm and an illustration of one possible trace.}
-  \label{fig:cc}
-\end{figure}
-
 At runtime, \sysname{} creates additional modules and controls to facillitate
 the runtime adaptation (\autoref{fig:runtime}).
 
@@ -27,8 +20,8 @@ the source is then enqueued to a \texttt{Queue} module and subsequently dequeued
 by \texttt{Socket}. When the source's data generation rate exceeds the socket's
 departure rate, the queue grows. At this time, adaptation controller (AC) starts
 regulating the source stream by changing the configuration. We denote the
-current configuration is $c_i$. The AC's algorithm (a state machine
-\autoref{fig:cc}) is described as below:
+current configuration is $c_i$. The AC's algorithm follows a state machine model
+(\autoref{fig:cc}).
 
 \para{Startup: rapid growth.} When the application starts up, it performs its
 first and most rapid rate increase. Upon each \texttt{Q.NoQueue} message, it
@@ -65,6 +58,14 @@ under two conditions: (1) the available bandwith $R$ is large enough for the
 next configuration $B(c_{i+1}) < R$ (\texttt{S.ProbeDone}); (2) objects are
 queued (\texttt{Q.Congestion}) due to probing.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/cc.pdf}
+  \caption{The Adaptation Algorithm and an illustration of one possible trace.}
+  \label{fig:cc}
+  \vspace{-2em}
+\end{figure}
+
 If online profiling is enabled, \texttt{Receiver} at the server side will
 extract raw data and send it to online profiler. The newly-learned model is then
 fed back to AC to update the profile for subsequent adaptation.
@@ -86,10 +87,11 @@ profiles allow \textit{utility fairness} in addition to resource fairness. We
 elaborate on the multiple streams (multitask) scenario below.
 
 Traditional resource fairness (such as TCP converges to a equal share of the
-bandwidth) among competing flows if they share the bottleneck link. However,
-resource fairness is different from utility fairness. Consider two profiles.  An
-allocation of X, Y leads to 0.3 and 0.7 accuracy; while another allocation could
-achieve 0.6 and 0.6 accuracy.
+bandwidth) among competing flows if they share the bottleneck link.
+
+%% However, resource fairness is different from utility fairness. Consider two
+%% profiles.  An allocation of X, Y leads to 0.3 and 0.7 accuracy; while another
+%% allocation could achieve 0.6 and 0.6 accuracy.
 
 We formulate the allocation as the following optimization problem: the
 congestion controller finds an allocation $c_i^t$ to maximize the
@@ -107,8 +109,6 @@ the total bandwidth demand does not exceed available bandwidth
 
 Solving this optimization is NP hard. In practice, we use heuristic solutions to
 approach the allocation.
-
-\newpage
 
 %%% Local Variables:
 %%% mode: latex
