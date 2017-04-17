@@ -9,11 +9,11 @@
 \begin{figure*}
   \centering
   \includegraphics[width=1.0\linewidth]{figures/motiv-app-specific.pdf}
-  \caption{Two streaming application examples. Each application has multiple
-    dimensions that affect the bandwidth demand and application
-    accuracy. Horizontally, the figure shows how each dimension affects the
-    performance. Vertically, the figure shows how application-specific
-    optimization in one case is a poor match for a different case.}
+  \caption{Two streaming application examples. (1) Comparing (a) and (b), the
+    figure shows how each dimension affects the performance; (2) Comparing (a)
+    and (c), the figure shows how application-specific optimization in one case
+    is a poor match for a different case. Figure (c)(d)(g)(h) explains the
+    measurement with example frames.}
   \label{fig:app-specific}
 \end{figure*}
 
@@ -32,25 +32,25 @@ aggregates camera feeds (both stationary ground cameras and moving aerial
 vehicles) and analyzes video streams in real-time for surveillance, anomaly
 detection or business intelligence~\cite{oh2011large}. Traditionally, humans are
 involved in analyzing abnormal activities. Recent advances in computer vision
-and deep learning has dramatically increased the accuracy for visual scenes
+and deep learning have dramatically increased the accuracy for visual scenes
 analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
 tracking~\cite{coifman1998real}, or facial recognition to locate people of
 interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}.
 
-\para{High-frequency IoT Sensors:} Although environmental sensors used to be
-slow and not data-intensive~\cite{atzori2010internet}, increasingly,
-high-frequency, high-precision sensors are deployed. For example, uPMUs monitor
-the electrical grid with a network of 1000 devices; each produces 12 streams of
-120 Hz high-precision values accurate to 100 ns. This amounts to 1.4 million
-points per second~\cite{andersen2016btrdb}.
+% \para{High-frequency IoT Sensors:} Although environmental sensors used to be
+% slow and not data-intensive~\cite{atzori2010internet}, increasingly,
+% high-frequency, high-precision sensors are deployed. For example, uPMUs monitor
+% the electrical grid with a network of 1000 devices; each produces 12 streams of
+% 120 Hz high-precision values accurate to 100 ns. This amounts to 1.4 million
+% points per second~\cite{andersen2016btrdb}.
 
 \para{Infrastructure Monitoring:} Large organizations today are managing
 10--100s of data centers (DCs) and edge clusters
 worldwide~\cite{calder2013mapping}. While most log analysis today runs in a
-batch mode and on a daily basis, there is trend in analyzing logs in real-time
-for quicker optimization. For example, a content distribution network (CDN) can
-improve the overall efficiency by optimizing data placement if the access logs
-can be processed in real-time.
+batch mode and on a daily basis, there is trend towards analyzing logs in
+real-time for quicker optimization. For example, a content distribution network
+(CDN) can improve the overall efficiency by optimizing data placement if the
+access logs can be processed in real-time.
 
 % We consider the practical issues with deploying these applications in the
 % wide-area. Our stand is that these applications face a bigger network
@@ -73,14 +73,14 @@ renting two machines~\cite{amazon2017pricing}.
 In addition to the scarcity and cost, the variability also affects our WAN
 streaming workload. We conducted a day-long study using iPerf~\cite{iperf3} to
 measure the pair-wise bandwidth between four Amazon EC2 sites. The results show
-large variance in all pairs and \autoref{fig:bw} is one such pair. There are
+large variance in all pairs, and \autoref{fig:bw} is one such pair. There are
 occasions that available bandwidth is below 25\% of the maximum bandwidth.
 
 The back-haul links between EC2 sites are better---if not at least
 representative---in comparison to general WAN links. Similar scarcity and
-variations have been reported in wireless network~\cite{biswas2015large}, ISP
-network~\cite{grover2013peeking} and cellular
-network~\cite{nikravesh2014mobile}.
+variations have been reported in wireless networks~\cite{biswas2015large}, ISP
+networks~\cite{grover2013peeking} and cellular
+networks~\cite{nikravesh2014mobile}.
 
 \subsection{Making the Case for a System Approach}
 \label{sec:making-case-sys-approach}
@@ -115,17 +115,17 @@ impact of individual operations, prohibiting its wide adoption in practice.
 three-fold: application goals, algorithm features and data distribution.
 
 Each analytical application has its own goal, entailing different metrics to
-optimize. Traditional video streaming focus on end-user
+optimize. Traditional video streaming focuses on end-user
 QoE~\cite{yin2015control, michalos2012dynamic, pantos2016http}. If we transfer
 their techniques to machine-based video analytics, the system maintains an
 unnecessarily-high frame rate.
 
-Each algorithm relies on different feature from the data. For example, many
-computer vision detection algorithms depends on the edge
+Each algorithm relies on different features from the data. For example, many
+computer vision detection algorithms depend on the edge
 information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
-while object tracking applications~\cite{allen2004object} works best when the
+while object tracking applications~\cite{allen2004object} work best when the
 inter-frame difference is small. The former is sensitive to resolution while the
-latter frame rate.
+latter to frame rate.
 
 Similar applications face different data distributions. Compare the stationary
 camera detecting pedestrians with the mobile camera recognizing objects

@@ -14,12 +14,12 @@ forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
 possible configurations $\mathbb{C}$ is the space that the profiling
 explores. For each configuration $c$, there are two mappings that are of
 particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
-its accuracy measure $A(c)$. \autoref{tab:notations} summarizes notations used
-in this paper.
+its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
+used in this paper.
 
-The Pareto-optimal set $\mathbb{P}$ is defined as \autoref{eq:pareto}: it's the
-set of all $c$ such that there is no alternative configuration $c'$ that
-requires less bandwidth while giving a higher accuracy.
+The Pareto-optimal set $\mathbb{P}$ is the set of all $c$ such that there is no
+alternative configuration $c'$ that requires less bandwidth while giving a
+higher accuracy. Formally $\mathbb{P}$ is written as follows:
 
 {\small \vspace{-1em}
   \begin{equation}
@@ -53,14 +53,14 @@ requires less bandwidth while giving a higher accuracy.
   \label{tab:notations}
 \end{table}
 
-\sysname{} targets at using arbitrary functions as the degradation
-functions. Instead of assuming a closed-form relation for $B(c)$ and $A(c)$,
-\sysname{} takes a data-driven approach: profiling applications with
-developer-supplied training data.  We measure $B(c)$ at the point of
-transmission. The accuracy $A(c)$ is measured either against the groundtruth, or
-the reference results when all degradation operations are off.  We discuss
-examples of concrete knobs, configurations, $B(c)$ and $A(c)$ when we present
-applications in \autoref{sec:build-appl}.
+\sysname{} allows arbitrary functions as the degradation functions. Instead of
+assuming a closed-form relation for $B(c)$ and $A(c)$, \sysname{} takes a
+data-driven approach: profiling applications with developer-supplied training
+data.  We measure $B(c)$ at the point of transmission. The accuracy $A(c)$ is
+measured either against the ground-truth, or the reference results when all
+degradation operations are off.  We discuss examples of concrete knobs,
+configurations, $B(c)$, and $A(c)$ when we present applications in
+\autoref{sec:build-appl}.
 
 \para{Offline Profiling:} We first use an offline process to build a bootstrap
 profile (or default profile). While all knobs form a combinatorial space,
@@ -68,7 +68,7 @@ profile (or default profile). While all knobs form a combinatorial space,
 offline process. Future work would explore statistical methods to build
 performance models with only a few training
 samples~\cite{venkataraman2016ernest}. \sysname{} exploits parallelism within
-the configurations profiling task. Without any \textit{a prior} knowledge, all
+the configurations profiling task. Without any \textit{a priori} knowledge, all
 configurations are assigned randomly to all available machines.
 
 \para{Online Profiling:} \sysname{} runs an online profiling process
@@ -76,27 +76,28 @@ continuously to refine the profile. The refinement handles concept drifts, a
 problem when the learned profile fails to predict the actual performance
 accurately. Online profiling has two challenges:
 
-The first is the lack of groundtruth labels or reference data to compute
-accuracy. It's infeasible to label data at runtime as labelling is labor
+The first is the lack of ground-truth labels or reference data to compute
+accuracy. It is infeasible to label data at runtime because labelling is labor
 intensive and time consuming~\cite{russell2008labelme}. One could use raw data
 as the reference, but the runtime may be transmitting degraded data due to
 bandwidth limits.
 
-\sysname{} currently uses raw data as the reference and allocate additional
-bandwidth to back-haul raw data. Allocating additional bandwidth seems a waste
-of resources, in our runtime design (see details in \autoref{sec:runtime}), the
-raw data can enjoy a free ride during the bandwidth probing.
+\sysname{} currently uses raw data as the reference and allocates additional
+bandwidth to back-haul raw data. Allocating additional bandwidth may seem to be
+a waste of resources, but in our runtime design (see details in
+\autoref{sec:runtime}), the raw data can enjoy a free ride during the bandwidth
+probing.
 
-The second challenge is the efficiency of online profiling. When taking too much
+The second challenge is the efficiency of online profiling. If it takes too much
 time, the newly-learned profile may already be stale. \sysname{} uses a
 combination of parallelism and sampling techniques to speed up this process.
 
 (i) Degradation-aware parallelization: Evaluating each configuration takes a
 different amount of time. Typically, an increase in the level of degradation
 leads to a decrease in computation, e.g. the smaller the FPS, the fewer images
-to process. Therefore, we collect processing time for each configuration from
-the offline process and use them for scheduling---such as longest first schedule
-(LFS)~\cite{karger2010scheduling}---in parallelization.
+to process. Therefore, we collect processing times for each configuration from
+the offline process and use them for scheduling---for example longest first
+schedule (LFS)~\cite{karger2010scheduling}---in parallelization.
 
 (ii) Sampling-based profiling: Instead of profiling \textit{all} the data of
 \textit{all} configurations, online profiling can speed up if only done

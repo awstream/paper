@@ -59,7 +59,7 @@ quantizes a stream of integers in Rust:
 \vspace{-2pt}
 \begin{lstlisting}
     let quantized_stream = vec![1, 2, 3, 4].into_stream()
-        .maybe(vec![2, 4], |k, p| p.wrapping_div(k));
+        .maybe(vec![2, 4], |k, p| p.wrapping_div(k))
         .collect();
 \end{lstlisting}
 
