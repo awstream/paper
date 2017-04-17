@@ -224,28 +224,27 @@ importance of the job.
   \label{tab:online}
 \end{table}
 
-\begin{figure*}[!htb]
-  \begin{subfigure}[t]{0.7\textwidth}
+\begin{figure*}
+  \begin{subfigure}{\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/runtime-legend.pdf}
+    \includegraphics[width=0.9\columnwidth]{figures/runtime-legend.pdf}
   \end{subfigure}
-  \\
-  \vspace{1em}
-  \begin{subfigure}[t]{0.3\textwidth}
+
+  \begin{subfigure}{0.33\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
     \caption{Pedestrian Detection}
     \label{fig:pd-runtime}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
+  \begin{subfigure}{0.33\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
     \caption{Augmented Reality}
     \label{fig:ar-runtime}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.3\textwidth}
+  \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
     \caption{Top-k}
     \label{fig:tk-runtime}
@@ -383,5 +382,5 @@ AR receives 4 mbps; and both achieves \textasciitilde 80\% accuracy
 
 %%% Local Variables:
 %%% mode: latex
-%%% TeX-master: "sosp17"
+%%% TeX-master: "main"
 %%% End:

@@ -1,0 +1,89 @@
+\documentclass[sigplan,10pt,anonymous]{acmart}\settopmatter{printfolios=true}
+
+%% Removes citation information below abstract
+\settopmatter{printacmref=false, printcss=false, printfolios=false}
+%% removes footnote with conference information in first column
+\renewcommand\footnotetextcopyrightpermission[1]{}
+%% removes running headers
+\pagestyle{plain}
+
+\usepackage[T1]{fontenc}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{booktabs} % For formal tables
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{varwidth}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ACMRed,
+  urlcolor=ACMBlue,
+  citecolor=ACMRed,
+}
+
+\lstset{
+  captionpos=b,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  morekeywords={maybe_downsample, maybe_skip, maybe}
+}
+
+\captionsetup[lstlisting]{font={footnotesize}}
+\renewcommand{\lstlistingname}{Example}
+
+\begin{document}
+
+\input{macros}
+
+\title{\sysname{}: Adaptive Wide-Area Streaming Analytics}
+
+\begin{abstract}
+  In the wide area, the emerging class of streaming analytics faces the
+  challenge of scarce and variable network bandwidth. Applications without
+  adaptation suffer from increased latency or degraded accuracy. Existing
+  approaches that adapt to network changes are often application-specific or
+  require extensive developers' effort.
+
+  This paper presents \sysname{}, the first stream processing system that
+  simultaneously achieves low latency and high accuracy in the wide area,
+  requiring minimal developer efforts. To realize this, \sysname{} uses three
+  ideas: (i) it integrates application adaptation as a first-class abstraction
+  in the stream processing model; (ii) with a combination of offline and online
+  profiling, it learns an accurate and precise profile automatically; (iii) at
+  runtime, it adjusts the application data rate to match the available
+  bandwidth.
+
+  We evaluate \sysname{} against three real-world applications: pedestrian
+  detection, augmented reality and distributed Top-k analysis. Our experiments
+  show that \sysname{} can achieve sub-second latency with nominal accuracy
+  drop.
+\end{abstract}
+
+\maketitle
+
+\input{intro}
+\input{motivation}
+\input{system}
+\input{impl}
+\input{evaluation}
+\input{discussion}
+\input{related}
+\input{conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\def \bibfont {\normalsize}
+\bibliography{sosp17}
+
+\end{document}
