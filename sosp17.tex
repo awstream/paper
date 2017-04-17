@@ -30,11 +30,25 @@
 %%
 \algnewcommand\algorithmicmatch{\textbf{match}}
 \algnewcommand\algorithmiccase{\textbf{case}}
-\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}%
+
 \algdef{SE}[MATCH]{Match}{EndMatch}[1]{\algorithmicmatch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicmatch}%
-\algdef{SE}[CASE]{Case}{EndCase}[1]{#1 $\Rightarrow$}{\algorithmicend\ \algorithmiccase}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
 \algtext*{EndMatch}%
 \algtext*{EndCase}%
+
+\algnewcommand\algorithmicwhen{\textbf{when}}
+\algdef{SE}[WHEN]{When}{EndWhen}[1]{\algorithmicwhen\ #1:}{\algorithmicend\ \algorithmicwhen}%
+\algtext*{EndWhen}%
+
+% \algnewcommand\algorithmicmatch{\textbf{match}}
+% \algnewcommand\algorithmiccase{\textbf{case}}
+% \algnewcommand\Assert[1]{\State \algorithmicassert(#1)}
+% \algdef{SE}[MATCH]{Match}{EndMatch}[1]{\algorithmicmatch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicmatch}%
+% \algdef{SE}[CASE]{Case}{EndCase}[1]{#1 $\Rightarrow$}{\algorithmicend\ \algorithmiccase}%
+% \algtext*{EndMatch}%
+% \algtext*{EndCase}%
 
 \hypersetup{
   colorlinks=true,
