@@ -109,10 +109,10 @@ nearby~\cite{satyanarayanan2009case, zhang2015cloud}, the wireless communication
 link is still susceptible to capacity variation.
 
 We use a similar setup (OpenCV and GStreamer) as the pedestrian detection except
-for the actual analytical function. To recognize objects, we use a pre-trained
-neural network~\cite{darknet13, redmon2016yolo9000} with a GPU-accelerated
-implementation for real-time processing. In this case, a successful detection
-requires matching the object type in addition to IOU criteria.
+for the actual analytical function. To recognize objects, we use
+YOLO~\cite{darknet13, redmon2016yolo9000}, a GPU-enabled pre-trained system for
+object detection. In this case, a successful detection requires matching the
+object type in addition to IOU criteria.
 
 \para{Distributed Top-K:} Many monitoring applications need to answer the
 \textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
