@@ -1,29 +1,30 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\fixme{Braindump only}. In this section, we discuss some shortcomings of
-\sysname{} and future works.
+We have presented \sysname{}, a stream processing system achieving low latency
+and high accuracy for the wide area. We then discuss \sysname{}'s limitations
+and our future work.
+
+\para{Fault-tolerance and failure recovery:} \sysname{} tolerates bandwidth
+variation but not network partition or host failure. While the servers within
+the DCs can handle faults as existing systems---such as Spark
+Streaming~\cite{zaharia2013discretized}---do, edge clients should not be
+failure-oblivious. We leave the failure detection and recovery of clients as a
+future work.
+
+\para{Profile modelling:} \sysname{} currently do not attempt to model $B(c)$
+and $A(c)$. Instead it performs an exhaustive search during the profiling. While
+parallelism and sampling techniques offer speed up, there are other statistical
+techniques. For example, Bayesian Optimization, as demonstrated by
+CherryPick~\cite{alipourfard2017cherrypick}, models black-box functions and
+reduces the search time. We plan to explore this direction to improve our
+profiler.
 
 \para{Expressiveness}: Our \maybe{} APIs allow an easy integration with existing
 stream processing systems. While it follows the operator model, combined with
 other operators, this is expressive enough. We've presented three applications
 in this paper; and we are implement more application using this framework to
 understand the expressiveness better.
-
-\para{Fault-tolerance and stragglers:} Currently our system focuses on
-adaptation. We have not explored fault-tolerance. While the servers could locate
-within a cluster and uses existing stream processing framework for
-fault-tolerance, the clients may fail as well. We do not synchronize all
-clients. Therefore, application latency may be introduced by straggller rather
-than network delays.
-
-\para{Performance modelling:} We aim to present a generic API to express
-adaptation. In this work, we do not make any assumptions about the functions
-used in each operator. This forces our profiling to perform an exhaustive
-search. If we could have some performance modelling of the
-operation~\cite{venkataraman2016ernest}, we may only profile a subset and
-interpolate or extrapolate the rest of the configurations. We leave such a
-performance modelling as future optimization.
 
 \para{Context detection:} Currently we perform online profiling and update the
 profile entirely. Real-world data potentially follows a multi-modal

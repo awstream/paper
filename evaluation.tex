@@ -230,21 +230,21 @@ the importance of the job.
     \includegraphics[width=0.9\columnwidth]{figures/runtime-legend.pdf}
   \end{subfigure}
 
-  \begin{subfigure}{0.33\textwidth}
+  \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
     \caption{Pedestrian Detection}
     \label{fig:pd-runtime}
   \end{subfigure}
   \hfill
-  \begin{subfigure}{0.33\textwidth}
+  \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
     \caption{Augmented Reality}
     \label{fig:ar-runtime}
   \end{subfigure}
   \hfill
-  \begin{subfigure}{0.33\textwidth}
+  \begin{subfigure}{0.3\textwidth}
     \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
     \caption{Top-k}
     \label{fig:tk-runtime}
@@ -259,69 +259,70 @@ the importance of the job.
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
 
-\fixme{Explain experiment setup and why baselines are streaming over TCP/UDP?}
+In this section, we evaluate the runtime performance for three applications. We
+first show that \sysname{} achieves low latency and high accuracy across all
+three applications---demonstrating the effectiveness of our system level
+approach. We then focus on AR by evaluating how manual policies and
+application-specific solutions work poorly, i.e., describe the experiments for
+\autoref{fig:intro}.
 
-In this section, we present the evaluation of the runtime performance of three
-applications. We measure throughput, latency and application accuracy with a
-controlled experiments.
-
-Our experiments run on five geo-distributed machines from Amazon EC2 (different
-AWS region). Four act as worker nodes (\textit{t2.micro} instances) and one acts
-as the aggregation server (\textit{m4.xlarge} instance to guarantee enough
-bandwidth). During each experiment, the worker node transmits test data
-(\autoref{tab:apps}) for about 10 mins. If the duration of the test data is less
-than 10 mins, we loop around.
+\para{Methodology:} We conduct our experiments on five geo-distributed machines
+from Amazon EC2, spanning different AWS regions. Four act as worker nodes
+(\textit{t2.micro} instances) and one acts as the aggregation server
+(\textit{m4.xlarge} instance to guarantee enough bandwidth). During each
+experiment, the worker node transmits test data (\autoref{tab:apps}) for about
+10 mins. If the duration of the test data is less than 10 mins, we loop around.
 
 We compare \sysname{} applications with baseline applications built with vanilla
-TCP and UDP. For TCP, we turn off all optimizations and disable the
-adaptation. For UDP, our experiment setup is different. We use RTSP over UDP
-with ffmpeg~\cite{bellard2012ffmpeg} for video streaming (PD and AR). For TK, we
-implemented a simple application protocol (packetization and custom header)
-based on UDP so that the receiver can still aggregate data when loss occurred.
+TCP and UDP. For streaming over TCP, we use \sysname{} but disable the
+adaptation. For streaming over UDP, our experiment setup is different: for video
+streaming (PD and AR), we use RTSP over UDP with ffmpeg~\cite{bellard2012ffmpeg}
+; for TK, we implemented a simple application protocol (packetization and custom
+header) based on UDP so that the receiver can still aggregate data when loss
+occurred.
 
-The baselines don't adapt the configuration. For all cases, the raw data streams
-are prohibitively large. For example, raw videos consumes 230 mbps. Therefore,
-we used a reasonable configuration as the maximum rate for all baseline
-applications. For PD, the configuration is 1920x1080 resolution, 10 FPS and a
-quantization factor of 20; it consumes about 12 mbps. For AR, we use 1600x900
-resolution, 30 FPS and a quantization of 20; it consumes about 14 mbps. For TK,
-we always truncate the windowed logs using \texttt{head} operation with
-$N=9750$.
+Because the baselines don't adapt the configuration and $c_{max}$ is
+prohibitively large---for example, raw videos consumes 230 mbps---we use a
+reasonable configuration to limit the maximum rate. For PD, $c_{max}$ is
+1920x1080 resolution, 10 FPS and a quantization factor of 20; it consumes about
+12 mbps. For AR, $c_{max}$ is 1600x900 resolution, 30 FPS and a quantization of
+20; it consumes about 14 mbps. For TK, we always truncate the windowed logs
+using \texttt{head} operation with $N=9750$.
 
-During the experiment, we use Linux \texttt{tc} utility with HTB
-scheduler~\cite{lartc, htb} to control the clients' outgoing bandwidth
-variation. Our experiments involve four phases: (i) before time 200 seconds,
-there is no shaping; (ii) at time 200 second, we start traffic shaping for 3
-minutes (7.5 mbps for video streaming and 1 mbps for TK); (iii) at time 380
-second, we further decrease the available bandwidth (5 mbps for video streaming
-and 0.75 mbps) for TK); (iv) at time 440 second, all traffic shaping is
-removed. For UDP, HTB doesn't emulate the packet loss or out-of-order delivery;
-we use \texttt{netem} and configure the loss probability to match the delivery
-rate. Because different pair-wise connections have different capacity, we impose
-a \textit{background} bandwidth limit---25 mbps for PD and AR, 2.5 mbps for
-TK---to simplify comparisons.
+Our experiments design follows JetStream~\cite{rabkin2014aggregation}. During
+the experiment, we use Linux \texttt{tc} utility with HTB scheduler~\cite{lartc,
+  htb} to control the clients' outgoing bandwidth variation. Our experiments
+involve four phases: (i) before time 200 seconds, there is no shaping; (ii) at
+time 200 second, we start traffic shaping for 3 minutes (7.5 mbps for video
+streaming and 1 mbps for TK); (iii) at time 380 second, we further decrease the
+available bandwidth (5 mbps for video streaming and 0.75 mbps) for TK); (iv) at
+time 440 second, all traffic shaping is removed. For UDP, HTB doesn't emulate
+the packet loss or out-of-order delivery; we use \texttt{netem} and configure
+the loss probability to match the delivery rate. Because different pair-wise
+connections have different capacity, we impose a \textit{background} bandwidth
+limit---25 mbps for PD and AR, 2.5 mbps for TK---to simplify comparisons.
 
 The throughput figures of \autoref{fig:all-runtime} show the effect of our
 traffic shaping. During the shaping, TCP and UDP make full use of the available
 bandwidth; in comparison, \sysname{} is conservative. When we stop the shaping,
 TCP has a ``catch-up'' phase where it's sending all the queued items as fast as
 possible. \sysname{} increases the throughput gradually instead of drastically
-as TCP/UDP does as it's undergoing the bandwidth probing.
+as TCP/UDP does. This is when \sysname{} is slowly probing for more bandwidth.
 
 The latency figures show that \sysname{} maintains a bounded latency. Note the
 figures split in the middle because of the large variation in the achieved
 latency. Specifically, during the traffic shaping, TCP queues items at the
 sender side for up to tens or hundreds of seconds. We plot such high latency
-measurements in log scale for comparison. UDP always transmits as fast as
-possible, leading to a consistent low latency. \sysname{}'s latency is slightly
-higher than UDP but considerable small in comparison to TCP. During the traffic
-shaping, \sysname{} updates the application's degradation to avoid data queueing
-up. For most of the time, we've maintained less than 500 ms latency for PD/AR,
-and 2.5 seconds latency for TK. Because TK's source is triggered every second
-after the \texttt{window} operation, two objects in the queue would lead to two
-seconds latency. Worst case latency happens at the start of the available
-bandwidth drop. Our experiments achieve worst-case sub-second latency for PD/AR
-and 5 seconds latency for TK.
+measurements in log scale. UDP always transmits as fast as possible, leading to
+a consistent low latency. \sysname{}'s latency is slightly higher than UDP but
+considerable small in comparison to TCP. During the traffic shaping, \sysname{}
+updates the application's degradation to avoid data queueing up. For most of the
+time, we've maintained less than 500 ms latency for PD/AR, and 2.5 seconds
+latency for TK. Because TK's source is triggered every second after the
+\texttt{window} operation, two objects in the queue would lead to two seconds
+latency. The worst case happens at the start of bandwidth drop. \sysname{}
+achieves sub-second latency for PD/AR and 5 seconds latency for TK at worst
+case.
 
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
 the experiments. TCP without adaptation always sends data at high fidelity
@@ -331,32 +332,39 @@ suffers from packet loss, leading to a severe performance deterioration.  In
 both PD and AR, the accuracy are \textasciitilde 0\% as the recovered images
 contain large blocks of pixels without content details. For TK, the accuracy has
 dropped to \textasciitilde 50\% during modest traffic shaping and dropped
-further to \textasciitilde 25\% during the severe shaping. \sysname{} also sees
-accuracy drop during the traffic shaping, but with a significant smaller
-penalty. This is due to the knowledge of the profile and a proper configuration
-use during the traffic shaping.
+further to \textasciitilde 25\% during the severe shaping. While \sysname{} also
+sees accuracy drop during the traffic shaping, the amount is significant
+smaller. We attribute this to the knowledge of the profile and a proper
+configuration use during the traffic shaping.
 
 In summary, our evaluation shows that \sysname{}'s adaptation achieves low
-latency and high accuracy simutaneously.
+latency and high accuracy simultaneously.
 
-\subsection{Resource Allocation and Multitask Fairness}
+\fixme{rewrite} Experiment data: We use AR. The manual policies are derived from
+the example from JetStream~\cite{rabkin2014aggregation}. We use PD's profile as
+the application-specific solution for AR. \sysname{}, Streaming over UDP and TCP
+are results above. We only use the data between 200 seconds and 440 seconds,
+i.e. during traffic shaping. This produces figure 1: the center is medians and
+the ellipses are standard deviations.
+
+\subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
 
-In this section, we show how profiles are useful for resource allocation among
-multiple applications. Specifically, we evaluate allocation schemes for
-different fairness goal with two applications.
+We evaluate resource allocations with two applications. In this way, the results
+cover the case of a single application, and can be generalized to more
+applications.
 
 We choose PD and AR as the example applications. The setup is the same as
 before; both applications share the same client and server, therefore, they
 share the same bottleneck link. The experiment starts with sufficient
 bandwidth. At 60 seconds, we start traffic shaping to limit the total bandwidth
-at 6 mbps. With a resource-fair allocation (\autoref{fig:eq-bw}), each
-application will get 3 mbps. Under this condition, PD runs with a higher
-accuracy (\textasciitilde 85\%) while AR only achieves \textasciitilde 77\%. In
-contrast, with the utility-fair allocation, our scheduler chooses configurations
-that maximize the minimal accuracy. In this experiment, PD receives 2 mbps and
-AR receives 4 mbps; and both achieve \textasciitilde 80\% accuracy
-(\autoref{fig:eq-acc}).
+at 6 mbps. When we allocate resource equally between two applications
+(\autoref{fig:eq-bw}), each application will get 3 mbps. Under this condition,
+PD runs with a higher accuracy (\textasciitilde 85\%) while AR only achieves
+\textasciitilde 77\%. In contrast, \sysname{} also supports utility fairness: it
+chooses configurations that maximize the minimal accuracy. In this experiment,
+PD receives 2 mbps and AR receives 4 mbps; and both achieve \textasciitilde 80\%
+accuracy (\autoref{fig:eq-acc}).
 
 \begin{figure}
   \begin{subfigure}[t]{0.9\columnwidth}
