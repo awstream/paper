@@ -13,14 +13,14 @@ globe~\cite{mukerjee2015practical}. These applications need to transport,
 distill and analyze streams of data across the wide area in real time.
 
 While existing stream processing systems and specialized analytical engines,
-such as Spark Streaming~\cite{zaharia2013discretized} and
-VideoStorm~\cite{zhang2017live}, are capable of handling large streams of data,
-they are designed to work inside a high-bandwidth network, such as a single data
-center (DC). The bandwidth across the wide area is significantly
-limited~\cite{hsieh17gaia, vulimiri2015global}. Recent studies show that the
-growth of the WAN bandwidth has been decelerating for many
-years~\cite{global2016telegeography} while traffic demands grows at a staggering
-rate~\cite{index2013zettabyte}.
+such as Spark Streaming~\cite{zaharia2013discretized},
+Storm~\cite{toshniwal2014storm}, and VideoStorm~\cite{zhang2017live}, are
+capable of handling large streams of data, they are designed to work inside a
+high-bandwidth network, such as a single data center (DC). The bandwidth across
+the wide area is significantly limited~\cite{hsieh17gaia,
+  vulimiri2015global}. Recent studies show that the growth of the WAN bandwidth
+has been decelerating for many years~\cite{global2016telegeography} while
+traffic demands grows at a staggering rate~\cite{index2013zettabyte}.
 
 Back-hauling all the data is not only impractical, but also inefficient. Recent
 works on WAN-aware systems promote pushing computations towards the

@@ -42,29 +42,33 @@ threshold. AC can query \texttt{Socket} for delivery rate $R$ or request it to
 probe for a target bandwidth, often $B(c_{i+1})$. When $R > B(C_{i+1})$,
 \texttt{Socket} sends back \spd{}. The algorithm follows a state machine:
 
-\para{Startup: rapid growth.} \sysname{} starts up with $c_1$ and grows the rate
-upon each \qe{}. The growth stops at $c_{max}$ (to \texttt{Steady}) or or it
-receives \qc{} (to \texttt{Degrade}).
+\begin{itemize}[leftmargin=*]
 
-\para{Degrade: reacting to congestion.} When objects are queued, AC receives
-\qc{} and runs \texttt{adapt()}. It involves two steps: (1) AC queries $R$ from
-\texttt{Socket}; (2) AC updates \texttt{Maybe} with $c$ such that
-$B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
-draining of the queue. \sysname{} changes to \texttt{Steady} after the queue is
-drained.
+\item \textbf{Startup: rapid growth.} \sysname{} starts up with $c_1$ and grows
+  the rate upon each \qe{}. The growth stops at $c_{max}$ (to \texttt{Steady})
+  or or it receives \qc{} (to \texttt{Degrade}).
 
-\para{Steady: low latency delivery.} \sysname{} achieves low latency by spending
-most of the time in \texttt{Steady} state. It changes to \texttt{Degrade} when
-congestion occurs. If $c < c_{max}$ and it receives \qe{}, AC enters
-\texttt{Probe} state to check for more available bandwidth.
+\item \textbf{Degrade: reacting to congestion.} When objects are queued, AC
+  receives \qc{} and runs \texttt{adapt()}. It involves two steps: (1) AC
+  queries $R$ from \texttt{Socket}; (2) AC updates \texttt{Maybe} with $c$ such
+  that $B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
+  draining of the queue. \sysname{} changes to \texttt{Steady} after the queue
+  is drained.
 
-\para{Probe: more bandwidth for a higher accuracy.} Advancing $c$ directly
-causes drastic latency increase when $B(c_{i+1}) \gg B(c_i)$. To allow a smooth
-increase, AC requests \texttt{Socket} to probe by sending additional traffic
-controlled by \texttt{probe\_gain} (in \texttt{inc\_pace()}, similar to
-BBR~\cite{cardwell2017bbr}). \sysname{} stops probing under two conditions: (1)
-upon \spd{}, it advances the configuration; (2) upon \qc{}, it returns to
-\texttt{Steady}.
+\item \textbf{Steady: low latency delivery.} \sysname{} achieves low latency by
+  spending most of the time in \texttt{Steady} state. It changes to
+  \texttt{Degrade} when congestion occurs. If $c < c_{max}$ and it receives
+  \qe{}, AC enters \texttt{Probe} state to check for more available bandwidth.
+
+\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing $c$
+  directly causes drastic latency increase when $B(c_{i+1}) \gg B(c_i)$. To
+  allow a smooth increase, AC requests \texttt{Socket} to probe by sending
+  additional traffic controlled by \texttt{probe\_gain} (in
+  \texttt{inc\_pace()}, similar to BBR~\cite{cardwell2017bbr}). \sysname{} stops
+  probing under two conditions: (1) upon \spd{}, it advances $c$; (2) upon
+  \qc{}, it returns to \texttt{Steady}.
+
+\end{itemize}
 
 \begin{figure}
   \begin{subfigure}[t]{\columnwidth}
@@ -95,12 +99,9 @@ upon \spd{}, it advances the configuration; (2) upon \qc{}, it returns to
 %   \label{fig:cc}
 % \end{figure}
 
-\vspace{1em}
-\noindent\textbf{Resource Allocation and Fairness}
-
-In addition to rate adaptation, the profile is also useful for controlling
-bandwidth usages of a single application and allocating resources among
-competing tasks.
+\para{Resource Allocation and Fairness:} In addition to rate adaptation, the
+profile is also useful for controlling bandwidth usages of a single application
+and allocating resources among competing tasks.
 
 For individual applications, developers can pinpoint a configuration for a given
 bandwidth or accuracy goal. They can also specify criterion to limit effective

@@ -99,10 +99,11 @@ for a system approach.
 \para{Manual polices are sub-optimal.} While existing works such as
 JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} allow
 adaptation, they require developers to write manual policies. We discuss the
-issues with manual policies with the following example: \textit{if bandwidth is
-  insufficient, switch to sending images at 75\% fidelity, then 50\% if there
-  still isn't enough bandwidth. Beyond that point, reduce the frame rate, but
-  keep the image fidelity.}
+issues with manual policies with the following
+example~\cite{rabkin2014aggregation}: \textit{if bandwidth is insufficient,
+  switch to sending images at 75\% fidelity, then 50\% if there still isn't
+  enough bandwidth. Beyond that point, reduce the frame rate, but keep the image
+  fidelity.}
 
 The policy is not accurate. Developers write such rules based on heuristics and
 don't back it up with measurements. Seventy-five percent fidelity does not

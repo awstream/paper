@@ -1,4 +1,4 @@
-\section{Discussion}
+\section{Discussion and Future work}
 \label{sec:discussion}
 
 We have presented \sysname{}, a stream processing system achieving low latency
@@ -18,25 +18,27 @@ parallelism and sampling techniques offer speed up, there are other statistical
 techniques. For example, Bayesian Optimization, as demonstrated by
 CherryPick~\cite{alipourfard2017cherrypick}, models black-box functions and
 reduces the search time. We plan to explore this direction to improve our
-profiler.
+profiling.
 
-\para{Expressiveness}: Our \maybe{} APIs allow an easy integration with existing
-stream processing systems. While it follows the operator model, combined with
-other operators, this is expressive enough. We've presented three applications
-in this paper; and we are implement more application using this framework to
-understand the expressiveness better.
+% \para{Expressiveness}: Our \maybe{} APIs allow an easy integration with
+% existing stream processing systems. While it follows the operator model,
+% combined with other operators, this is expressive enough. We've presented
+% three applications in this paper; and we are implement more application using
+% this framework to understand the expressiveness better.
 
-\para{Context detection:} Currently we perform online profiling and update the
-profile entirely. Real-world data potentially follows a multi-modal
-distribution. One optimization is to detect such context changes and use the
-profile that best predicts in the current context (such as indoor video vs
-outdoor video).
+\para{Predicting bandwidth changes:} Our runtime adaptation currently does not
+predict future bandwidth actively. While reacting to bandwidth changes is enough
+to achieve sub-second latency, if \sysname{} can accurately predict future
+bandwidth, we expect further improvement such as no latency spikes or a
+simplified probing state. Model predictive control (MPC), for example, have
+improved QoE in video streaming~\cite{yin2015control} with throughput
+prediction.
 
-\para{Predicting bandwidth changes:} Model predict control
-(MPC)~\cite{yin2015control} has been explored in video streaming to predict the
-bandwidth chagnes. Our system could potentially also make predictions and adapt
-according to the prediction results; this would further reduces latency;
-although predictions need to be cautious for false positives.
+% \para{Context detection:} Currently we perform online profiling and update the
+% profile entirely. Real-world data potentially follows a multi-modal
+% distribution. One optimization is to detect such context changes and use the
+% profile that best predicts in the current context (such as indoor video vs
+% outdoor video).
 
 %%% Local Variables:
 %%% mode: latex

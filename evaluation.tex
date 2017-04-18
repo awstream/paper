@@ -266,20 +266,20 @@ approach. We then focus on AR by evaluating how manual policies and
 application-specific solutions work poorly, i.e., describe the experiments for
 \autoref{fig:intro}.
 
-\para{Methodology:} We conduct our experiments on five geo-distributed machines
-from Amazon EC2, spanning different AWS regions. Four act as worker nodes
-(\textit{t2.micro} instances) and one acts as the aggregation server
-(\textit{m4.xlarge} instance to guarantee enough bandwidth). During each
-experiment, the worker node transmits test data (\autoref{tab:apps}) for about
-10 mins. If the duration of the test data is less than 10 mins, we loop around.
+We conduct our experiments on five geo-distributed machines from Amazon EC2,
+spanning different AWS regions. Four act as worker nodes (\textit{t2.micro}
+instances) and one acts as the aggregation server (\textit{m4.xlarge} instance
+to guarantee enough bandwidth). During each experiment, the worker node
+transmits test data (\autoref{tab:apps}) for about 10 mins. If the duration of
+the test data is less than 10 mins, we loop around.
 
 We compare \sysname{} applications with baseline applications built with vanilla
-TCP and UDP. For streaming over TCP, we use \sysname{} but disable the
-adaptation. For streaming over UDP, our experiment setup is different: for video
-streaming (PD and AR), we use RTSP over UDP with ffmpeg~\cite{bellard2012ffmpeg}
-; for TK, we implemented a simple application protocol (packetization and custom
-header) based on UDP so that the receiver can still aggregate data when loss
-occurred.
+TCP and UDP because they are universal for all applications. For streaming over
+TCP, we use \sysname{} but disable the adaptation. For streaming over UDP, our
+experiment setup is different: for video streaming (PD and AR), we use RTSP over
+UDP with ffmpeg~\cite{bellard2012ffmpeg} ; for TK, we implemented a simple
+application protocol (packetization and custom header) based on UDP so that the
+receiver can still aggregate data when loss occurred.
 
 Because the baselines don't adapt the configuration and $c_{max}$ is
 prohibitively large---for example, raw videos consumes 230 mbps---we use a
@@ -337,15 +337,30 @@ sees accuracy drop during the traffic shaping, the amount is significant
 smaller. We attribute this to the knowledge of the profile and a proper
 configuration use during the traffic shaping.
 
-In summary, our evaluation shows that \sysname{}'s adaptation achieves low
-latency and high accuracy simultaneously.
+In summary, \autoref{fig:runtime} shows that \sysname{}'s adaptation achieves
+low latency and high accuracy simultaneously.
 
-\fixme{rewrite} Experiment data: We use AR. The manual policies are derived from
-the example from JetStream~\cite{rabkin2014aggregation}. We use PD's profile as
-the application-specific solution for AR. \sysname{}, Streaming over UDP and TCP
-are results above. We only use the data between 200 seconds and 440 seconds,
-i.e. during traffic shaping. This produces figure 1: the center is medians and
-the ellipses are standard deviations.
+\para{Fidelity and freshness:} We then explain our experiments for
+\autoref{fig:intro}. For streaming over TCP/UDP and \sysname{}, we use the
+latency and accuracy measurements for AR. For manual policies, we implement the
+policy from the example in JetStream~\cite{rabkin2014aggregation}. For
+application-specific solutions, we use PD's adaptation profile to control AR's
+behavior. We use data collected during traffic shaping (between 200 seconds and
+440 seconds), i.e., when facing insufficient bandwidth. Their behaviors reflect
+the design choices made by different schemes within the fidelity and freshness
+design space:
+
+\begin{itemize}[leftmargin=*]
+\item Streaming over TCP favors fidelity over freshness.
+\item Streaming over UDP favors freshness over fidelity.
+\item Manual policies have limited rules with coarse-granularity. A sudden
+  increase from one rule to another rule incurs large latency (\textasciitilde 5
+  seconds).
+\item Application-specific solutions suffer from accuracy drop. PD's profile has
+  configurations that reduce frame rate aggressively; these configurations work
+  poorly for AR.
+\item \sysname{} balances fidelity and freshness simultaneously.
+\end{itemize}
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
