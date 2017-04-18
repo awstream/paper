@@ -41,20 +41,21 @@ borrows the same computation model. We list some example operators, such as
 \texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
 
 Along with normal operators, \sysname{} integrates special \maybe{} operators
-that degrades the data quality, yielding potential bandwidth savings. Our design
-has the following goals: (i) to free developers from specifying exact rules, the
-API should tolerate approximate specifications; (ii) to allow combining multiple
-dimensions, the API should be modular: each operator is a unit and developer can
-chain multiple operators; (iii) to support flexible integration with arbitrary
-degradation functions, the API should take user-defined functions
-(UDFs). Therefore, our API is,
+that degrades the data quality, yielding potential bandwidth savings. Our API
+design has three considerations: (i)~to free developers from specifying exact
+rules, the API should tolerate approximate specifications; (ii)~to allow
+combining multiple dimensions, the API should be modular: each operator is a
+unit and developer can chain multiple operators; (iii)~to support flexible
+integration with arbitrary degradation functions, the API should take
+user-defined functions (UDFs). Therefore, our API is,
+
 \vspace{-2pt}
 \begin{lstlisting}
         maybe(knobs: Vec<T>, f: (T, I) => I)
 \end{lstlisting}
 
 We illustrate the usage of \texttt{maybe} operator with an example that
-quantizes a stream of integers in Rust:
+quantizes a stream of integers in the Rust programming language:
 
 \vspace{-2pt}
 \begin{lstlisting}
@@ -76,7 +77,7 @@ Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will
 optionally takes the top values of the \textit{list}; and
 \texttt{maybe\_downsample} can adjust the \textit{image} resolution to a
-configured target. \sysname{} provides a few such operations as libraries for
+configured target. \sysname{} provides a few such operations as a library for
 developers (\autoref{tab:operators}).
 
 With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
@@ -96,13 +97,8 @@ This snippet first instantiates a \texttt{Camera} source, which produces
 operations follow the source: one that downsamples image to either 1600x900 or
 1280x720 resolution; one that skips frames with a parameter of 2 or 5, resulting
 in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS. In this example, degraded images are
-shown on the display, while in practice, further processing, such as encoding
-and transmission, operators can be chained.
-
-Structured adaptation not only simplifies the specifications of degradation, the
-structure also facilitates learning an accurate profile
-(\autoref{sec:automatic-profiling}) and reacting at runtime
-(\autoref{sec:runtime}).
+shown on the display. In practice, further processing, such as encoding and
+transmission, operators can be chained.
 
 %%% Local Variables:
 %%% mode: latex

@@ -1,8 +1,8 @@
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}
 
-With structured adaptation, \sysname{} automatically learns an application
-profile from \maybe{} operators. The profile accurately captures the
+\sysname{} automatically builds an application profiles based on degradation
+operations specified by \maybe{} operators. The profile accurately captures the
 relationship between application accuracy and bandwidth consumption under
 different combinations of data degradation operations. We describe the
 formalism, followed by techniques that efficiently perform offline and online
@@ -17,9 +17,9 @@ particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
 its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
 used in this paper.
 
-The Pareto-optimal set $\mathbb{P}$ is the set of all $c$ such that there is no
-alternative configuration $c'$ that requires less bandwidth while giving a
-higher accuracy. Formally $\mathbb{P}$ is written as follows:
+The Pareto-optimal set $\mathbb{P}$ is defined as the set of all $c$ such that
+there is no alternative configuration $c'$ that requires less bandwidth while
+giving a higher accuracy. Formally $\mathbb{P}$ is written as follows:
 
 {\small \vspace{-1em}
   \begin{equation}
@@ -47,6 +47,8 @@ higher accuracy. Formally $\mathbb{P}$ is written as follows:
     \midrule
     $c_i$, $c_{i+1}$, $c_{max}$ & current/next/maximal configuration at runtime \\
     $R$ & network delivery rate (estimated bandwidth) \\
+    $\text{Q}_\text{E}$, $\text{Q}_\text{C}$ & \texttt{Queue} is empty or congested \\
+    $\text{S}_\text{ProbeDone}$ & \texttt{Socket} finishes probing \\
     \bottomrule
   \end{tabular}
   \caption{Notations used in this paper.}
@@ -59,8 +61,8 @@ data-driven approach: profiling applications with developer-supplied training
 data.  We measure $B(c)$ at the point of transmission. The accuracy $A(c)$ is
 measured either against the ground-truth, or the reference results when all
 degradation operations are off.  We discuss examples of concrete knobs,
-configurations, $B(c)$, and $A(c)$ when we present applications in
-\autoref{sec:build-appl}.
+configurations, accuracy functions when we present applications in
+\autoref{sec:implementation}.
 
 \para{Offline Profiling:} We first use an offline process to build a bootstrap
 profile (or default profile). While all knobs form a combinatorial space,
@@ -72,25 +74,22 @@ the configurations profiling task. Without any \textit{a priori} knowledge, all
 configurations are assigned randomly to all available machines.
 
 \para{Online Profiling:} \sysname{} runs an online profiling process
-continuously to refine the profile. The refinement handles concept drifts, a
-problem when the learned profile fails to predict the actual performance
-accurately. Online profiling has two challenges:
+continuously to refine the profile. The refinement handles \textit{concept
+  drifts}, a problem when the learned profile fails to predict the actual
+performance accurately. Online profiling has two challenges:
 
-The first is the lack of ground-truth labels or reference data to compute
-accuracy. It is infeasible to label data at runtime because labelling is labor
-intensive and time consuming~\cite{russell2008labelme}. One could use raw data
-as the reference, but the runtime may be transmitting degraded data due to
-bandwidth limits.
+First, there is no ground-truth labels or reference data to compute
+accuracy. Because labelling data is prohibitively labor intensive and time
+consuming~\cite{russell2008labelme}, \sysname{} currently uses raw data as the
+reference. It allocates additional bandwidth to back-haul raw data when our
+runtime is transmitting degraded data due to bandwidth limits. Allocating
+additional bandwidth may seem to be a waste of resources, but in our runtime
+design (see details in \autoref{sec:runtime}), the raw data can enjoy a free
+ride during the bandwidth probing.
 
-\sysname{} currently uses raw data as the reference and allocates additional
-bandwidth to back-haul raw data. Allocating additional bandwidth may seem to be
-a waste of resources, but in our runtime design (see details in
-\autoref{sec:runtime}), the raw data can enjoy a free ride during the bandwidth
-probing.
-
-The second challenge is the efficiency of online profiling. If it takes too much
-time, the newly-learned profile may already be stale. \sysname{} uses a
-combination of parallelism and sampling techniques to speed up this process.
+Second, exhaustive profiling is expensive at online. If it takes too much time,
+the newly-learned profile may already be stale. \sysname{} uses a combination of
+parallelism and sampling techniques to speed up this process.
 
 (i) Degradation-aware parallelization: Evaluating each configuration takes a
 different amount of time. Typically, an increase in the level of degradation

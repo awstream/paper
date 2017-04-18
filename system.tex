@@ -3,12 +3,14 @@
 
 \sysname{} avoids the problems with manual policies or application-specific
 solutions by structuring adaptation as a set of approximate, modular and
-extensible specifications, or APIs. The well-defined structure allows us to
-build a generic profiling tool that learns an accurate relationship (the
-profile) between bandwidth consumption and application accuracy. The accurate
-profile then allows us to build a reactive runtime that achieves low latency and
-high accuracy in the face of bandwidth variation. \autoref{fig:overview} shows
-the high-level design of \sysname{}. We then discuss each stage in turn.
+extensible specifications, or APIs (\autoref{sec:struct-adapt}). The
+well-defined structure allows us to build a generic profiling tool that learns
+an accurate relationship (the profile) between bandwidth consumption and
+application accuracy (\autoref{sec:automatic-profiling}). The accurate profile
+then allows the runtime to react with precision: achieving low latency and high
+accuracy when facing bandwidth variation
+(\autoref{sec:runtime}). \autoref{fig:overview} shows the high-level overview of
+\sysname{}. We then discuss each stage in turn.
 
 \begin{figure}
   \centering

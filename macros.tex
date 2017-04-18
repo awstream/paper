@@ -3,6 +3,7 @@
 \newcommand{\paraf}[1]{\smallskip\noindent\textbf{#1}}
 \newcommand{\todo}[1]{{\color{ACMRed}\bf{TODO: #1}\normalfont}}
 \newcommand{\fixme}[1]{{\color{ACMRed}\bf{FIXME: #1}\normalfont}}
+\newcommand{\question}[1]{{\color{ACMRed}\footnotesize{Q: #1}\normalfont}}
 
 \newcommand{\maybe}{\texttt{maybe}}
 
@@ -15,6 +16,13 @@
 
 \newcommand{\specialcell}[2][c]{%
   \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+    \node[shape=circle,draw,inner sep=0.5pt] (char) {#1};}}
+
+\newcommand*\qe{$\text{Q}_\text{E}$}
+\newcommand*\qc{$\text{Q}_\text{C}$}
+\newcommand*\spd{$\text{S}_\text{ProbeDone}$}
 
 %%% Local Variables:
 %%% mode: latex

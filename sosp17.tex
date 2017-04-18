@@ -17,6 +17,7 @@
 \usepackage{listings}
 \usepackage{multirow}
 \usepackage{subcaption}
+\usepackage{tikz}
 \usepackage{varwidth}
 \usepackage{xcolor}
 
@@ -43,6 +44,9 @@
 \captionsetup[lstlisting]{font={footnotesize}}
 \renewcommand{\lstlistingname}{Example}
 
+\captionsetup[figure]{belowskip=-2pt,aboveskip=5pt}
+\captionsetup[table]{belowskip=2pt, aboveskip=1pt}
+
 \begin{document}
 
 \input{macros}
@@ -55,20 +59,21 @@
   challenge of scarce and variable network bandwidth. Applications without
   adaptation suffer from increased latency or degraded accuracy. Existing
   approaches that adapt to network changes are often application-specific or
-  require extensive developers' effort.
+  require extensive developer effort.
 
-  This paper presents \sysname{}, the first stream processing system that
-  simultaneously achieves low latency and high accuracy in the wide area,
-  requiring minimal developer efforts. To realize this, \sysname{} uses three
-  ideas: (i) it integrates application adaptation as a first-class abstraction
-  in the stream processing model; (ii) with a combination of offline and online
+  This paper presents \sysname{}, a stream processing system that simultaneously
+  achieves low latency and high accuracy in the wide area, requiring minimal
+  developer effort. To realize this, \sysname{} uses three ideas: (i) it
+  integrates application adaptation as a first-class programming abstraction in
+  the stream processing model; (ii) with a combination of offline and online
   profiling, it learns an accurate and precise profile automatically; (iii) at
   runtime, it adjusts the application data rate to match the available
   bandwidth.
 
   We evaluate \sysname{} against three real-world applications: pedestrian
-  detection, augmented reality, distributed Top-k analysis. Our experiments show
-  that \sysname{} can achieve sub-second latency with nominal accuracy drop.
+  detection, augmented reality, and distributed Top-k analysis. Our experiments
+  show that \sysname{} can achieve sub-second latency with nominal accuracy
+  drop.
 \end{abstract}
 
 \maketitle
@@ -87,3 +92,8 @@
 \bibliography{sosp17}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

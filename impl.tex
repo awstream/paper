@@ -7,7 +7,7 @@
     \midrule
     \specialcell{Pedestrian\\Detection}
                 & \specialcell{resolution \\ frame rate \\ quantizer }
-                & F1 score & \specialcell{training: MOT16-04\\testing: MOT16-03} \\
+                & F1 score & \specialcell{MOT16~\cite{milan2016mot16}\\training: MOT16-04\\testing: MOT16-03} \\
     \midrule
     \specialcell{Augmented\\Reality}
                 & \specialcell{resolution \\ frame rate \\ quantizer }
@@ -17,7 +17,7 @@
     \specialcell{Top-k}
                 & \specialcell{head (N) \\ threshold (T) }
                 & \specialcell{Kendall's $\tau$}
-                        & \specialcell{sec.gov access log~\cite{edgarlog} \\ training: 4 days \\
+                        & \specialcell{\href{https://www.sec.gov}{SEC.gov} access logs~\cite{edgarlog} \\ training: 4 days \\
     testing: 16 days} \\
     \bottomrule
   \end{tabular}
@@ -25,7 +25,7 @@
   \label{tab:apps}
 \end{table}
 
-\section{Implementation}
+\section{Implementation and Applications}
 \label{sec:implementation}
 
 While our proposed APIs are general and not language specific, we choose a safe
@@ -73,13 +73,10 @@ deployment manager is currently a shell script.
 %   \label{fig:apps}
 % \end{figure*}
 
-\subsection{Building Applications}
-\label{sec:build-appl}
-
 We've built built three applications: pedestrian detection surveillance, an
-augmented reality, a distributed log analysis to extract the Top-K most access
-files. \autoref{tab:apps} summarizes the application-specific part: knobs,
-utility function, and the dataset we used for training and testing.
+augmented reality, and a distributed log analysis to extract the Top-K most
+access files. \autoref{tab:apps} summarizes the application-specific part:
+knobs, utility function, and the dataset we used for training and testing.
 
 \para{Pedestrian Detection:} This application analyzes streams of videos from
 installed CCTV cameras and detects pedestrians inside. We implement
@@ -94,26 +91,28 @@ pipeline that exposes \texttt{appsrc} (to feed raw image data) and
 \texttt{appsink} (to get encoded bytes). The GStreamer main loop is managed in a
 separate thread and \sysname{} communicates with it via Rust's channel. The
 \texttt{x264enc} is configured with \texttt{zerolatency} preset and uses four
-threads. Constant quality encoding is used and the quantizer is exposed as a
-parameter that can be tuned.
+threads. We use constant quality encoding and expose the quantizer as another
+knob.
 
 Pedestrian detection returns a list of bounding boxes, and each box is a
 rectangle with normalized coordinates on the image. The detection is compared
-against the reference result from raw data. A successful detection is defined
-when the intersection over union (IOU) is greater than
-50\%~\cite{everingham2010pascal}. The utility function is F1 score (\%), the
-harmonic mean of precision and recall~\cite{Rijsbergen:1979:IR:539927}.
+against the reference result from raw data. A detection is successful if the
+intersection over union (IOU) is greater than
+50\%~\cite{everingham2010pascal}. We use F1 score
+(\%)~\cite{Rijsbergen:1979:IR:539927} as the accuracy function and MOT16
+dataset~\cite{milan2016mot16} for training and testing.
 
 \para{Augmented Reality:} We target at mobile augmented reality applications
-that offload the heavy computation to resources elsewhere. Even when the
-offloading server is nearby~\cite{satyanarayanan2009case, zhang2015cloud}, the
-wireless communication link is also susceptible to capacity variation.
+that recognizes objects by offloading the heavy computation to resources
+elsewhere. Even when the offloading server is
+nearby~\cite{satyanarayanan2009case, zhang2015cloud}, the wireless communication
+link is still susceptible to capacity variation.
 
 We use a similar setup (OpenCV and GStreamer) as the pedestrian detection except
-for the actual analytical functions. To recognize objects, we use a a
-pre-trained neural network~\cite{darknet13, redmon2016yolo9000} with the
-GPU-accelerated implementation for real-time processing. Here, a successful
-detection also requires matching the object type in addition to IOU criteria.
+for the actual analytical function. To recognize objects, we use a pre-trained
+neural network~\cite{darknet13, redmon2016yolo9000} with a GPU-accelerated
+implementation for real-time processing. In this case, a successful detection
+requires matching the object type in addition to IOU criteria.
 
 \para{Distributed Top-K:} Many monitoring applications need to answer the
 \textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
@@ -141,11 +140,18 @@ The edge nodes perform two degradation operations: (1) a head (\texttt{N})
 operation that only takes the top \texttt{N} entries; (2) a threshold \texttt{T}
 that filters small entries. These two operations are not orthognal to each
 other. Their impact on data size reduction and quality degradation depends on
-the distribution of the actual data. For the accuracy, we use Kendall's
-$\tau$~\cite{abdi2007kendall}. It is a correlation measure of the concordance
-between two ranked list. The output ranges from -1 to 1, representing no
-agreement to complete agreement, respectively. To integrate with \sysname{}, we
-convert the measure with a linear transformation to the range of [0, 1].
+the distribution of the actual data. The accuracy function is
+Kendall's~$\tau$~\cite{abdi2007kendall}. It is a correlation measure of the
+concordance between two ranked list. The output ranges from -1 to 1,
+representing no agreement to complete agreement, respectively. To integrate with
+\sysname{}, we convert the measure with a linear transformation to the range of
+[0, 1].
+
+Our Top-K application aims to find the fifty most accessed files from web server
+logs. We use Apache logs files that record and store user access statistics for
+the \href{https://www.sec.gov}{SEC.gov} website. These log files are split into
+four groups, simulating four geo-distributed nodes. We also compress an hour's
+logs into one second to match the load of popular web servers.
 
 %%% Local Variables:
 %%% mode: latex
