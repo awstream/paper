@@ -55,25 +55,23 @@
 \gdef\addresses{Paper \textbf{\#200}, 12 pages}
 
 \begin{abstract}
-  In the wide area, the emerging class of streaming analytics faces the
-  challenge of scarce and variable network bandwidth. Applications without
-  adaptation suffer from increased latency or degraded accuracy. Existing
-  approaches that adapt to network changes are often application-specific or
-  require extensive developer effort.
+  The emerging class of wide-area streaming analytics faces the challenge of
+  scarce and variable WAN bandwidth. Applications that solely rely on
+  transport protocols like TCP and UDP suffer from increased latency or degraded
+  accuracy. Existing approaches that adapt to network changes are often
+  application-specific or require extensive developer effort.
 
-  This paper presents \sysname{}, a stream processing system that simultaneously
-  achieves low latency and high accuracy in the wide area, requiring minimal
-  developer effort. To realize this, \sysname{} uses three ideas: (i) it
-  integrates application adaptation as a first-class programming abstraction in
-  the stream processing model; (ii) with a combination of offline and online
-  profiling, it learns an accurate and precise profile automatically; (iii) at
-  runtime, it adjusts the application data rate to match the available
-  bandwidth.
-
-  We evaluate \sysname{} against three real-world applications: pedestrian
-  detection, augmented reality, and distributed Top-k analysis. Our experiments
-  show that \sysname{} can achieve sub-second latency with nominal accuracy
-  drop.
+  We present \sysname{}, a stream processing system that simultaneously achieves
+  low latency and high accuracy in the wide area, requiring minimal developer
+  effort. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
+  application adaptation as a first-class programming abstraction in the stream
+  processing model; $(ii)$ with a combination of offline and online profiling,
+  it automatically learns an accurate and precise profile to model accuracy and
+  bandwidth trade-off; $(iii)$ at runtime, it adjusts the application data rate
+  to match the available bandwidth. We evaluate \sysname{} against three
+  real-world applications: pedestrian detection, augmented reality, and
+  monitoring log analysis. Our experiments show that \sysname{} achieves
+  sub-second latency with nominal accuracy drop.
 \end{abstract}
 
 \maketitle
