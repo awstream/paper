@@ -12,9 +12,9 @@ content delivery networks (CDNs), analyze user requests from machine logs over t
 globe~\cite{mukerjee2015practical}. These applications need to transport,
 distill and analyze streams of data across the wide area in real time.
 
-Most existing stream processing systems, such as
-Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized},
-and VideoStorm~\cite{zhang2017live}, targets to work within a single datacenter.
+Existing stream processing systems, such as Storm~\cite{toshniwal2014storm},
+Spark Streaming~\cite{zaharia2013discretized}, and
+VideoStorm~\cite{zhang2017live}, targets to work within a single datacenter.
 While they are capable of handling large streams of data, they assume the
 network is not the bottleneck, which is usually the case for high-bandwidth
 datacenter networks. However, the bandwidth in the wide-area network (WAN) is
@@ -46,11 +46,8 @@ decision within the design space of data freshness and data fidelity
   \centering
   \includegraphics[width=0.9\columnwidth]{figures/figure1a.pdf}
   \caption{The trade-off space between data freshness and data fidelity when
-    facing insufficient bandwidth. Data collected for our augmented reality
-    application. \question{How detailed should we explain the experiment setup?}
-    Manual policies are derived from~\cite{rabkin2014aggregation};
-    application-specific optimizations is PD's profile for AR. We defer the
-    details on how data is collected to \autoref{sec:evaluation}.}
+    facing insufficient bandwidth. \autoref{sec:runtime-adaptation} describes
+    the details on experiments and data for this figure.}
   \label{fig:intro}
   \vspace{-1em}
 \end{figure}

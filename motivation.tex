@@ -35,28 +35,34 @@ involved in analyzing abnormal activities. Recent advances in computer vision
 and deep learning have dramatically increased the accuracy for visual scenes
 analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
 tracking~\cite{coifman1998real}, or facial recognition to locate people of
-interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}. Newer surveillance
+interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}. While some
+surveillance networks use dedicated links, an increasing number of surveillance
 systems, such as Dropcam~\cite{dropcam} and Vigil~\cite{zhang2015design}, use
-the public Internet and wireless links to reduce the cost of deploying and
-running the surveillance network.
+the public Internet and wireless links to reduce the cost of deployment and
+management.
 
 % \para{High-frequency IoT Sensors:} Although environmental sensors used to be
 % slow and not data-intensive~\cite{atzori2010internet}, increasingly,
-% high-frequency, high-precision sensors are deployed. For example, uPMUs monitor
-% the electrical grid with a network of 1000 devices; each produces 12 streams of
-% 120 Hz high-precision values accurate to 100 ns. This amounts to 1.4 million
-% points per second~\cite{andersen2016btrdb}.
+% high-frequency, high-precision sensors are deployed. For example, uPMUs
+% monitor the electrical grid with a network of 1000 devices; each produces 12
+% streams of 120 Hz high-precision values accurate to 100 ns. This amounts to
+% 1.4 million points per second~\cite{andersen2016btrdb}.
 
 \para{Infrastructure Monitoring:} Large organizations today are managing
 10--100s of data centers (DCs) and edge clusters
 worldwide~\cite{calder2013mapping}. This geo-distributed infrastructure
 continuously produces large volumes of data like data access logs, server
 monitoring logs, and performance counters~\cite{pu2015low,
-  rabkin2014aggregation}. While most log analysis today runs in a batch mode on
-a daily basis, there is trend towards analyzing logs in real-time for quicker
-optimization. For example, a content distribution network (CDN) can improve the
-overall efficiency by optimizing data placement if the access logs can be
-processed in real-time.
+  alspaugh2014analyzing, vulimiri2015global}. While most log analysis today runs
+in a batch mode on a daily basis, there is a trend towards analyzing logs in
+real-time for quicker optimization~\cite{rabkin2014aggregation}. For example, a
+content distribution network (CDN) can improve the overall efficiency by
+optimizing data placement if the access logs can be processed in real time.
+
+%% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
+%% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
+%% hours, generating and processing over 200 TB of random data. We collected
+%% over 24 million lines of logs from HDFS.
 
 % We consider the practical issues with deploying these applications in the
 % wide-area. Our stand is that these applications face a bigger network
@@ -68,16 +74,16 @@ processed in real-time.
 \subsection{Wide-area Bandwidth Characteristics}
 \label{sec:wide-area-bandwidth}
 
-Recent works on WAN-aware systems have all demonstrated that WAN bandwidth is
-insufficient and costly~\cite{pu2015low, vulimiri2015global,
-  vulimiri2015wananlytics, hsieh17gaia}. Using Amazon EC2 as a case study, the
-WAN bandwidth capacity is 15x smaller than their LAN bandwidth on average, and
-up to 60x smaller in the worst case~\cite{hsieh17gaia}. In terms of pricing, as
-of April 2017, the average WAN bandwidth cost is up to 38x of the cost of
-renting two machines~\cite{amazon2017pricing}.
+WAN bandwidth is insufficient and costly, as demonstrated by many WAN-aware
+systems~\cite{pu2015low, vulimiri2015global, vulimiri2015wananlytics,
+  hsieh17gaia}. Using Amazon EC2 as a case study, the WAN bandwidth capacity is
+15x smaller than their LAN bandwidth on average, and up to 60x smaller in the
+worst case~\cite{hsieh17gaia}. In terms of pricing, as of April 2017, the
+average WAN bandwidth cost is up to 38x of the cost of renting two
+machines~\cite{amazon2017pricing}.
 
-In addition to the scarcity and cost, the variability also affects our WAN
-streaming workload. We conducted a day-long measurement using
+In addition to the scarcity and cost, the large variability of WAN bandwidth
+also affects our streaming workload. We conducted a day-long measurement using
 iPerf~\cite{iperf3} to measure the pair-wise bandwidth between four Amazon EC2
 sites. The results show large variance in all pairs, and \autoref{fig:bw} is one
 such pair. There are occasions that available bandwidth is below 25\% of the
@@ -92,13 +98,13 @@ cellular networks~\cite{nikravesh2014mobile}.
 \subsection{Making the Case for a System Approach}
 \label{sec:making-case-sys-approach}
 
-In addressing the bandwidth limits, existing solutions include manual policies
-or application-specific solutions. We discuss their drawbacks to make the case
-for a system approach.
+To address the bandwidth limits, existing solutions include manual policies and
+application-specific solutions. We discuss their drawbacks to make the case for
+a system approach.
 
 \para{Manual polices are sub-optimal.} While existing works such as
 JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} allow
-adaptation, they require developers to write manual policies. We discuss the
+adaptation, they require developers to write manual policies. We illustrate the
 issues with manual policies with the following
 example~\cite{rabkin2014aggregation}: \textit{if bandwidth is insufficient,
   switch to sending images at 75\% fidelity, then 50\% if there still isn't
@@ -111,8 +117,9 @@ necessarily lead to 75\% application accuracy. In terms of bandwidth, naively
 one would think that reducing the frame rate by by half will also half the data
 rate. However, if video encoding such as H.264~\cite{richardson2011h} is used,
 when we reduce the frame rate, it increases the inter-frame difference and
-creates larger P-frames. \autoref{fig:app-specific}(e) shows that reducing the
-frame rate to one-third, the bandwidth consumption is still more than 50\%.
+creates larger P-frames. \hyperref[fig:app-specific]{Fig.~3e} shows that
+reducing the frame rate to one-third, the bandwidth consumption is still more
+than 50\%.
 
 Such specification is not scalable. When the policy involves multiple dimensions
 or developers desire a fine-grain control, the policy will end up with too many
@@ -124,7 +131,7 @@ impact of individual operations, prohibiting its wide adoption in practice.
 \para{Application-specific solutions don't generalize.} Because each application
 has a different performance metric, relies on different features, targets at
 different data distributions, a fine-tuned policy for one application will work
-poorly when applied to another application.
+poorly for another application.
 
 Analytical applications have their own goals, entailing different metrics to
 optimize. Traditional video streaming focuses on end-users'
@@ -135,9 +142,9 @@ an unnecessarily-high frame rate.
 Each algorithm relies on different features from the data. For example, many
 computer vision detection algorithms depend on the edge
 information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
-while object tracking applications~\cite{allen2004object} work best when the
-inter-frame difference is small. The former is sensitive to resolution while the
-latter to frame rate.
+while object tracking~\cite{allen2004object} works best when the inter-frame
+difference is small. The former is sensitive to resolution changes while the
+latter frame rate changes.
 
 Similar applications face different data distributions. Compare the stationary
 camera detecting pedestrians with the mobile camera recognizing objects

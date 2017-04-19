@@ -18,11 +18,12 @@ operators for stream processing. Recent research projects and open-source
 systems, such as MillWheel~\cite{akidau2013millwheel},
 Storm~\cite{toshniwal2014storm}, Heron~\cite{sanjeev2015twitter}, Spark
 Streaming~\cite{zaharia2013discretized}, Apache Flink~\cite{carbone2015apache},
-primary focus on fault-tolerant streaming in the context of a single
-cluster. While our work has a large debt to the prior streaming work, \sysname{}
-is designed for the wide area and explicitly trades data fidelity for data
-freshness. In contrast, these stream processing systems often choose to throttle
-the source when backpressure happens.
+primarily focus on fault-tolerant streaming in the context of a single
+cluster. While our work has a large debt to the prior streaming works,
+\sysname{} is designed for the wide area and explicitly explore the trade-off
+between data fidelity and data freshness. In contrast, these stream processing
+systems often use TCP and choose to throttle the source when back pressure
+happens.
 
 \para{Approximate analytics:} The idea of degrading computation fidelity for
 responsiveness has also been explored in other contexts. For SQL queries, online
@@ -40,20 +41,20 @@ emerging application domain especially with the advent of IoT.
 \para{WAN-aware systems:} The main challenge in designing geo-distributed
 systems is to cope with high latency and limited bandwidth. While some research
 projects, such as Vivace~\cite{cho2012surviving}, assume the network can
-prioritize a small amount of critical data to avoid delays even under
-congestion, most systems reduce data transfer in the first place to avoid
-congestion. For example, LBFS~\cite{muthitacharoen2001low} exploits similarities
-between files or versions of the same file. Over the past few years, we have
-seen a plethora of geo-distributed analytical frameworks:
+prioritize a small amount of critical data to avoid delays under congestion,
+most systems reduce data transfer in the first place to avoid congestion. For
+example, LBFS~\cite{muthitacharoen2001low} exploits similarities between files
+or versions of the same file. Over the past few years, we have seen a plethora
+of geo-distributed analytical frameworks:
 WANalytics~\cite{vulimiri2015wananlytics}, Geode~\cite{vulimiri2015global},
 Iridium~\cite{pu2015low}, Pixida~\cite{kloudas2015pixida},
 Clarinet~\cite{viswanathan2016clarinet}, etc. They minimize data movement by
 incorporating heterogeneous wide-area bandwidth information into query
 optimization and data/task placement. While effective in improving analytics
-efficiency, they focus on batch analytics such as MapReduce tasks or SQL
-query. Such tasks are often executed once, with little real time constrain. In
-contrast, \sysname{} focuses on streaming analytics that process streams of data
-continuously in real time.
+efficiency, most of these works focus on batch tasks such as MapReduce jobs or
+SQL query. Such tasks are often executed once, with little real time
+constrain. In contrast, \sysname{} focuses on streaming analytics that process
+streams of data continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.
@@ -78,16 +79,16 @@ continuously in real time.
 %% wide-area analytics.
 
 \para{Adaptive video streaming:} Designing a good adaptation strategy to improve
-QoE for video streaming has been a hot topic. Research
+QoE for video streaming has been a hot topic, including research
 projects~\cite{yin2015control, sun2016cs2p} and industrial efforts
-HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
-  michalos2012dynamic}. Despite fruitful, their results are not directly
-transferable to the wide-area streaming analytics. \sysname{} attempts at a
-generalization with \maybe{} APIs to allows more custom control over what
-parameters can be adjusted. \sysname{} is not competing with video streaming
-technologies. Instead, our APIs are extensible to incorporate techniques such as
+(HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
+  michalos2012dynamic}). Because they optimize QoE for humans, their results are
+not directly transferable to wide-area streaming analytics. In comparison,
+\sysname{} generalizes adaptation by providing \maybe{} APIs to allows more
+custom control over what parameters can be tuned. In this way, \sysname{} can
+effectively integrate existing and future techniques in video streaming, such as
 video encoding (H.264~\cite{richardson2011h} or VP9~\cite{grange2016vp9}). The
-main contribution of \sysname{} here is to provide a system for arbitrary
+main contribution of \sysname{} here is to provide a system for a wide range of
 streaming analytics to benefit from adaptation.
 
 %% TCP, for example, adapts to available bandwidth by controlling the congestion

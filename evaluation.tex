@@ -136,15 +136,15 @@ profiling efficiency. We then present the evaluations as follows.
   \end{subfigure}
   \\
   \vspace{1.5em}
-  \begin{subfigure}[t]{0.48\columnwidth}
+  \begin{subfigure}[t]{0.49\columnwidth}
     \includegraphics[width=\textwidth]{figures/online3.pdf}
-    \caption{Online (partial)}
+    \caption{Partial data}
     \label{fig:online-partial}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.48\columnwidth}
+  \begin{subfigure}[t]{0.49\columnwidth}
     \includegraphics[width=\textwidth]{figures/online4.pdf}
-    \caption{Online (trigger)}
+    \caption{Partial configurations}
     \label{fig:online-trigger}
   \end{subfigure}
   \caption{The bandwidth estimation of various profiling schemes. The horizontal
@@ -171,25 +171,26 @@ profiling efficiency. We then present the evaluations as follows.
   \label{tab:online}
 \end{table}
 
-\para{Parallelism reduces the profiling time}. Because evaluating each
-individual configuration is independent of other configurations, we parallelize
-the profiling task by assigning configurations to GPUs. (i) In the offline
-profiling, because we do not assume a performance model among the
-configurations, the assignment is random. \autoref{fig:parallel} shows that with
-the increased number of GPUs, the profiling overhead reduces significantly (from
-52X to 4X with 30 GPUs). (ii) The saving is further improved during the online
-profiling. The processing times during the offline profiling help schedule the
-assignment. With LPT assignment, the overhead is reduced to 1.75X with 30 GPUs.
+\para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
+evaluating each individual configuration is independent of other configurations,
+we parallelize the profiling task by assigning configurations to GPUs. $(i)$~In
+the offline profiling, because we do not assume a performance model among the
+configurations, the assignment is random. With the increased number of GPUs, the
+profiling overhead reduces significantly (from 52X to 4X with 30
+GPUs). $(ii)$~The saving is further improved during the online profiling. The
+processing times during the offline profiling help schedule the assignment. With
+LPT assignment, the overhead is reduced to 1.75X with 30 GPUs.
 
-\para{Partial and trigger-based online profiling.} Before we evaluate these two
-schemes, we validate the \textit{concept drifts} issue with real-world data. We
-use the profile trained over a video clip of the office environment. Suppose
-there is 11 mbps available bandwidth, according to the profile, the application
-should operate at a configuration of 1280x720 resolution, 30 FPS and a
-quantization factor of 20. The test video is collected in a home environment. At
-about 100 seconds, the camera points out of the window to detect objects on the
-street.  Because of the scene change, the configuration fails to predict the
-actual bandwidth, as illustrated in \autoref{fig:offline}.
+\para{Sampling-based techniques speed up online profiling
+  (\autoref{fig:online}).} Before we evaluate these two schemes, we validate the
+\textit{concept drifts} issue with real-world data. We use the profile trained
+over a video clip of the office environment. Suppose there is 11 mbps available
+bandwidth, according to the profile, the application should operate at a
+configuration of 1280x720 resolution, 30 FPS and a quantization factor of
+20. The test video is collected in a home environment. At about 100 seconds, the
+camera points out of the window to detect objects on the street.  Because of the
+scene change, the configuration fails to predict the actual bandwidth, as
+illustrated in \autoref{fig:offline}.
 
 To correct the profile, if we continuously run the profiling online and update
 the strategy, the application will be able to predict the right bandwidth
@@ -218,11 +219,11 @@ bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%. With our
 test data, such a trigger-based profiling is enough to correct the profile.  And
 the overhead is reduced to 6X because we run full profiling less often.
 
-When we combine the parallelization and partial/trigger-based profiling, we can
-further reduce the profiling overhead. For example, scheduling five GPUs running
-5 configurations continuously to check for concept drifts will reduce the
-overhead to almost 1X. How much resources to use will depend on the budget and
-the importance of the job.
+When we combine the parallelization and sampling-based profiling, we can further
+reduce the profiling overhead. For example, scheduling five GPUs running 5
+configurations continuously to check for concept drifts will reduce the overhead
+to almost 1X. How much resources to use will depend on the budget and the
+importance of the job.
 
 \begin{figure*}
   \begin{subfigure}{\linewidth}
@@ -354,12 +355,12 @@ design space:
 \item Streaming over TCP favors fidelity over freshness.
 \item Streaming over UDP favors freshness over fidelity.
 \item Manual policies have limited rules with coarse-granularity. A sudden
-  increase from one rule to another rule incurs large latency (\textasciitilde 5
+  change from one rule to another incurs large latency (\textasciitilde 5
   seconds).
 \item Application-specific solutions suffer from accuracy drop. PD's profile has
   configurations that reduce frame rate aggressively; these configurations work
   poorly for AR.
-\item \sysname{} balances fidelity and freshness simultaneously.
+\item \sysname{} achieves both data fidelity and freshness.
 \end{itemize}
 
 \subsection{Resource Allocation and Fairness}

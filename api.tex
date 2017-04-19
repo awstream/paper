@@ -40,14 +40,14 @@ where each operator transforms input streams into new streams. \sysname{}
 borrows the same computation model. We list some example operators, such as
 \texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
 
-Along with normal operators, \sysname{} integrates special \maybe{} operators
-that degrades the data quality, yielding potential bandwidth savings. Our API
-design has three considerations: (i)~to free developers from specifying exact
-rules, the API should tolerate approximate specifications; (ii)~to allow
-combining multiple dimensions, the API should be modular: each operator is a
-unit and developer can chain multiple operators; (iii)~to support flexible
-integration with arbitrary degradation functions, the API should take
-user-defined functions (UDFs). Therefore, our API is,
+\sysname{} integrates new \maybe{} operators that degrades the data quality,
+yielding potential bandwidth savings. Our API design has three considerations:
+(i)~to free developers from specifying exact rules, the API should tolerate
+approximate specifications; (ii)~to allow combining multiple dimensions, the API
+should be modular: each operator is a unit and developer can chain multiple
+operators; (iii)~to support flexible integration with arbitrary degradation
+functions, the API should take user-defined functions (UDFs). Therefore, our API
+is,
 
 \vspace{-2pt}
 \begin{lstlisting}
@@ -75,7 +75,7 @@ will change according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will
-optionally takes the top values of the \textit{list}; and
+optionally takes the top values of a \textit{list}; and
 \texttt{maybe\_downsample} can adjust the \textit{image} resolution to a
 configured target. \sysname{} provides a few such operations as a library for
 developers (\autoref{tab:operators}).
@@ -84,8 +84,8 @@ With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
 can now be implemented as follows:
 
 \vspace{-2pt}
-\begin{lstlisting}[caption={Video Processing Example}, label={lst:ex}]
-   let app = Camera::new((1920, 1080, 30))
+\begin{lstlisting}
+   let app = Camera::new((1920, 1080), 30)
       .maybe_downsample(vec![(1600, 900), (1280, 720)])
       .maybe_skip(vec![2, 5])
       .map(|frame| frame.show())
