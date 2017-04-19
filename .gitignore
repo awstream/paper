@@ -1,5 +1,9 @@
 .DS_Store
 
+## sublime
+*.sublime-project
+*.sublime-workspace
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
