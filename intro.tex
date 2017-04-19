@@ -5,32 +5,33 @@ Wide-area streaming analytics are becoming pervasive, especially with the
 emerging class of Internet of Things (IoT) applications.  Large cities such as
 London and Beijing have deployed millions of cameras for surveillance and
 traffic control~\cite{london.surveillance, skynet}. Buildings are increasingly
-equipped with a wide variety of sensors to improve building energy use, occupant
+equipped with a wide variety of sensors to improve energy efficiency, occupant
 comfort, reliability and
-maintenance~\cite{krioukov2012building}. Geo-distributed infrastructure, such as
-content delivery network (CDN) analyzes user requests from machine logs over the
+maintenance~\cite{krioukov2012building}. Geo-distributed infrastructures, such as
+content delivery networks (CDNs), analyze user requests from machine logs over the
 globe~\cite{mukerjee2015practical}. These applications need to transport,
 distill and analyze streams of data across the wide area in real time.
 
-While existing stream processing systems and specialized analytical engines,
-such as Spark Streaming~\cite{zaharia2013discretized},
-Storm~\cite{toshniwal2014storm}, and VideoStorm~\cite{zhang2017live}, are
-capable of handling large streams of data, they are designed to work inside a
-high-bandwidth network, such as a single data center (DC). The bandwidth across
-the wide area is significantly limited~\cite{hsieh17gaia,
-  vulimiri2015global}. Recent studies show that the growth of the WAN bandwidth
-has been decelerating for many years~\cite{global2016telegeography} while
-traffic demands grows at a staggering rate~\cite{index2013zettabyte}.
+Most existing stream processing systems, such as
+Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized},
+and VideoStorm~\cite{zhang2017live}, targets to work within a single datacenter.
+While they are capable of handling large streams of data, they assume the
+network is not the bottleneck, which is usually the case for high-bandwidth
+datacenter networks. However, the bandwidth in the wide-area network (WAN) is
+significantly limited~\cite{hsieh17gaia, vulimiri2015global}. Recent studies
+show that the growth of WAN bandwidth has been decelerating for many
+years~\cite{global2016telegeography} while traffic demands grows at a staggering
+rate~\cite{index2013zettabyte}.
 
-Back-hauling all the data is not only impractical, but also inefficient. Recent
+Back-hauling all the data is impractical and inefficient. Recent
 works on WAN-aware systems promote pushing computations towards the
 edge~\cite{satyanarayanan2009case, rabkin2014aggregation, pu2015low}. However,
-communications are not entirely avoidable for the following reasons: (i)~some
-analytics require joining or aggregating data from multiple geo-distributed
-sites~\cite{pu2015low, viswanathan2016clarinet}; (ii)~the edge benefits
-significantly from central computing resources such as GPU or
-TPU~\cite{abadi2016tensorflow} in the cloud; (iii)~end-devices such as cameras
-or mobile devices suffer from the bandwidth in last-hop wireless
+communications are not entirely avoidable for the following reasons: $(i)$ some
+analytics jobs require joining or aggregating data from multiple geo-distributed
+sites~\cite{pu2015low, viswanathan2016clarinet}; $(ii)$ the edge benefits
+significantly from central computing resources such as GPUs and
+TPUs~\cite{abadi2016tensorflow} in the cloud; $(iii)$ end-devices such as cameras
+and mobile devices suffer from the bandwidth in last-hop wireless
 links~\cite{zhang2015design, abari2017enabling}.
 
 % could improve efficiency (such as GDA pushes queries out; cloudlet
@@ -39,7 +40,7 @@ links~\cite{zhang2015design, abari2017enabling}.
 
 When facing insufficient bandwidth, application developers need to make a
 decision within the design space of data freshness and data fidelity
-(\autoref{fig:intro}):
+(\autoref{fig:intro}).
 
 \begin{figure}
   \centering
@@ -54,27 +55,28 @@ decision within the design space of data freshness and data fidelity
   \vspace{-1em}
 \end{figure}
 
-Applications over existing protocols without adaptation often result in one
-extreme point in the design space. Streaming over TCP ensures a reliable
+First, applications over existing protocols without adaptation often result in one
+extreme design point. Streaming over TCP ensures a reliable
 delivery but the backlogged data increases application latency. Streaming over
 UDP minimizes the latency by sending packets as fast as possible, but
 uncontrolled loss devastates application accuracy.
 
-Manual policies, such as sampling, allow developers to trade data fidelity for
-freshness~\cite{rabkin2014aggregation}. But it's non-trivial to write accurate
-policies without expertise or developer effort. In practice, these policies are
-developer heuristics without measurements backing up, leading to sub-optimal
-performance for both freshness and fidelity.
+Second, manual policies, such as sampling, allow developers to trade data
+fidelity for freshness~\cite{rabkin2014aggregation}. But it's non-trivial to
+write accurate policies without expertise or developer effort. In practice,
+these policies can result in heuristics without measurements backing up, leading
+to sub-optimal performance for both freshness and fidelity.
 
-Application-specific optimizations do not generalize. A fine-tuned algorithm for
-one application will work poorly for another application if performance metrics
-or data distributions have changed. Video streaming, for example, has primarily
-focused on improving quality of experience~\cite{yin2015control}. Because humans
-favor smoothness over image quality, video streaming maintains a high frame
-rate, e.g.~25 FPS. This restriction is unnecessary for other applications, such
-as machine-based video analytics that maximize accuracy.
+Third, application-specific optimizations do not generalize. A fine-tuned
+algorithm for one application will work poorly for another application, if
+performance metrics or data distributions change. Video streaming, for
+example, has primarily focused on improving quality of
+experience~\cite{yin2015control}. Because humans favor smoothness over image
+quality, video streaming maintains a high frame rate, e.g., 25 FPS. This
+restriction is unnecessary for other applications, such as machine-based video
+analytics that maximize accuracy.
 
-In this paper, we present \sysname{}, a stream processing system that
+We present \sysname{}, a stream processing system that
 simultaneously achieves low latency and high accuracy with minimal developer
 effort. The key idea is to build an accurate and precise performance model,
 instead of relying on manual or application-specific policies. \sysname{}'s
@@ -107,17 +109,17 @@ bandwidth, and high accuracy by using Pareto-optimal configurations from the
 profile. Upon network congestion, our rate adaptation algorithm increases the
 degradation level to reduce bandwidth demand, such that no persistent queue
 builds up. To recover, it progressively decreases the degradation level after
-probing for more available bandwidth. The runtime can control application
-behaviors based on the profile in other ways. For a single application,
-developers can limit the maximum allowed bandwidth to reduce WAN cost. For
-multiple applications, the profiles allows bandwidth allocation among competing
-tasks for utility-fairness, i.e. maximizing the minimal accuracy.
+probing for more available bandwidth. The runtime also provides additional
+options for developers to control application behaviors, e.g., limiting the
+maximum allowed bandwidth to reduce WAN cost. For multiple applications, the
+profiles allows bandwidth allocation among competing tasks for utility-fairness,
+i.e. maximizing the minimal accuracy.
 
-To evaluate \sysname{}, we've built three streaming applications: pedestrian
-detection (PD), augmented reality (AR), and a distributed Top-K (TK). We use
+To evaluate \sysname{}, we have built three streaming applications: pedestrian
+detection (PD), augmented reality (AR), and monitoring log analysis (LA). We use
 real-world data to profile these applications and evaluate their runtime
-performance using geo-distributed infrastructure. Our contributions and
-evaluation results are summarized as follows:
+performance on a geo-distributed public cloud. Our contributions and
+evaluation results are summarized as follows.
 
 \begin{itemize}[leftmargin=16pt]
 
@@ -132,7 +134,7 @@ evaluation results are summarized as follows:
 \item Using runtime experiments on geo-distributed EC2 nodes, \sysname{}
   achieves low latency and high accuracy simultaneously for all applications:
   sub-second latency and 5\% accuracy drop for video analytics, 4-second latency
-  and 6\% accuracy drop for TK.
+  and 6\% accuracy drop for LA.
 
 \end{itemize}
 
