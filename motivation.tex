@@ -132,21 +132,22 @@ has a different performance metric, relies on different features, and targets
 different data distributions, a fine-tuned policy for one application will probably work
 poorly for others.
 
-Analytical applications have their own goals, entailing different optimization metrics. 
+Analytical applications have their own goals, entailing different optimization metrics and
+different algorithms.
 %
 %For instance, traditional video streaming focuses on end-users'
 %experience~\cite{yin2015control, michalos2012dynamic, pantos2016http}. If we
 %transfer their techniques to %machine-based video analytics, the %system maintains
 %an unnecessarily-high frame rate.
 %
-For instance, each video algorithm relies on different features from the data. For example, computer
-vision detection algorithms depend on the edge
+In video analytics, for instance,
+object detection algorithms depend on the edge
 information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
 while object tracking~\cite{allen2004object} works best when the inter-frame
 difference is small. The former is sensitive to resolution changes while the
 latter frame rate changes.
 
-Also, similar applications face different data distributions. Compare the stationary
+Similar applications face different data distributions. Compare the stationary
 camera detecting pedestrians with the mobile camera recognizing objects
 (\autoref{fig:app-specific}). In the former case, when we take the pedestrians'
 walking speed into consideration, a high frame rate is not necessary. But

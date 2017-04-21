@@ -117,6 +117,59 @@ profiling efficiency; we present their evaluations as follows.
   \label{fig:parallel}
 \end{figure}
 
+\para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
+evaluating each individual configuration is independent of other configurations,
+we parallelize the profiling task by assigning configurations to GPUs.
+$(i)$~The offline profiling assigns configurations to machines randomly. 
+With the increased number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.
+$(ii)$~The saving is further improved during online profiling
+when we assign configurations based on the processing times collected during offline.
+\sysname{} currently uses LPT assignment and can reduce the overhead to 1.75X with 30 GPUs.
+
+\para{Sampling-based techniques speed up online profiling
+  (\autoref{fig:online-tricks}).} Before we evaluate the speed up, we validate the
+\textit{model drifts} issue with real-world data. We use the profile trained
+over a video clip of the office environment. Suppose there is 11 mbps available
+bandwidth, according to the profile, the application should operate at a
+configuration of 1280x720 resolution, 30 FPS and a quantization of 20. The test
+video captures a home environment. At about 100 seconds, the camera points out
+of the window to detect objects on the street.  Because of the scene change, the
+configuration fails to predict runtime bandwidth, as illustrated in
+\autoref{fig:offline}.
+
+To correct the profile, if we continuously run the profiling online and update
+the profile, the application will choose the right configuration to meet the bandwidth limit.
+\autoref{fig:online} shows the bandwidth prediction when we continuously
+profile with the past chunk (30 seconds of video). At time t=120s, the new
+prediction matches the test data. The downside of a continuous profiling, as
+discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
+parallelism, two more techniques are useful for online profiling
+(\autoref{tab:online} summarizes their savings):
+
+(i) Partial data: Instead of using all the past data, we run profiling with only
+a fraction of the raw data.
+\autoref{fig:online-partial} shows the bandwidth prediction if we only use 10
+seconds of data out of the past 30 seconds. In this way, although the profile
+may be less accurate (the mis-prediction at 80--100 seconds), and there is a
+delay in reacting to data change (the mis-prediction is corrected after 125
+seconds), we save the online profiling by 3$\times$ (from 52X to 17X).
+
+(ii) Partial configurations: If we use the past profile as a reference and only
+measure a subset of all Pareto-optimal configurations, the savings can be
+substantial. A full profiling is only triggered if there is a significant
+difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
+evaluate 5 configurations continuously and trigger a full profiling when the
+bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.
+For our test data, this scheme is enough to correct model drifts by predicting an accurate bandwidth usage
+(compare \autoref{fig:online} and \autoref{fig:online-trigger}).
+The overhead reduces to 6X because we run full profiling less often.
+
+When we combine the parallelization and sampling-based profiling, we can further
+reduce the profiling overhead. For example, scheduling five GPUs running 5
+configurations continuously to check for model drifts will reduce the overhead
+to 1X\@. The amount of resources to use will depend on the budget and the importance
+of the job.
+
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.48\columnwidth}
@@ -161,69 +214,19 @@ profiling efficiency; we present their evaluations as follows.
   \centering
   \begin{tabular}{c c c}
     \toprule
-    online scheme & overhead & savings \\
+    online scheme & overhead & improvements \\
     \midrule
-    continous & 52X & 1x \\
-    partial data & 17X & 3x\\
-    partial configurations & 6X & 8.7x \\
+    continuous & 52X & baseline \\
+    partial data & 17X & 3$\times$\\
+    partial configurations & 6X & 8.7$\times$ \\
     \bottomrule
   \end{tabular}
-  \caption{Sampling-based profiling speeds up the profiling.}
+  \caption{Sampling-based profiling speeds up the profiling. We use X to denote the overhead of processing one-second worth of data; and $\times$ for the savings in comparison to continuous profiling.}
   \label{tab:online}
 \end{table}
 
-\para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
-evaluating each individual configuration is independent of other configurations,
-we parallelize the profiling task by assigning configurations to GPUs.
-$(i)$~The offline profiling assigns configurations to machines randomly. 
-With the increased number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.
-$(ii)$~The saving is further improved during online profiling
-when we assign configurations based on the processing times collected during offline.
-\sysname{} currently uses LPT assignment and can reduce the overhead to 1.75X with 30 GPUs.
-
-\para{Sampling-based techniques speed up online profiling
-  (\autoref{fig:online}).} Before we evaluate the speed up, we validate the
-\textit{concept drifts} issue with real-world data. We use the profile trained
-over a video clip of the office environment. Suppose there is 11 mbps available
-bandwidth, according to the profile, the application should operate at a
-configuration of 1280x720 resolution, 30 FPS and a quantization of 20. The test
-video captures a home environment. At about 100 seconds, the camera points out
-of the window to detect objects on the street.  Because of the scene change, the
-configuration fails to predict runtime bandwidth, as illustrated in
-\autoref{fig:offline}.
-
-To correct the profile, if we continuously run the profiling online and update
-the profile, the application will choose the right configuration to meet the bandwidth limit.
-\autoref{fig:online} shows the bandwidth prediction when we continuously
-profile with the past chunk (30 seconds of video). At time t=120s, the new
-prediction matches the test data. The downside of a continuous profiling, as
-discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
-parallelism, two more techniques are useful for online profiling
-(\autoref{tab:online} summarizes their savings):
-
-(i) Partial data: Instead of using all the past data, we run profiling with only
-a fraction of the raw data.
-\autoref{fig:online-partial} shows the bandwidth prediction if we only use 10
-seconds of data out of the past 30 seconds. In this way, although the profile
-may be less accurate (the mis-prediction at 80--100 seconds), and there is a
-delay in reacting to data change (the mis-prediction is corrected after 125
-seconds), we save the online profiling by 3x (from 52X to 17X).
-
-(ii) Partial configurations: If we use the past profile as a reference and only
-measure a subset of all Pareto-optimal configurations, the savings can be
-substantial. A full profiling is only triggered if there is a significant
-difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
-evaluate 5 configurations continously and trigger a full profiling when the
-bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.
-For our test data, this scheme is enough to correct concepts drifts by predicting an accurate bandwidth usage
-(compare \autoref{fig:online} and \autoref{fig:online-trigger}).
-The overhead reduces to 6X because we run full profiling less often.
-
-When we combine the parallelization and sampling-based profiling, we can further
-reduce the profiling overhead. For example, scheduling five GPUs running 5
-configurations continuously to check for concept drifts will reduce the overhead
-to 1X\@. The amount of resources to use will depend on the budget and the importance
-of the job.
+%% Note that it is not always needed to do online profiling. PD's test data doesn't exhibit model drift.
+%% Nor is online profiling always expensive. Processing TK over all configurations.
 
 \begin{figure*}
   \begin{subfigure}{\linewidth}
@@ -234,20 +237,20 @@ of the job.
   \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
-    \caption{Pedestrian Detection}
+    \caption{Pedestrian Detection (PD)}
     \label{fig:pd-runtime}
   \end{subfigure}
   \hfill
   \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
-    \caption{Augmented Reality}
+    \caption{Augmented Reality (AR)}
     \label{fig:ar-runtime}
   \end{subfigure}
   \hfill
   \begin{subfigure}{0.3\textwidth}
     \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
-    \caption{Top-k}
+    \caption{Top-K (TK)}
     \label{fig:tk-runtime}
   \end{subfigure}
   \caption{Runtime behavior of \sysname{} applications in comparison with
@@ -278,7 +281,7 @@ We compare \sysname{} applications with baseline applications built with vanilla
 TCP and UDP because they are universal for all applications. For streaming over
 TCP, we use \sysname{} but disable the adaptation. For streaming over UDP, our
 experiment setup is different: for video streaming (PD and AR), we use RTSP over
-UDP with ffmpeg~\cite{bellard2012ffmpeg} ; for TK, we implemented a simple
+UDP with ffmpeg~\cite{bellard2012ffmpeg}; for TK, we implemented a simple
 application protocol---packetization and a custom header---such that the receiver
 can still aggregate data in the presence of UDP packet loss.
 

@@ -1,7 +1,7 @@
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}
 
-After developers use \maybe{} operators to specify degradation operations,
+After developers use \maybe{} operators to specify potential degradation operations,
 \sysname{} automatically builds an accurate application profile. The profile
 captures the relationship between application accuracy and bandwidth consumption
 under different combinations of data degradation operations. We describe the
@@ -52,7 +52,7 @@ as follows:
     $\text{S}_\text{ProbeDone}$ & message when \texttt{Socket} finishes probing \\
     \bottomrule
   \end{tabular}
-  \caption{Notations in this paper.}
+  \caption{Notations used in this paper.}
   \label{tab:notations}
 \end{table}
 
@@ -76,31 +76,33 @@ configurations profiling task. Without any \textit{a priori} knowledge, all
 configurations are assigned randomly to all available machines.
 
 \para{Online Profiling:} \sysname{} runs an online profiling process
-continuously to refine the profile. The refinement handles \textit{concept
+continuously to refine the profile. The refinement handles \textit{model
   drifts}, a problem when the learned profile fails to predict the performance
 accurately. There are two challenges with online profiling.
-First, there is no ground-truth labels or reference data to compute
+$(i)$~There is no ground-truth labels or reference data to compute
 accuracy. Because labelling data is prohibitively labor intensive and time
 consuming~\cite{russell2008labelme}, \sysname{} currently uses raw data as the
 reference. If the application is run without any data degradation, the
 application data is used for online profiling. Otherwise, we allocate additional
 bandwidth to back-haul raw data, but only do so when it does not interfere the
 running application.
-Second, exhaustive profiling is expensive. If it takes too much time,
+$(ii)$~Exhaustive profiling is expensive. If it takes too much time,
 the newly-learned profile may already be stale. \sysname{} uses a combination of
 parallelism and sampling techniques to speed up this process, as described below:
 
-(i) Degradation-aware parallelization: Evaluating each configuration takes a
+\begin{itemize}[leftmargin=*]
+
+\item Degradation-aware parallelization: Evaluating each configuration takes a
 different amount of time. Typically, an increase in the level of degradation
 leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer images
 to process. Therefore, we collect processing times for each configuration from
 the offline process and use them for scheduling---for example longest first
 schedule (LFS)~\cite{karger2010scheduling}---in parallelization.
 
-(ii) Sampling-based profiling: Instead of profiling \textit{all} the data of
-\textit{all} configurations, online profiling is sped up by only considering a subset. Processing only portions of the raw data results in a less accurate profile.  However, we mitigate this effect by comparing the performance with the existing profile. A
-substantial difference, such as more than 1 mbps of bandwidth estimation,
-triggers a full profiling to update the current profile.
+\item Sampling-based profiling: Online profiling can speed up if we only profile a subset of all data or a subset of all configurations. 
+The former case reduces the amount of data to process, but at a cost of generating a less accurate profile. In the latter case, we can evaluate a subset of the configurations and compare their performances with the existing profile. A substantial difference, such as more than 1 mbps of bandwidth estimation, triggers a full profiling over all configurations to update the current profile.
+
+\end{itemize}
 
 %%% Local Variables:
 %%% mode: latex

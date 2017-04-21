@@ -17,9 +17,11 @@ because prior solutions are not satisfactory: $(i)$~network protocols adapt to
 available resources without application accuracy guarantee; $(ii)$
 JetStream~\cite{rabkin2014aggregation} uses manual policies without the
 bandwidth demand of each rule, therefore it can only react slowly and adapt
-gradually, causing high latency; $(iii)$~video streaming adaptation, such as
+gradually, causing high latency; and $(iii)$~video streaming adaptation, such as
 Huang et al.~\cite{huang2014buffer}, relies on the playback buffer and incurs
-high latency. Our runtime differs from prior systems in the ability to react
+high latency.
+
+Our runtime differs from prior systems in the ability to react
 with precision: it stays in a low-latency state and uses a Pareto-optimal
 configuration for high accuracy.
 
@@ -36,16 +38,17 @@ and delivers data to the application analytics. Raw data is only transmitted
 when the queue is empty. When a new profile is learned, it is fed back to AC for
 subsequent adaptation.
 
-\autoref{fig:cc} shows the adaptation algorithm and an example trace
-illustrating state transitions. We first describe some notations to facilitate
-the discussion. AC loads the profile and sorts all configurations with an
+We then describe the adaptation algorithm; \autoref{fig:cc} shows the state machine model and an example trace for illustration.
+AC loads the profile and sorts all configurations with an
 ascending order of bandwidth demand, resulting in a list $[c_1, \dots,
-c_{\max}]$, where the current configuration is $c_i$ and the next $c_{i+1}$. AC
-receives messages from the \texttt{Queue}: message \qe{} when the queue is empty
+c_{\max}]$.
+These configurations follow a total order: $c_i < c_j$ if $B(c_i) < B(c_j)$.
+We denote the current configuration as $c_i$ and the next $c_{i+1}$.
+AC receives messages from the \texttt{Queue}: message \qe{} when the queue is empty
 and $\text{Q}_\text{C}$ when queued items exceed a threshold. AC can query
-\texttt{Socket} for delivery rate $R$ or request it to probe for a target
+\texttt{Socket} for delivery rate $R$ or request it to probe ($\text{AC}_{\text{Probe}}$) for a target
 bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
-\spd{}. The algorithm follows a state machine behavior as described below:
+\spd{}. The algorithm follows a state machine as described below:
 
 \begin{itemize}[leftmargin=*]
 
@@ -54,7 +57,7 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
   $c_{\max}$ (to \texttt{Steady}) or if it receives \qc{} (to \texttt{Degrade}).
 
 \item \textbf{Degrade: reacting to congestion.} When \texttt{Queue} grows and
-  exceeds a threshold, AC receives \qc{} and runs \texttt{adapt()}
+  exceeds a threshold, AC receives \qc{} and runs the \texttt{adapt()}
   procedure. This involves two steps: (1) AC queries $R$ from \texttt{Socket};
   (2) AC updates \texttt{Maybe} with $c$ such that
   $B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
@@ -67,7 +70,7 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
   \qe{}, AC enters the \texttt{Probe} state to check for more available
   bandwidth.
 
-\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing $c$
+\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing the configuration
   directly causes a drastic latency increase when $B(c_{i+1}) \gg B(c_i)$. To
   allow a smooth increase, AC requests \texttt{Socket} to probe by sending
   additional traffic controlled by \texttt{probe\_gain} (in
@@ -88,12 +91,11 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
   \begin{subfigure}[t]{\columnwidth}
     \centering
     \includegraphics[width=\columnwidth]{figures/cc2.pdf}
-    \caption{An example to illustrate the adaptation algorithm.}
+    \caption{An example illustrating the adaptation algorithm.}
     \label{fig:cc-ex}
   \end{subfigure}
 
-  \caption{The adaptation algorithm as a state machine and an illustration of
-    one possible trace showing state transitions.}
+  \caption{Runtime adaptation algorithm.}
   \label{fig:cc}
 \end{figure}
 
