@@ -14,10 +14,10 @@ forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
 possible configurations $\mathbb{C}$ is the space that the profiling
 explores. For each configuration $c$, there are two mappings that are of
 particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
-its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
-used in this paper.
+its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations used in
+this paper.
 
-The profiling is looking for all $c$ such that there is no alternative
+The profiling looks for all $c$ such that there is no alternative
 configuration $c'$ that requires less bandwidth while giving a higher
 accuracy. These configurations form the Pareto-optimal set $\mathbb{P}$, defined
 as follows:
@@ -52,7 +52,7 @@ as follows:
     $\text{S}_\text{ProbeDone}$ & message when \texttt{Socket} finishes probing \\
     \bottomrule
   \end{tabular}
-  \caption{Notations used in this paper.}
+  \caption{Notations in this paper.}
   \label{tab:notations}
 \end{table}
 
@@ -69,41 +69,36 @@ applications in \autoref{sec:implementation}.
 profile (or default profile). Because offline profiling is a one-time process,
 \sysname{} currently performs an exhaustive evaluation of all configurations in
 $\mathbb{C}$ despite all knobs form a combinatorial space. Future work could
-explore statistical methods to build performance models with only a few training
-samples~\cite{venkataraman2016ernest, alipourfard2017cherrypick}. \sysname{}
-exploits parallelism within the configurations profiling task. Without any
-\textit{a priori} knowledge, all configurations are assigned randomly to all
-available machines.
+explore statistical methods to build performance models with a smaller number of
+training samples~\cite{venkataraman2016ernest,
+  alipourfard2017cherrypick}. \sysname{} exploits parallelism within the
+configurations profiling task. Without any \textit{a priori} knowledge, all
+configurations are assigned randomly to all available machines.
 
 \para{Online Profiling:} \sysname{} runs an online profiling process
 continuously to refine the profile. The refinement handles \textit{concept
-  drifts}, a problem when the learned profile fails to predict actual
-performance accurately. We identify two challenges with online profiling:
-
+  drifts}, a problem when the learned profile fails to predict the performance
+accurately. There are two challenges with online profiling.
 First, there is no ground-truth labels or reference data to compute
 accuracy. Because labelling data is prohibitively labor intensive and time
 consuming~\cite{russell2008labelme}, \sysname{} currently uses raw data as the
-reference. If the application is running without any data degradation, the
+reference. If the application is run without any data degradation, the
 application data is used for online profiling. Otherwise, we allocate additional
-bandwidth to back-haul raw data but only do so when it does not interfere the
+bandwidth to back-haul raw data, but only do so when it does not interfere the
 running application.
-
-Second, exhaustive profiling is expensive at online. If it takes too much time,
+Second, exhaustive profiling is expensive. If it takes too much time,
 the newly-learned profile may already be stale. \sysname{} uses a combination of
-parallelism and sampling techniques to speed up this process.
+parallelism and sampling techniques to speed up this process, as described below:
 
 (i) Degradation-aware parallelization: Evaluating each configuration takes a
 different amount of time. Typically, an increase in the level of degradation
-leads to a decrease in computation, e.g. the smaller the FPS, the fewer images
+leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer images
 to process. Therefore, we collect processing times for each configuration from
 the offline process and use them for scheduling---for example longest first
 schedule (LFS)~\cite{karger2010scheduling}---in parallelization.
 
 (ii) Sampling-based profiling: Instead of profiling \textit{all} the data of
-\textit{all} configurations, online profiling can speed up if only done
-partially. We can process portions of the raw data; this reduces computation at
-the cost of a less accurate profile. Alternatively, we can evaluate a subset of
-the configurations and compare the performance with the existing profile. A
+\textit{all} configurations, online profiling is sped up by only considering a subset. Processing only portions of the raw data results in a less accurate profile.  However, we mitigate this effect by comparing the performance with the existing profile. A
 substantial difference, such as more than 1 mbps of bandwidth estimation,
 triggers a full profiling to update the current profile.
 

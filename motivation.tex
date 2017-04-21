@@ -9,7 +9,7 @@
 \begin{figure*}
   \centering
   \includegraphics[width=0.95\linewidth]{figures/motiv-app-specific.pdf}
-  \caption{Two streaming application examples. (1) Comparing (a) and (b), the
+  \caption{Two video analytics applications. (1) Comparing (a) and (b), the
     figure shows how each dimension affects the performance; (2) Comparing (a)
     and (c), the figure shows how application-specific optimization in one case
     is a poor match for a different case. Figure (c)(d)(g)(h) explains the
@@ -30,11 +30,11 @@ application-specific optimizations solve the problem.
 \paraf{Video Surveillance:} We envisage a city-wide monitoring system that
 aggregates camera feeds---from stationary ground cameras and moving aerial
 vehicles---and analyzes video streams in real-time for surveillance, anomaly
-detection or business intelligence~\cite{oh2011large}. Traditionally, humans are
-involved in analyzing abnormal activities. Recent advances in computer vision
-and deep learning have dramatically increased the accuracy for visual scenes
-analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
-tracking~\cite{coifman1998real}, or facial recognition to locate people of
+detection or business intelligence~\cite{oh2011large}. Traditionally, video
+analysis has relied on humans, but recent advances in computer vision and deep
+learning have dramatically increased accuracy for automatic visual scene analysis,
+such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
+tracking~\cite{coifman1998real}, an facial recognition to locate people of
 interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}. While some
 surveillance networks use dedicated links, an increasing number of surveillance
 systems, such as Dropcam~\cite{dropcam} and Vigil~\cite{zhang2015design}, use
@@ -51,11 +51,11 @@ management.
 \para{Infrastructure Monitoring:} Large organizations today are managing
 10--100s of data centers (DCs) and edge clusters
 worldwide~\cite{calder2013mapping}. This geo-distributed infrastructure
-continuously produces large volumes of data like data access logs, server
+continuously produces large volumes of data such as data access logs, server
 monitoring logs, and performance counters~\cite{pu2015low,
   alspaugh2014analyzing, vulimiri2015global}. While most log analysis today runs
-in a batch mode on a daily basis, there is a trend towards analyzing logs in
-real-time for quicker optimization~\cite{rabkin2014aggregation}. For example, a
+in batch mode on a daily basis, there is a trend towards analyzing logs in
+real-time for rapid optimization~\cite{rabkin2014aggregation}. For example, a
 content distribution network (CDN) can improve the overall efficiency by
 optimizing data placement if the access logs can be processed in real time.
 
@@ -74,7 +74,7 @@ optimizing data placement if the access logs can be processed in real time.
 \subsection{Wide-area Bandwidth Characteristics}
 \label{sec:wide-area-bandwidth}
 
-WAN bandwidth is insufficient and costly, as demonstrated by many WAN-aware
+WAN bandwidth is insufficient and costly, as demonstrated by recent WAN-aware
 systems~\cite{pu2015low, vulimiri2015global, vulimiri2015wananlytics,
   hsieh17gaia}. Using Amazon EC2 as a case study, the WAN bandwidth capacity is
 15x smaller than their LAN bandwidth on average, and up to 60x smaller in the
@@ -83,10 +83,10 @@ average WAN bandwidth cost is up to 38x of the cost of renting two
 machines~\cite{amazon2017pricing}.
 
 In addition to the scarcity and cost, the large variability of WAN bandwidth
-also affects our streaming workload. We conducted a day-long measurement using
+also affects streaming workloads. We conducted a day-long measurement using
 iPerf~\cite{iperf3} to measure the pair-wise bandwidth between four Amazon EC2
-sites. The results show large variance in all pairs, and \autoref{fig:bw} is one
-such pair. There are occasions that available bandwidth is below 25\% of the
+sites. The results show large variance in all pairs---\autoref{fig:bw} is one
+such pair. There are occasions when available bandwidth is below 25\% of the
 maximum bandwidth.
 
 The back-haul links between EC2 sites are better---if not at least
@@ -95,58 +95,58 @@ variations have been reported in wireless networks~\cite{biswas2015large},
 broadband access networks~\cite{grover2013peeking, sundaresan2014bismark} and
 cellular networks~\cite{nikravesh2014mobile}.
 
-\subsection{Making the Case for a System Approach}
+\subsection{The Case for a System Approach}
 \label{sec:making-case-sys-approach}
 
 To address the bandwidth limits, existing solutions include manual policies and
 application-specific solutions. We discuss their drawbacks to make the case for
 a system approach.
 
-\para{Manual polices are sub-optimal.} While existing works such as
+\para{Manual polices are sub-optimal.} While existing work such as
 JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} allow
 adaptation, they require developers to write manual policies. We illustrate the
-issues with manual policies with the following
+problems with manual policies using the following
 example~\cite{rabkin2014aggregation}: \textit{if bandwidth is insufficient,
   switch to sending images at 75\% fidelity, then 50\% if there still isn't
   enough bandwidth. Beyond that point, reduce the frame rate, but keep the image
   fidelity.}
 
-The policy is not accurate. Developers write such rules based on heuristics and
-don't back it up with measurements. Seventy-five percent fidelity does not
+The first problem with this policy is that it is not accurate. Developers write such rules based on heuristics and
+don't back them up with measurements. 75\% fidelity does not
 necessarily lead to 75\% application accuracy. In terms of bandwidth, naively
-one would think that reducing the frame rate by by half will also half the data
-rate. However, if video encoding such as H.264~\cite{richardson2011h} is used,
-when we reduce the frame rate, it increases the inter-frame difference and
-creates larger P-frames. \hyperref[fig:app-specific]{Fig.~3e} shows that
-reducing the frame rate to one-third, the bandwidth consumption is still more
-than 50\%.
+one would think that reducing the frame rate by half will also half the data
+rate. But if video encoding such as H.264~\cite{richardson2011h} is used, then a reduction in frame rate results
+in an increases in inter-frame difference, creating
+larger P-frames. \hyperref[fig:app-specific]{Fig.~3e} shows that by reducing the
+frame rate to one-third, the bandwidth consumption is still more than 50\%.
 
-Such specification is not scalable. When the policy involves multiple dimensions
+The second problem with this specification is that it is not scalable. When the policy involves multiple dimensions
 or developers desire a fine-grain control, the policy will end up with too many
 rules.  Writing such rules manually is a tedious and error-prone process.
 
-The abstraction is low-level. Developers are forced to study and measure the
+Lastly, this abstraction is too low-level. It forces developers to study and measure the
 impact of individual operations, prohibiting its wide adoption in practice.
 
 \para{Application-specific solutions don't generalize.} Because each application
-has a different performance metric, relies on different features, targets at
-different data distributions, a fine-tuned policy for one application will work
-poorly for another application.
+has a different performance metric, relies on different features, and targets
+different data distributions, a fine-tuned policy for one application will probably work
+poorly for others.
 
-Analytical applications have their own goals, entailing different metrics to
-optimize. Traditional video streaming focuses on end-users'
-experience~\cite{yin2015control, michalos2012dynamic, pantos2016http}. If we
-transfer their techniques to machine-based video analytics, the system maintains
-an unnecessarily-high frame rate.
-
-Each algorithm relies on different features from the data. For example, many
-computer vision detection algorithms depend on the edge
+Analytical applications have their own goals, entailing different optimization metrics. 
+%
+%For instance, traditional video streaming focuses on end-users'
+%experience~\cite{yin2015control, michalos2012dynamic, pantos2016http}. If we
+%transfer their techniques to %machine-based video analytics, the %system maintains
+%an unnecessarily-high frame rate.
+%
+For instance, each video algorithm relies on different features from the data. For example, computer
+vision detection algorithms depend on the edge
 information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
 while object tracking~\cite{allen2004object} works best when the inter-frame
 difference is small. The former is sensitive to resolution changes while the
 latter frame rate changes.
 
-Similar applications face different data distributions. Compare the stationary
+Also, similar applications face different data distributions. Compare the stationary
 camera detecting pedestrians with the mobile camera recognizing objects
 (\autoref{fig:app-specific}). In the former case, when we take the pedestrians'
 walking speed into consideration, a high frame rate is not necessary. But

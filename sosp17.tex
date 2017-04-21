@@ -11,6 +11,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{algpseudocode}
 \usepackage{amsmath}
+\usepackage{balance}
 \usepackage{booktabs} % For formal tables
 \usepackage{caption}
 \usepackage{enumitem}
@@ -48,6 +49,8 @@
 \captionsetup[figure]{belowskip=-2pt,aboveskip=5pt}
 \captionsetup[table]{belowskip=2pt, aboveskip=1pt}
 
+\frenchspacing
+
 \begin{document}
 
 \input{macros}
@@ -68,8 +71,8 @@
   application adaptation as a first-class programming abstraction in the stream
   processing model; $(ii)$ with a combination of offline and online profiling,
   it automatically learns an accurate and precise profile to model accuracy and
-  bandwidth trade-off; $(iii)$ at runtime, it adjusts the application data rate
-  to match the available bandwidth. We evaluate \sysname{} against three
+  bandwidth trade-off; and $(iii)$ at runtime, it adjusts the application data rate
+  to match the available bandwidth. We evaluate \sysname{} using three
   real-world applications: pedestrian detection, augmented reality, and
   monitoring log analysis. Our experiments show that \sysname{} achieves
   sub-second latency with nominal accuracy drop.
@@ -86,6 +89,7 @@
 \input{related}
 \input{conclusion}
 
+\balance
 \bibliographystyle{ACM-Reference-Format}
 \def \bibfont {\normalsize}
 \bibliography{sosp17}

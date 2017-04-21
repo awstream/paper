@@ -3,14 +3,14 @@
   \centering
   \begin{tabular}{c c c c}
     \toprule
-    Application & Knobs & Utility & Dataset \\
+    Application & Knobs & Accuracy & Dataset \\
     \midrule
     \specialcell{Pedestrian\\Detection}
-                & \specialcell{resolution \\ frame rate \\ quantizer }
+                & \specialcell{resolution \\ frame rate \\ quantization }
                 & F1 score & \specialcell{MOT16~\cite{milan2016mot16}\\training: MOT16-04\\testing: MOT16-03} \\
     \midrule
     \specialcell{Augmented\\Reality}
-                & \specialcell{resolution \\ frame rate \\ quantizer }
+                & \specialcell{resolution \\ frame rate \\ quantization }
                 & F1 score & \specialcell{iPhone video clips\\training: office (24 s)\\testing: home
     (246 s)} \\
     \midrule
@@ -30,11 +30,10 @@
 
 While our proposed APIs are general and not language specific, we choose a safe
 language, Rust, to implement the core framework. \sysname{} is open-source on
-Github.\footnote{Url elided for anonymity.} Applications built with \sysname{}
-run as a single process. The entire processing pipeline is often specified in a
-single main file. The execution mode (profiling, runtime as client or runtime as
-server) is configured with command line arguments or environment variables. Our
-deployment manager is currently a shell script.
+Github.\footnote{Url elided for anonymity.}
+Applications built with \sysname{} run as a single process.
+The execution mode---profiling, runtime as client or runtime as server---is configurable with command line arguments or environment variables.
+Our deployment manager is currently a shell script.
 
 % First, Rust's memory safety guarantee can ensure applications running
 % continously for an extended period of time. Besides, the zero-cost abstraction
@@ -73,46 +72,43 @@ deployment manager is currently a shell script.
 %   \label{fig:apps}
 % \end{figure*}
 
-We've built built three applications: pedestrian detection surveillance, an
-augmented reality, and a distributed log analysis to extract the Top-K most
-access files. \autoref{tab:apps} summarizes the application-specific part:
-knobs, utility function, and the dataset we used for training and testing.
+We've built three applications: pedestrian detection surveillance, an augmented
+reality, and a distributed log analysis to extract the Top-K most access
+files. \autoref{tab:apps} summarizes the application-specific part: knobs,
+accuracy function, and the dataset we used for training and testing.
 
 \para{Pedestrian Detection:} This application analyzes streams of videos from
 installed CCTV cameras and detects pedestrians inside. We implement
 image-related operations with OpenCV 3.1~\cite{opencvlibrary} and detect
-pedestrians with histogram of oriented gradients
+pedestrians using histogram of oriented gradients
 (HOG)~\cite{dalal2005histograms} with the default linear SVM classifier. To
 ensure real-time processing of frames, we use the GPU-accelerated
-implementation. Video encoding employs H.264 scheme because of its prevalence in
-existing systems. Our implemenation is based on GStreamer~\cite{gstreamer} with
+implementation. Video encoding employs H.264 because of its prevalence in
+existing systems. Our implementation uses GStreamer~\cite{gstreamer} with
 \texttt{x264enc} plugin. To integrate with \sysname{}, we first create a
 pipeline that exposes \texttt{appsrc} (to feed raw image data) and
-\texttt{appsink} (to get encoded bytes). The GStreamer main loop is managed in a
+\texttt{appsink} (to get encoded bytes). The GStreamer main loop executes in a
 separate thread and \sysname{} communicates with it via Rust's channel. The
-\texttt{x264enc} is configured with \texttt{zerolatency} preset and uses four
-threads. We use constant quality encoding and expose the quantizer as another
-knob.
+\texttt{x264enc} uses the \texttt{zerolatency} preset and four threads. We use
+constant quality encoding and expose the quantization factor as another knob
+(in addition to image resolution and frame rate).
 
 Pedestrian detection returns a list of bounding boxes, and each box is a
-rectangle with normalized coordinates on the image. The detection is compared
-against the reference result from raw data. A detection is successful if the
+rectangle with normalized coordinates on the image. We compare the detection
+against the reference result from raw data, and declare it success if the
 intersection over union (IOU) is greater than
 50\%~\cite{everingham2010pascal}. We use F1 score
 (\%)~\cite{Rijsbergen:1979:IR:539927} as the accuracy function and MOT16
 dataset~\cite{milan2016mot16} for training and testing.
 
-\para{Augmented Reality:} We target at mobile augmented reality applications
+\para{Augmented Reality:} We target mobile augmented reality applications
 that recognizes objects by offloading the heavy computation to resources
-elsewhere. Even when the offloading server is
-nearby~\cite{satyanarayanan2009case, zhang2015cloud}, the wireless communication
-link is still susceptible to capacity variation.
-
+elsewhere.
 We use a similar setup (OpenCV and GStreamer) as the pedestrian detection except
-for the actual analytical function. To recognize objects, we use
-YOLO~\cite{darknet13, redmon2016yolo9000}, a GPU-enabled pre-trained system for
-object detection. In this case, a successful detection requires matching the
-object type in addition to IOU criteria.
+for the analytical function. To recognize objects, we use YOLO~\cite{darknet13,
+  redmon2016yolo9000}, a GPU-enabled pre-trained system for object detection. In
+this case, a successful detection requires matching the object type in addition
+to IOU criteria. We collect video clips for this application: the training data is a 24-second long video of an office environment; the test data is a 246-second long video of a home environment.
 
 \para{Distributed Top-K:} Many monitoring applications need to answer the
 \textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
@@ -131,27 +127,25 @@ an illustration).
 Naively aggregating all the raw logs is not feasible because popular servers
 have millions of requests per second. Edge nodes can first perform a
 \texttt{Window} operation to generate data summary, such as key-value pairs of
-\texttt{<item, count>}. However, even after this operation, the data size can
+\texttt{<item, count>}. Even after this operation, however, the data size can
 still be too large because most real-world access patterns follow a long-tailed
 distribution. There is a large-but-irrelevant tail that contributes little to
 the final results.
 
 The edge nodes perform two degradation operations: (1) a head (\texttt{N})
 operation that only takes the top \texttt{N} entries; (2) a threshold \texttt{T}
-that filters small entries. These two operations are not orthognal to each
-other. Their impact on data size reduction and quality degradation depends on
-the distribution of the actual data. The accuracy function is
-Kendall's~$\tau$~\cite{abdi2007kendall}. It is a correlation measure of the
-concordance between two ranked list. The output ranges from -1 to 1,
-representing no agreement to complete agreement, respectively. To integrate with
-\sysname{}, we convert the measure with a linear transformation to the range of
-[0, 1].
+that filters small entries. These two operations are not orthogonal. Their impact on data size reduction and quality degradation depends on
+the data distribution. The accuracy function is
+Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation measure of the
+concordance between two ranked list. The output ranges from \(-1\) to 1,
+representing no agreement to complete agreement. To integrate with \sysname{},
+we convert the Kendall's~$\tau$ to the range of [0, 1] with a linear transformation.
 
 Our Top-K application aims to find the fifty most accessed files from web server
-logs. We use Apache logs files that record and store user access statistics for
-the \href{https://www.sec.gov}{SEC.gov} website. These log files are split into
-four groups, simulating four geo-distributed nodes. We also compress an hour's
-logs into one second to match the load of popular web servers.
+logs. We use Apache log files that record and store user access statistics for
+the \href{https://www.sec.gov}{SEC.gov} website. We split these logs into four
+groups, simulating four geo-distributed nodes monitoring web accesses.
+To match the load of popular web servers, we compress one hour's logs into one second.
 
 %%% Local Variables:
 %%% mode: latex

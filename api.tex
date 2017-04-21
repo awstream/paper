@@ -44,7 +44,7 @@ borrows the same computation model. We list some example operators, such as
 yielding potential bandwidth savings. Our API design has three considerations:
 (i)~to free developers from specifying exact rules, the API should tolerate
 approximate specifications; (ii)~to allow combining multiple dimensions, the API
-should be modular: each operator is a unit and developer can chain multiple
+should be modular: each operator is a unit and the developer can chain multiple
 operators; (iii)~to support flexible integration with arbitrary degradation
 functions, the API should take user-defined functions (UDFs). Therefore, our API
 is,
@@ -54,7 +54,7 @@ is,
         maybe(knobs: Vec<T>, f: (T, I) => I)
 \end{lstlisting}
 
-We illustrate the usage of \texttt{maybe} operator with an example that
+We illustrate the use of the \texttt{maybe} operator with an example that
 quantizes a stream of integers in the Rust programming language:
 
 \vspace{-2pt}
@@ -77,7 +77,7 @@ Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will
 optionally takes the top values of a \textit{list}; and
 \texttt{maybe\_downsample} can adjust the \textit{image} resolution to a
-configured target. \sysname{} provides a few such operations as a library for
+configured target. \sysname{} provides a number of such operations as a library for
 developers (\autoref{tab:operators}).
 
 With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
@@ -93,11 +93,11 @@ can now be implemented as follows:
 \end{lstlisting}
 
 This snippet first instantiates a \texttt{Camera} source, which produces
-\texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS. Two degradation
-operations follow the source: one that downsamples image to either 1600x900 or
-1280x720 resolution; one that skips frames with a parameter of 2 or 5, resulting
-in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS. In this example, degraded images are
-shown on the display. In practice, further processing, such as encoding and
+\texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS\@. Two degradation
+operations follow the source: one that downsamples the image to either 1600x900 or
+1280x720 resolution, and one that skips frames with a parameter of 2 or 5, resulting
+in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows degraded images
+on the display. In practice, further processing, such as encoding and
 transmission, operators can be chained.
 
 %%% Local Variables:

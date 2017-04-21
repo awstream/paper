@@ -29,10 +29,10 @@ direction to improve our profiling.
 \para{Context detection:} Currently the offline profiling uses one
 representative training dataset and the online profiling updates the profile
 continuously. Real world applications could produce data with a multi-modal
-distribution, where the mode changes upon context changes, e.g. indoor video vs
-outdoor video. One optimization to \sysname{} is allow multiple profiles for one
-application, detect context changes at runtime, and use the profile that best
-matches the current data distribution.
+distribution, where the mode changes upon context changes, such as indoor videos
+to outdoor videos. One possible optimization to \sysname{} would be to allow multiple profiles
+for one application, detect context changes at runtime, and use the profile that
+best matches the current data distribution.
 
 \para{Predicting bandwidth changes:} Our runtime adaptation currently does not
 predict future bandwidth. While reacting to bandwidth changes is enough to
