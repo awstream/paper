@@ -39,7 +39,7 @@ as follows.
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
   profiles across multiple dimensions with precision
   (\autoref{fig:all-profiles}).
-\item[\autoref{sec:online-profiling}] Our parallel and partial profiling speeds
+\item[\autoref{sec:online-profiling}] Our parallel and sampling profiling speeds
   up offline and online profiling (\autoref{fig:parallel},
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
@@ -75,8 +75,8 @@ profile, we see that the Pareto-optimal configurations are only achievable when
 multiple knobs are in effect. Tuning only one dimension often leads to
 sub-optimal performance. Although Top-K's Pareto-optimal boundary aligns with
 the performance of tuning \texttt{N}, i.e.\,tuning \texttt{T} doesn't contribute
-much for this dataset, if we use another dataset with a different distribution,
-the behavior will change.
+much for this dataset, for another dataset with a different distribution,
+the behavior will probably change.
 
 \para{Each dimension affects differently}. Within a single profile, the
 difference between tuning individual dimensions is evident. For PD, tuning
@@ -85,7 +85,7 @@ tuning the frame rate (the yellow line). Comparing PD and AR, the same dimension
 has different impact. Tuning resolution is less harmful in AR than PD; while
 tuning frame rate hurts AR more than PD\@. This echoes our initial observation
 in~\autoref{sec:making-case-sys-approach} that application- and context-specific
-optimizations doesn't generalize.
+optimizations don't generalize.
 
 \para{Quantification with precision}. The generated profiles are actionable
 configurations that control the knobs with precision. For example,
@@ -97,8 +97,10 @@ application to compute manual policies.
 \subsection{Profiling Efficiency and Online Profiling}
 \label{sec:online-profiling}
 
-This section focuses on the AR application as a case study. AR allows 216
-different configurations: 6 resolutions, 6 frame rates and 6
+This section focuses on the AR application as a case study;
+our profiling techniques---parallelism and sampling---do not make assumptions about the application; therefore, the evaluation results can be generalized to other applications.
+
+AR allows 216 different configurations: 6 resolutions, 6 frame rates and 6
 quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
   an input image to a fixed neural network size. Evaluating all images (with
@@ -112,47 +114,44 @@ profiling efficiency; we present their evaluations as follows.
 \begin{figure}
   \centering
   \includegraphics[width=0.9\columnwidth]{figures/parallel.pdf}
-  \caption{We exploit parallelism to speed up the profiling. The y-axis shows
-    the profiling time for one-second video.}
+  \caption{Parallelism speeds up both offline and online profiling.
+  The y-axis shows the profiling time for 1-second video.}
   \label{fig:parallel}
 \end{figure}
 
 \para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
 evaluating each individual configuration is independent of other configurations,
 we parallelize the profiling task by assigning configurations to GPUs.
-$(i)$~The offline profiling assigns configurations to machines randomly. 
+$(i)$~Our offline profiling assigns configurations randomly. 
 With the increased number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.
-$(ii)$~The saving is further improved during online profiling
-when we assign configurations based on the processing times collected during offline.
+$(ii)$~Our online profiling assigns configurations based on the processing times collected during offline.
 \sysname{} currently uses LPT assignment and can reduce the overhead to 1.75X with 30 GPUs.
 
-\para{Sampling-based techniques speed up online profiling
-  (\autoref{fig:online-tricks}).} Before we evaluate the speed up, we validate the
-\textit{model drifts} issue with real-world data. We use the profile trained
-over a video clip of the office environment. Suppose there is 11 mbps available
-bandwidth, according to the profile, the application should operate at a
-configuration of 1280x720 resolution, 30 FPS and a quantization of 20. The test
-video captures a home environment. At about 100 seconds, the camera points out
-of the window to detect objects on the street.  Because of the scene change, the
+\para{Sampling techniques speed up online profiling (\autoref{fig:online-tricks}).}
+Before we evaluate the speed up, we validate
+\textit{model drifts} with real-world data. We use the profile 
+trained in an office environment. 
+According to the profile, the application should operate at a configuration of 1280x720 resolution, 30 FPS and a quantization of 20 to meet 11 mbps available bandwidth.
+We test it against a home environment, and at about t=100s, the camera points out
+of the window to detect objects on the street. Because of the scene change, the
 configuration fails to predict runtime bandwidth, as illustrated in
 \autoref{fig:offline}.
 
 To correct the profile, if we continuously run the profiling online and update
 the profile, the application will choose the right configuration to meet the bandwidth limit.
 \autoref{fig:online} shows the bandwidth prediction when we continuously
-profile with the past chunk (30 seconds of video). At time t=120s, the new
-prediction matches the test data. The downside of a continuous profiling, as
+profile with the past 30 seconds of video. At time t=120s, the new
+prediction corrects the drifts. The downside of continuous profiling, as
 discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
-parallelism, two more techniques are useful for online profiling
-(\autoref{tab:online} summarizes their savings):
+parallelism, \sysname{} uses two other techniques for online profiling
+(improvements in \autoref{tab:online}):
 
 (i) Partial data: Instead of using all the past data, we run profiling with only
 a fraction of the raw data.
 \autoref{fig:online-partial} shows the bandwidth prediction if we only use 10
 seconds of data out of the past 30 seconds. In this way, although the profile
-may be less accurate (the mis-prediction at 80--100 seconds), and there is a
-delay in reacting to data change (the mis-prediction is corrected after 125
-seconds), we save the online profiling by 3$\times$ (from 52X to 17X).
+may be less accurate (the mis-prediction at t=80--100s), and there is a
+delay in reacting to data change (the mis-prediction is corrected after t=125s), we save the online profiling by 3$\times$ (from 52X to 17X).
 
 (ii) Partial configurations: If we use the past profile as a reference and only
 measure a subset of all Pareto-optimal configurations, the savings can be
@@ -162,12 +161,12 @@ evaluate 5 configurations continuously and trigger a full profiling when the
 bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.
 For our test data, this scheme is enough to correct model drifts by predicting an accurate bandwidth usage
 (compare \autoref{fig:online} and \autoref{fig:online-trigger}).
-The overhead reduces to 6X because we run full profiling less often.
+The overhead reduces to 6X because we run full profiling less often (only two times in this experiment).
 
 When we combine the parallelization and sampling-based profiling, we can further
 reduce the profiling overhead. For example, scheduling five GPUs running 5
 configurations continuously to check for model drifts will reduce the overhead
-to 1X\@. The amount of resources to use will depend on the budget and the importance
+to 1X\@. In practice, the amount of resources to use will depend on the budget and the importance
 of the job.
 
 \begin{figure}
@@ -198,10 +197,7 @@ of the job.
     \caption{Partial configurations}
     \label{fig:online-trigger}
   \end{subfigure}
-  \caption{The bandwidth estimation of different profiling schemes. The
-    horizontal reference line is the target bandwidth (11 mbps). We omit the
-    accuracy prediction since all schemes are similarly high (\textasciitilde
-    90\%).}
+  \caption{The horizontal reference line is the target bandwidth (11 mbps). We omit accuracy predictions  since in all schemes they are similarly high (\textasciitilde 90\%). (1) Online profiling is necessary to handle model drifts ((a) vs.\,(b-d)). (2) Sampling techniques---partial data (c) and partial configurations (d)---can correct model drifts with less profiling overhead (see \autoref{tab:online}), compared to continuous (b).}
   \label{fig:online-tricks}
 \end{figure}
 
@@ -221,7 +217,7 @@ of the job.
     partial configurations & 6X & 8.7$\times$ \\
     \bottomrule
   \end{tabular}
-  \caption{Sampling-based profiling speeds up the profiling. We use X to denote the overhead of processing one-second worth of data; and $\times$ for the savings in comparison to continuous profiling.}
+  \caption{Sampling techniques speed up the profiling. We use X to denote the overhead of processing one-second worth of data; and $\times$ for the improvements.}
   \label{tab:online}
 \end{table}
 
@@ -231,9 +227,10 @@ of the job.
 \begin{figure*}
   \begin{subfigure}{\linewidth}
     \centering
-    \includegraphics[width=0.9\columnwidth]{figures/runtime-legend.pdf}
+    \includegraphics[width=0.5\columnwidth]{figures/runtime-legend.pdf}
   \end{subfigure}
-
+  \\
+  \vspace{0.4em}
   \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
@@ -253,8 +250,7 @@ of the job.
     \caption{Top-K (TK)}
     \label{fig:tk-runtime}
   \end{subfigure}
-  \caption{Runtime behavior of \sysname{} applications in comparison with
-    streaming over TCP/UDP.}
+  \caption{Runtime behavior of \sysname{} applications in comparison with streaming over TCP/UDP\@. AWStream simultaneously provides sub-second latency (similar to UDP) and high accuracy (similar to TCP).}
   \label{fig:all-runtime}
 \end{figure*}
 
@@ -265,8 +261,8 @@ of the job.
 
 In this section, we evaluate the runtime performance for three applications. We
 first show that \sysname{} achieves low latency and high accuracy across all
-three applications---demonstrating the effectiveness of our system level
-approach. We then focus on AR by evaluating how manual policies and
+three applications (\autoref{fig:all-runtime}).
+We then focus on AR by evaluating how manual policies and
 application-specific solutions work poorly, i.e., describe the experiments for
 \autoref{fig:intro}.
 
@@ -293,8 +289,8 @@ mbps. For AR, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and a quantiz
 it consumes about 14 mbps.
 For TK, $c_{\max}$ is $N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}.
 
-Our controlled experiments follow  JetStream~\cite{rabkin2014aggregation}. During
-the experiment, we use the Linux \texttt{tc} utility with the HTB scheduler~\cite{lartc,
+Our controlled-experiment design follows JetStream~\cite{rabkin2014aggregation}. During
+the experiment, we use the Linux \texttt{tc} utility with HTB~\cite{lartc,
   htb} to control the clients' outgoing bandwidth. Our experiments
 involve four phases: (i) before t=200s, there is no shaping; (ii) at
 t=200s, we start traffic shaping for 3 minutes (7.5 mbps for video
@@ -320,7 +316,7 @@ sender side for up to tens or hundreds of seconds. We plot such high latency
 measurements in log scale. UDP always transmits as fast as possible, leading to
 a consistent low latency. \sysname{}'s latency is slightly higher than UDP but
 considerable small in comparison to TCP\@. During the traffic shaping,
-\sysname{} updates the application's degradation to avoid data queueing up. For
+\sysname{} controls the application's degradation to avoid data queueing up. For
 most of the time, we've maintained less than 500 ms latency for PD/AR, and 2.5
 seconds latency for TK\@. Because TK's source generates data every second after
 the \texttt{window} operation, two objects in the queue would lead to two
@@ -338,13 +334,13 @@ contain large blocks of pixels without content details. For TK, the accuracy has
 dropped to \textasciitilde 50\% during modest traffic shaping and dropped
 further to \textasciitilde 25\% during the severe shaping. While \sysname{} also
 sees an accuracy drop during the traffic shaping, the amount is significant
-smaller: ~2\% drop on average in comparison to streaming over TCP.
+smaller: ~2\% drop on average in comparison to streaming over TCP\@.
 We attribute this to the knowledge of the profile and the use of Pareto-optimal configurations during traffic shaping.
 
 In summary, \autoref{fig:all-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
 
-\para{Fidelity and freshness:} Here we explain our experiments for
+\para{Fidelity and freshness.} Here we explain our experiments for
 \autoref{fig:intro}. For streaming over TCP/UDP and \sysname{}, we use the
 latency and accuracy measurements for AR\@. For manual policies, we implement the
 policy from the example in JetStream~\cite{rabkin2014aggregation}. For
@@ -360,7 +356,7 @@ the design choices within the design space of data fidelity and freshness:
 \item Streaming over UDP favors freshness over fidelity.
 \item Manual policies have limited rules with coarse-granularity. A sudden
   change from one rule to another incurs large latency (\textasciitilde 5
-  seconds).
+  seconds, similar to JetStream's result~\cite{rabkin2014aggregation}).
 \item Application-specific solutions suffer from accuracy drop. PD's profile has
   configurations that reduce frame rate aggressively; these configurations work
   poorly for AR\@.
@@ -373,14 +369,14 @@ the design choices within the design space of data fidelity and freshness:
 We evaluate resource allocations with two applications. In this way, the results
 cover the case of a single application, and can generalize to more applications.
 
-We choose PD and AR as the example applications. The setup is the same as in \autoref{sec:runtime-adaptation}. 
-Both applications share the same client and server, therefore, they
+We choose PD and AR as the example applications.
+We colocate the clients and servers of both applications so that they
 share the same bottleneck link. The experiment starts with sufficient
 bandwidth. At t=60s, we start traffic shaping to limit the total bandwidth
 at 6 mbps. When we allocate resource equally between two applications
 (\autoref{fig:eq-bw}), each application gets 3 mbps. Under this condition,
 PD runs with a higher accuracy (\textasciitilde 85\%) while AR only achieves
-\textasciitilde 77\%. In contrast, \sysname{} also supports utility fairness: it
+\textasciitilde 77\%. In addition to resource fairness, \sysname{} supports utility fairness: it
 chooses configurations that maximize the minimal accuracy. In this experiment,
 PD receives 2 mbps and AR receives 4 mbps; and both achieve \textasciitilde 80\%
 accuracy (\autoref{fig:eq-acc}).
@@ -405,8 +401,7 @@ accuracy (\autoref{fig:eq-acc}).
     \caption{Utility Fairness}
     \label{fig:eq-acc}
   \end{subfigure}
-  \caption{Comparison between different resource allocation schemes:
-    resource fairness and utility fairness.}
+  \caption{\sysname{} supports a variety of resource allocation schemes (e.g., resource fairness and utility fairness).}
   \label{fig:multitask}
 \end{figure}
 

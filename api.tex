@@ -40,12 +40,13 @@ where each operator transforms input streams into new streams. \sysname{}
 borrows the same computation model. We list some example operators, such as
 \texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
 
-\sysname{} integrates new \maybe{} operators that degrades the data quality,
-yielding potential bandwidth savings. Our API design has three considerations:
-(i)~to free developers from specifying exact rules, the API should tolerate
-approximate specifications; (ii)~to allow combining multiple dimensions, the API
+To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
+that degrade data quality, yielding potential bandwidth savings.
+Our API design has three considerations:
+$(i)$~to free developers from specifying exact rules, the API should tolerate
+approximate specifications; $(ii)$~to allow combining multiple dimensions, the API
 should be modular: each operator is a unit and the developer can chain multiple
-operators; (iii)~to support flexible integration with arbitrary degradation
+operators; $(iii)$~to support flexible integration with arbitrary degradation
 functions, the API should take user-defined functions (UDFs). Therefore, our API
 is,
 
@@ -60,7 +61,7 @@ quantizes a stream of integers in the Rust programming language:
 \vspace{-2pt}
 \begin{lstlisting}
     let quantized_stream = vec![1, 2, 3, 4].into_stream()
-        .maybe(vec![2, 4], |k, p| p.wrapping_div(k))
+        .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
         .collect();
 \end{lstlisting}
 
@@ -75,8 +76,8 @@ will change according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will
-optionally takes the top values of a \textit{list}; and
-\texttt{maybe\_downsample} can adjust the \textit{image} resolution to a
+optionally takes the top values of a vector; and
+\texttt{maybe\_downsample} can adjust the image resolution to a
 configured target. \sysname{} provides a number of such operations as a library for
 developers (\autoref{tab:operators}).
 
@@ -97,8 +98,8 @@ This snippet first instantiates a \texttt{Camera} source, which produces
 operations follow the source: one that downsamples the image to either 1600x900 or
 1280x720 resolution, and one that skips frames with a parameter of 2 or 5, resulting
 in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows degraded images
-on the display. In practice, further processing, such as encoding and
-transmission, operators can be chained.
+on the display. In practice, operators for further processing, such as encoding and
+transmission, can be chained.
 
 %%% Local Variables:
 %%% mode: latex

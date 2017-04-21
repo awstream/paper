@@ -1,13 +1,3 @@
-\begin{figure}
-  \centering
-  % \resizebox{\columnwidth}{!}{
-  %   \input{runtime-diagram}
-  % }
-  \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
-  \caption{Runtime adaptation system architecture.}
-  \label{fig:runtime}
-\end{figure}
-
 \subsection{Runtime Adaptation}
 \label{sec:runtime}
 
@@ -24,6 +14,13 @@ high latency.
 Our runtime differs from prior systems in the ability to react
 with precision: it stays in a low-latency state and uses a Pareto-optimal
 configuration for high accuracy.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
+  \caption{Runtime adaptation system architecture.}
+  \label{fig:runtime}
+\end{figure}
 
 \autoref{fig:runtime} shows our runtime system architecture. \sysname{}
 applications' source contains a \texttt{Maybe} module derived from all \maybe{}
@@ -59,7 +56,7 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
 \item \textbf{Degrade: reacting to congestion.} When \texttt{Queue} grows and
   exceeds a threshold, AC receives \qc{} and runs the \texttt{adapt()}
   procedure. This involves two steps: (1) AC queries $R$ from \texttt{Socket};
-  (2) AC updates \texttt{Maybe} with $c$ such that
+  (2) AC updates \texttt{Maybe} with the maximum-allowed $c$ that satisfies
   $B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
   draining of the queue. After the queue is drained, \sysname{} changes to
   \texttt{Steady}.
@@ -94,7 +91,6 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
     \caption{An example illustrating the adaptation algorithm.}
     \label{fig:cc-ex}
   \end{subfigure}
-
   \caption{Runtime adaptation algorithm.}
   \label{fig:cc}
 \end{figure}
@@ -108,29 +104,38 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
 %   \label{fig:cc}
 % \end{figure}
 
-\para{Resource Allocation and Fairness:} In addition to rate adaptation, the
-profile is also useful for controlling the bandwidth usage of a single
-application or allocating resources among competing tasks.
+\para{Resource Allocation and Fairness.} In addition to rate adaptation, the
+profile is also useful for controlling a single application's bandwidth usage or allocating resources among competing tasks.
 
 For individual applications, developers can pinpoint a configuration for a given
-bandwidth or accuracy goal. They can also specify criterion to limit effective
+bandwidth or accuracy goal. They can also specify a criterion to limit effective
 configurations. For example, \sysname{} can enforce an upper bound on the
-bandwidth consumption. Such a limit is useful to reduce WAN bandwidth cost.
+bandwidth consumption, useful to reduce WAN bandwidth usage and cost.
 
 For multiple applications, their profiles allows novel bandwidth allocation
 schemes such as utility fairness. Different from traditional resource fairness
-where applications get equal share of bandwidth, \textit{utility fairness} aims
+where applications get equal share of bandwidth, utility fairness aims
 to maximize the \textit{minimal} application accuracy. With the profiles,
 finding allocations is equivalent to finding proper configuration $c^t$ for
 application $t$. We formulate utility fairness as follows:
 
+%% Pick one based on the space
+
+%\begin{equation}
+ % \label{eq:multitask}
+%  \underset{c^t}{\max} \; \min({A^t(c^t)})
+%  \;
+%  \text{s.t.}
+%%  \;
+%%  \sum_t{B^t(c^t)} < R
+%% \end{equation}
+
 \begin{equation}
-  \label{eq:multitask}
-  \underset{c^t}{\max} \; \min({A^t(c^t)})
-  \;
-  \text{s.t.}
-  \;
-  \sum_t{B^t(c^t)} < R
+ \label{eq:multitask}
+ \begin{aligned}
+    & \underset{c^t}{\text{maximize}} & & \min({A^t(c^t)}) & & \\
+    & \text{subject to} & & \sum_t{B^t(c^t)} < R & & \\
+ \end{aligned}
 \end{equation}
 
 Solving this optimization is computationally hard. \sysname{} uses a heuristics

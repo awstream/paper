@@ -8,7 +8,7 @@ under different combinations of data degradation operations. We describe the
 formalism, followed by techniques that efficiently perform offline and online
 profiling.
 
-\para{Profiling formalism:} Suppose a stream processing application has $n$
+\para{Profiling formalism.} Suppose a stream processing application has $n$
 \maybe{} operators. Each operator introduces a knob $k_i$ and their combination
 forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
 possible configurations $\mathbb{C}$ is the space that the profiling
@@ -65,15 +65,28 @@ or the reference results when all degradation operations are off.  We discuss
 examples of concrete knobs, configurations, accuracy functions when we present
 applications in \autoref{sec:implementation}.
 
-\para{Offline Profiling:} We first use an offline process to build a bootstrap
-profile (or default profile). Because offline profiling is a one-time process,
-\sysname{} currently performs an exhaustive evaluation of all configurations in
-$\mathbb{C}$ despite all knobs form a combinatorial space. Future work could
-explore statistical methods to build performance models with a smaller number of
-training samples~\cite{venkataraman2016ernest,
-  alipourfard2017cherrypick}. \sysname{} exploits parallelism within the
-configurations profiling task. Without any \textit{a priori} knowledge, all
-configurations are assigned randomly to all available machines.
+\para{Offline Profiling.} We first use an offline process to build a bootstrap
+profile (or default profile).
+\sysname{} makes no assumptions on the performance models, and thus evaluate all possible configurations.
+While all knobs form a combinatorial space, the offline profiling is only a one-time process.
+We exploits parallelism to reduce the profiling time.
+Without any \textit{a priori} knowledge, all
+configurations are assigned randomly to available machines.
+Nevertheless, given certain workloads, we can leverage statistical methods to build accurate performance
+models while only exploring a small number of configurations~\cite{venkataraman2016ernest,
+  alipourfard2017cherrypick}.
+
+%\para{Offline Profiling.} We first use an offline process to build a bootstrap
+%profile (or default profile).
+%Because \sysname{} supports arbitrary degradation operations, we need to evaluate all combinations of the configurations
+%offline profiling is a one-time process,
+%\sysname{} currently performs an exhaustive evaluation of all configurations in
+%$\mathbb{C}$ despite all knobs form a combinatorial space. Future work could
+%explore statistical methods to build performance models with a smaller number of
+%training samples~\cite{venkataraman2016ernest, alipourfard2017cherrypick}.
+%\sysname{} exploits parallelism when profiling all configurations.
+%Without any \textit{a priori} knowledge, all
+%configurations are assigned randomly to all available machines.
 
 \para{Online Profiling:} \sysname{} runs an online profiling process
 continuously to refine the profile. The refinement handles \textit{model
@@ -96,7 +109,7 @@ parallelism and sampling techniques to speed up this process, as described below
 different amount of time. Typically, an increase in the level of degradation
 leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer images
 to process. Therefore, we collect processing times for each configuration from
-the offline process and use them for scheduling---for example longest first
+the offline process and use them for scheduling---for example longest-job first
 schedule (LFS)~\cite{karger2010scheduling}---in parallelization.
 
 \item Sampling-based profiling: Online profiling can speed up if we only profile a subset of all data or a subset of all configurations. 

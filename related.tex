@@ -5,12 +5,12 @@ The work most closely related to \sysname{} is
 JetStream~\cite{rabkin2014aggregation}. Both systems target at wide-area
 streaming analytics. JetStream proposes to use aggregation and \textit{manual}
 degradation policies to achieve responsiveness in the presence of bandwidth
-fluctuation. We've discussed its limitations in \autoref{sec:motivation}.
+fluctuation. We've discussed its limitations in \autoref{sec:motivation} and made comparisons throughout the paper.
 
 We divide other related works into stream processing systems, approximate
 analytics, WAN-aware systems and adaptive video streaming.
 
-\paraf{Stream processing systems:} Streaming databases, such as
+\paraf{Stream processing systems.} Streaming databases, such as
 Borealis~\cite{abadi2005design},
 TelegraphCQ~\cite{chandrasekaran2003telegraphcq}, are the early academic
 explorations. They pioneered the use of dataflow models with specialized
@@ -25,20 +25,20 @@ between data fidelity and data freshness. In contrast, these stream processing
 systems often use TCP and choose to throttle the source when back pressure
 happens.
 
-\para{Approximate analytics:} The idea of degrading computation fidelity for
+\para{Approximate analytics.} The idea of degrading computation fidelity for
 responsiveness has also been explored in other contexts. For SQL queries, online
 aggregation~\cite{hellerstein1997online}, BlinkDB~\cite{agarwal2013blinkdb} and
 GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
 on a statistical model of SQL operators. For real-time processing,
 MEANTIME~\cite{farrell2016meantime} uses approximation to guarantee satisfying
 real-time deadlines. For video processing, VideoStorm~\cite{zhang2017live}
-optimizes video stream \textit{processing} within lager clusters with
+optimizes video stream \textit{processing} within lager clusters by exploiting
 approximation and delay-tolerance for resource management and allocation. The
 trade-off between available resource and application accuracy is a common theme
 among all this work. \sysname{} targets at wide-area streaming analytics, an
 emerging application domain especially with the advent of IoT\@.
 
-\para{WAN-aware systems:} The main challenge in designing geo-distributed
+\para{WAN-aware systems.} The main challenge in designing geo-distributed
 systems is to cope with high latency and limited bandwidth. While some research
 projects, such as Vivace~\cite{cho2012surviving}, assume the network can
 prioritize a small amount of critical data to avoid delays under congestion,
@@ -51,8 +51,8 @@ Iridium~\cite{pu2015low}, Pixida~\cite{kloudas2015pixida},
 Clarinet~\cite{viswanathan2016clarinet}, etc. They minimize data movement by
 incorporating heterogeneous wide-area bandwidth information into query
 optimization and data/task placement. While effective in improving analytics
-efficiency, most of these works focus on batch tasks such as MapReduce jobs or
-SQL query. Such tasks are often executed once, without real time constrain. In
+efficiency, these systems focus on batch tasks such as MapReduce jobs or
+SQL queries. Such tasks are often executed once, without real time constrain. In
 contrast, \sysname{} focuses on streaming analytics that process streams of data
 continuously in real time.
 
@@ -78,7 +78,7 @@ continuously in real time.
 %% \cite{heintz2015towards} discusses the complex tradeoffs involved in
 %% wide-area analytics.
 
-\para{Adaptive video streaming:} Designing a good adaptation strategy to improve
+\para{Adaptive video streaming.} Designing a good adaptation strategy to improve
 QoE for video streaming has been a hot topic, including research
 projects~\cite{yin2015control, sun2016cs2p} and industrial efforts
 (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,

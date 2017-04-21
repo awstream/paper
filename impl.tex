@@ -32,7 +32,7 @@ While our proposed APIs are general and not language specific, we choose a safe
 language, Rust, to implement the core framework. \sysname{} is open-source on
 Github.\footnote{Url elided for anonymity.}
 Applications built with \sysname{} run as a single process.
-The execution mode---profiling, runtime as client or runtime as server---is configurable with command line arguments or environment variables.
+The execution mode---profiling, runtime as client, or runtime as server---is configurable with command line arguments or environment variables.
 Our deployment manager is currently a shell script.
 
 % First, Rust's memory safety guarantee can ensure applications running
@@ -77,7 +77,7 @@ reality, and a distributed log analysis to extract the Top-K most access
 files. \autoref{tab:apps} summarizes the application-specific part: knobs,
 accuracy function, and the dataset we used for training and testing.
 
-\para{Pedestrian Detection:} This application analyzes streams of videos from
+\para{Pedestrian Detection.} This application analyzes streams of videos from
 installed CCTV cameras and detects pedestrians inside. We implement
 image-related operations with OpenCV 3.1~\cite{opencvlibrary} and detect
 pedestrians using histogram of oriented gradients
@@ -101,20 +101,19 @@ intersection over union (IOU) is greater than
 (\%)~\cite{Rijsbergen:1979:IR:539927} as the accuracy function and MOT16
 dataset~\cite{milan2016mot16} for training and testing.
 
-\para{Augmented Reality:} We target mobile augmented reality applications
+\para{Augmented Reality.} We target mobile augmented reality applications
 that recognizes objects by offloading the heavy computation to resources
 elsewhere.
 We use a similar setup (OpenCV and GStreamer) as the pedestrian detection except
 for the analytical function. To recognize objects, we use YOLO~\cite{darknet13,
-  redmon2016yolo9000}, a GPU-enabled pre-trained system for object detection. In
+  redmon2016yolo9000}, a GPU-enabled pre-trained neural network for object detection. In
 this case, a successful detection requires matching the object type in addition
-to IOU criteria. We collect video clips for this application: the training data is a 24-second long video of an office environment; the test data is a 246-second long video of a home environment.
+to IOU criteria. In terms of dataset, we've collected our own video clips: the training data is a 24-second long video of an office environment; the test data is a 246-second long video of a home environment.
 
-\para{Distributed Top-K:} Many monitoring applications need to answer the
+\para{Distributed Top-K.} Many monitoring applications need to answer the
 \textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
 popular URLs, or the Top-K most access files. A distributed Top-K application
-aggregates information from geo-distributed servers (see \autoref{fig:topk} for
-an illustration).
+aggregates information from geo-distributed servers to computer a final Top-K (\autoref{fig:topk}).
 
 \begin{figure}
   \centering
@@ -128,18 +127,17 @@ Naively aggregating all the raw logs is not feasible because popular servers
 have millions of requests per second. Edge nodes can first perform a
 \texttt{Window} operation to generate data summary, such as key-value pairs of
 \texttt{<item, count>}. Even after this operation, however, the data size can
-still be too large because most real-world access patterns follow a long-tailed
+still be too large because most real-world access patterns follow a long tail
 distribution. There is a large-but-irrelevant tail that contributes little to
 the final results.
 
 The edge nodes perform two degradation operations: (1) a head (\texttt{N})
 operation that only takes the top \texttt{N} entries; (2) a threshold \texttt{T}
 that filters small entries. These two operations are not orthogonal. Their impact on data size reduction and quality degradation depends on
-the data distribution. The accuracy function is
-Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation measure of the
+the data distribution. For the accuracy function, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation measure of the
 concordance between two ranked list. The output ranges from \(-1\) to 1,
 representing no agreement to complete agreement. To integrate with \sysname{},
-we convert the Kendall's~$\tau$ to the range of [0, 1] with a linear transformation.
+we convert Kendall's~$\tau$ to the range of [0, 1] with a linear transformation.
 
 Our Top-K application aims to find the fifty most accessed files from web server
 logs. We use Apache log files that record and store user access statistics for
