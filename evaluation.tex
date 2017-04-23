@@ -27,8 +27,6 @@
   \label{fig:all-profiles}
 \end{figure*}
 
-\newpage
-
 \section{Evaluation}
 \label{sec:evaluation}
 
@@ -122,15 +120,15 @@ profiling efficiency; we present their evaluations as follows.
 \para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
 evaluating each individual configuration is independent of other configurations,
 we parallelize the profiling task by assigning configurations to GPUs.
-$(i)$~Our offline profiling assigns configurations randomly. 
+$(i)$~Our offline profiling assigns configurations randomly.
 With the increased number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.
 $(ii)$~Our online profiling assigns configurations based on the processing times collected during offline.
 \sysname{} currently uses LPT assignment and can reduce the overhead to 1.75X with 30 GPUs.
 
 \para{Sampling techniques speed up online profiling (\autoref{fig:online-tricks}).}
 Before we evaluate the speed up, we validate
-\textit{model drifts} with real-world data. We use the profile 
-trained in an office environment. 
+\textit{model drifts} with real-world data. We use the profile
+trained in an office environment.
 According to the profile, the application should operate at a configuration of 1280x720 resolution, 30 FPS and a quantization of 20 to meet 11 mbps available bandwidth.
 We test it against a home environment, and at about t=100s, the camera points out
 of the window to detect objects on the street. Because of the scene change, the
