@@ -2,5 +2,6 @@
 
 Run `make` inside this folder to generate the PDF file.
 
-`sigcomm17` contains the old paper draft for SIGCOMM'17 submission (didn't
-submit due to time constrain).
+The repo
+has [a tag to SOSP17](https://github.com/nebgnahz/NSDI18-AwStream/tree/sosp17)
+submission.
