@@ -103,17 +103,23 @@ $(ii)$~Exhaustive profiling is expensive. If it takes too much time,
 the newly-learned profile may already be stale. \sysname{} uses a combination of
 parallelism and sampling techniques to speed up this process, as described below:
 
-\begin{itemize}[leftmargin=*]
+\begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
 
 \item Degradation-aware parallelization: Evaluating each configuration takes a
-different amount of time. Typically, an increase in the level of degradation
-leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer images
-to process. Therefore, we collect processing times for each configuration from
-the offline process and use them for scheduling---for example longest-job first
-schedule (LFS)~\cite{karger2010scheduling}---in parallelization.
+  different amount of time. Typically, an increase in the level of degradation
+  leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer
+  images to process. Therefore, we collect processing times for each
+  configuration from the offline process and schedule online profiling with
+  longest first schedule (LFS)~\cite{karger2010scheduling} for parallelization.
 
-\item Sampling-based profiling: Online profiling can speed up if we only profile a subset of all data or a subset of all configurations. 
-The former case reduces the amount of data to process, but at a cost of generating a less accurate profile. In the latter case, we can evaluate a subset of the configurations and compare their performances with the existing profile. A substantial difference, such as more than 1 mbps of bandwidth estimation, triggers a full profiling over all configurations to update the current profile.
+\item Sampling-based profiling: Online profiling can speed up if we only profile
+  a subset of all data or a subset of all configurations.  The former case
+  reduces the amount of data to process, but at a cost of generating a less
+  accurate profile. In the latter case, we can evaluate a subset of the
+  configurations and compare their performances with the existing profile. A
+  substantial difference, such as more than 1 mbps of bandwidth estimation,
+  triggers a full profiling over all configurations to update the current
+  profile.
 
 \end{itemize}
 

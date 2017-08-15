@@ -60,9 +60,9 @@ quantizes a stream of integers in the Rust programming language:
 
 \vspace{-2pt}
 \begin{lstlisting}
-    let quantized_stream = vec![1, 2, 3, 4].into_stream()
-        .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
-        .collect();
+  let quantized_stream = vec![1, 2, 3, 4].into_stream()
+    .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
+    .collect();
 \end{lstlisting}
 
 The snippet creates a stream of integers, chains a degradation operation and
@@ -86,11 +86,11 @@ can now be implemented as follows:
 
 \vspace{-2pt}
 \begin{lstlisting}
-   let app = Camera::new((1920, 1080), 30)
-      .maybe_downsample(vec![(1600, 900), (1280, 720)])
-      .maybe_skip(vec![2, 5])
-      .map(|frame| frame.show())
-      .compose();
+  let app = Camera::new((1920, 1080), 30)
+    .maybe_downsample(vec![(1600, 900), (1280, 720)])
+    .maybe_skip(vec![2, 5])
+    .map(|frame| frame.show())
+    .compose();
 \end{lstlisting}
 
 This snippet first instantiates a \texttt{Camera} source, which produces

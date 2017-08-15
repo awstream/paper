@@ -1,5 +1,6 @@
 \documentclass[twocolumn, 9pt]{article}
 
+\usepackage[toc,page]{appendix}
 \usepackage[T1]{fontenc}
 \usepackage{algpseudocode}
 \usepackage{amsmath}
@@ -16,6 +17,8 @@
 \usepackage{usenix}
 \usepackage{varwidth}
 \usepackage{xcolor}
+
+\usepackage[explicit]{titlesec}
 
 \hypersetup{
   colorlinks=true,
@@ -49,8 +52,17 @@
 \captionsetup[lstlisting]{font={footnotesize}}
 \renewcommand{\lstlistingname}{Example}
 
-% \captionsetup[figure]{belowskip=-3pt,aboveskip=5pt}
-% \captionsetup[table]{belowskip=1pt, aboveskip=1pt}
+\makeatletter
+\newcommand\appendix@section[1]{%
+  \refstepcounter{section}%
+  \orig@section*{Appendix \@Alph\c@section: #1}%
+  \addcontentsline{toc}{section}{Appendix \@Alph\c@section: #1}%
+}
+\let\orig@section\section
+\g@addto@macro\appendix{\let\section\appendix@section}
+\makeatother
+
+\newcommand*{\Appendixautorefname}{Appendix}
 
 \frenchspacing
 
@@ -70,23 +82,24 @@
 \maketitle
 
 \subsection*{Abstract}
-  The emerging class of wide-area streaming analytics faces the challenge of
-  scarce and variable WAN bandwidth. Applications that solely rely on
-  transport protocols like TCP and UDP suffer from increased latency or degraded
-  accuracy. Existing approaches that adapt to network changes are often
-  application-specific or require extensive developer effort.
 
-  We present \sysname{}, a stream processing system that simultaneously achieves
-  low latency and high accuracy in the wide area, requiring minimal developer
-  effort. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
-  application adaptation as a first-class programming abstraction in the stream
-  processing model; $(ii)$ with a combination of offline and online profiling,
-  it automatically learns an accurate and precise profile that models accuracy and
-  bandwidth trade-off; and $(iii)$ at runtime, it adjusts the application data rate
-  to match the available bandwidth. We evaluate \sysname{} using three
-  real-world applications: pedestrian detection, augmented reality, and
-  monitoring log analysis. Our experiments show that \sysname{} achieves
-  sub-second latency with nominal accuracy drop.
+The emerging class of wide-area streaming analytics faces the challenge of
+scarce and variable WAN bandwidth. Applications that solely rely on transport
+protocols like TCP and UDP suffer from increased latency or degraded
+accuracy. Existing approaches that adapt to network changes are often
+application-specific or require extensive developer effort.
+
+We present \sysname{}, a stream processing system that simultaneously achieves
+low latency and high accuracy in the wide area, requiring minimal developer
+effort. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
+application adaptation as a first-class programming abstraction in the stream
+processing model; $(ii)$ with a combination of offline and online profiling, it
+automatically learns an accurate and precise profile that models accuracy and
+bandwidth trade-off; and $(iii)$ at runtime, it adjusts the application data
+rate to match the available bandwidth. We evaluate \sysname{} using three
+real-world applications: pedestrian detection, augmented reality, and monitoring
+log analysis. Our experiments show that \sysname{} achieves sub-second latency
+with nominal accuracy drop.
 
 \input{intro}
 \input{motivation}
@@ -101,6 +114,10 @@
 
 {\footnotesize \bibliographystyle{acm}
 \bibliography{awstream}}
+
+\begin{appendices}
+\input{appendix.tex}
+\end{appendices}
 
 \end{document}
 
