@@ -1,0 +1,110 @@
+\documentclass[twocolumn, 9pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{balance}
+\usepackage{booktabs} % For formal tables
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{usenix}
+\usepackage{varwidth}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ACMRed,
+  urlcolor=ACMBlue,
+  citecolor=ACMRed,
+}
+
+\definecolor[named]{ACMBlue}{cmyk}{1,0.1,0,0.1}
+\definecolor[named]{ACMYellow}{cmyk}{0,0.16,1,0}
+\definecolor[named]{ACMOrange}{cmyk}{0,0.42,1,0.01}
+\definecolor[named]{ACMRed}{cmyk}{0,0.90,0.86,0}
+\definecolor[named]{ACMLightBlue}{cmyk}{0.49,0.01,0,0}
+\definecolor[named]{ACMGreen}{cmyk}{0.20,0,1,0.19}
+\definecolor[named]{ACMPurple}{cmyk}{0.55,1,0,0.15}
+\definecolor[named]{ACMDarkBlue}{cmyk}{1,0.58,0,0.21}
+
+\lstset{
+  captionpos=b,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  morekeywords={maybe_downsample, maybe_skip, maybe}
+}
+
+\captionsetup[lstlisting]{font={footnotesize}}
+\renewcommand{\lstlistingname}{Example}
+
+% \captionsetup[figure]{belowskip=-3pt,aboveskip=5pt}
+% \captionsetup[table]{belowskip=1pt, aboveskip=1pt}
+
+\frenchspacing
+
+\begin{document}
+
+% don't want date printed
+\date{}
+
+\input{macros}
+
+\title{\sysname{}: Adaptive Wide-Area Streaming Analytics}
+
+\author{
+  \textit{Anonymous for submission}
+}
+
+\maketitle
+
+\subsection*{Abstract}
+  The emerging class of wide-area streaming analytics faces the challenge of
+  scarce and variable WAN bandwidth. Applications that solely rely on
+  transport protocols like TCP and UDP suffer from increased latency or degraded
+  accuracy. Existing approaches that adapt to network changes are often
+  application-specific or require extensive developer effort.
+
+  We present \sysname{}, a stream processing system that simultaneously achieves
+  low latency and high accuracy in the wide area, requiring minimal developer
+  effort. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
+  application adaptation as a first-class programming abstraction in the stream
+  processing model; $(ii)$ with a combination of offline and online profiling,
+  it automatically learns an accurate and precise profile that models accuracy and
+  bandwidth trade-off; and $(iii)$ at runtime, it adjusts the application data rate
+  to match the available bandwidth. We evaluate \sysname{} using three
+  real-world applications: pedestrian detection, augmented reality, and
+  monitoring log analysis. Our experiments show that \sysname{} achieves
+  sub-second latency with nominal accuracy drop.
+
+\input{intro}
+\input{motivation}
+\input{system}
+\input{impl}
+\input{evaluation}
+\input{discussion}
+\input{related}
+\input{conclusion}
+
+% \input{acknowledgement}
+
+{\footnotesize \bibliographystyle{acm}
+\bibliography{awstream}}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

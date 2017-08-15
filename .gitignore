@@ -188,6 +188,9 @@ TSWLatexianTemp*
 # Emacs AucTex
 auto/
 sigcomm2017.pdf
+awstream.pdf
 sosp17.pdf
 main.pdf
 _region_*
+
+banal

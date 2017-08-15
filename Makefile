@@ -1,4 +1,4 @@
-filename=sosp17
+filename=awstream
 
 pdf:
 	pdflatex ${filename}.tex
