@@ -2,16 +2,16 @@
   \centering
   \begin{subfigure}[t]{0.32\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/profile-mot.pdf}
-    \caption{Pedestrian Detection (PD)}
-    \label{fig:pd-profile}
+    \includegraphics[width=\textwidth]{figures/profile-darknet.pdf}
+    \caption{Augmented Reality (AR)}
+    \label{fig:ar-profile}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{0.32\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/profile-darknet.pdf}
-    \caption{Augmented Reality (AR)}
-    \label{fig:ar-profile}
+    \includegraphics[width=\textwidth]{figures/profile-mot.pdf}
+    \caption{Pedestrian Detection (PD)}
+    \label{fig:pd-profile}
   \end{subfigure}
   \hfill
   \begin{subfigure}[t]{0.32\textwidth}
@@ -60,13 +60,13 @@ impact on the degradation, we highlight configurations from tuning only
 
 \para{Large bandwidth variation.} For all three applications, their bandwidth
 requirements have two to three orders of magnitude of difference (note the
-x-axis is in log scale). For PD and AR, the most expensive configuration
-transmits videos at 1920x1080, 30 FPS and 0 quantization; it consumes 230 mbps. In
-constrast to the large bandwidth variation, there is a smaller variation in
-accuracy. In PD, for example, even after the bandwidth reduces to 1 mbps (less
-than 1\% of the maximum), the accuracy is still above 75\%. This allows
-\sysname{} applications to operate at a high accuracy configuration even under
-severe network deterioration.
+x-axis is in log scale). For AR and PD, the most expensive configuration
+transmits videos at 1920x1080, 30 FPS and 0 quantization; it consumes 230
+mbps. In constrast to the large bandwidth variation, there is a smaller
+variation in accuracy. In PD, for example, even after the bandwidth reduces to 1
+mbps (less than 1\% of the maximum), the accuracy is still above 75\%. This
+allows \sysname{} applications to operate at a high accuracy configuration even
+under severe network deterioration.
 
 \para{Multiple dimensions achieve the optimal.} Comparing dashed lines in each
 profile, we see that the Pareto-optimal configurations are only achievable when
@@ -79,7 +79,7 @@ the behavior will probably change.
 \para{Each dimension affects differently}. Within a single profile, the
 difference between tuning individual dimensions is evident. For PD, tuning
 resolution (the red line) leads to a quicker accuracy drop in comparison to
-tuning the frame rate (the yellow line). Comparing PD and AR, the same dimension
+tuning the frame rate (the yellow line). Comparing AR and PD, the same dimension
 has different impact. Tuning resolution is less harmful in AR than PD; while
 tuning frame rate hurts AR more than PD\@. This echoes our initial observation
 in~\autoref{sec:making-case-sys-approach} that application- and context-specific
@@ -95,20 +95,23 @@ application to compute manual policies.
 \subsection{Profiling Efficiency \& Online Profiling}
 \label{sec:online-profiling}
 
-This section focuses on the AR application as a case study;
-our profiling techniques---parallelism and sampling---do not make assumptions about the application; therefore, the evaluation results can be generalized to other applications.
+This section focuses on the AR application as a case study; our profiling
+techniques---parallelism and sampling---do not make assumptions about the
+application; therefore, the evaluation results can be generalized to other
+applications.
 
 AR allows 216 different configurations: 6 resolutions, 6 frame rates and 6
 quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
-  an input image to a fixed neural network size. Evaluating all images (with
-  different resolutions) takes a similar amount of time.} But different
-configurations require different amounts of processing. For example, a
-\(10~\text{FPS}\) video has 1/3 of the frames to process in comparison to a
-\(30~\text{FPS}\) video.  In our experiment, to evaluate all 216 configurations,
-it takes 52 seconds for 1-second worth of data. We denote such overhead as
-52X\@. \autoref{sec:automatic-profiling} discusses techniques to improve the
-profiling efficiency; we present their evaluations as follows.
+  an input image to a fixed resolution (416x416) as required by the neural
+  network. Evaluating all images (with different resolutions) takes a similar
+  amount of time.} But different configurations require different amounts of
+processing. For example, a \(10~\text{FPS}\) video has 1/3 of the frames to
+process in comparison to a \(30~\text{FPS}\) video.  In our experiment, to
+evaluate all 216 configurations, it takes 52 seconds for 1-second worth of
+data. We denote such overhead as 52X\@. \autoref{sec:automatic-profiling}
+discusses techniques to improve the profiling efficiency; we present their
+evaluations as follows.
 
 \begin{figure}
   \centering
@@ -338,12 +341,12 @@ the design choices within the design space of data fidelity and freshness:
 \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
 \item Streaming over TCP favors fidelity over freshness.
 \item Streaming over UDP favors freshness over fidelity.
-\item Manual policies have limited rules with coarse-granularity. A sudden
+\item Manual policies have limited rules with coarse granularity. A sudden
   change from one rule to another incurs large latency (\textasciitilde 5
-  seconds, similar to JetStream's result~\cite{rabkin2014aggregation}).
-\item Application-specific solutions suffer from accuracy drop. PD's profile has
-  configurations that reduce frame rate aggressively; these configurations work
-  poorly for AR\@.
+  seconds).
+\item Application-specific solutions suffer from accuracy drop. PD's profile
+  prefers to reduce frame rate aggressively; these configurations work poorly
+  for AR\@.
 \item \sysname{} achieves both data fidelity and freshness.
 \end{itemize}
 

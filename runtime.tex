@@ -34,17 +34,17 @@ and delivers data to the application analytics. Raw data is only transmitted
 when the queue is empty. When a new profile is learned, it is fed back to AC for
 subsequent adaptation.
 
-We then describe the adaptation algorithm; \autoref{fig:cc} shows the state machine model and an example trace for illustration.
-AC loads the profile and sorts all configurations with an
-ascending order of bandwidth demand, resulting in a list $[c_1, \dots,
-c_{\max}]$.
-These configurations follow a total order: $c_i < c_j$ if $B(c_i) < B(c_j)$.
-We denote the current configuration as $c_i$ and the next $c_{i+1}$.
-AC receives messages from the \texttt{Queue}: message \qe{} when the queue is empty
-and $\text{Q}_\text{C}$ when queued items exceed a threshold. AC can query
-\texttt{Socket} for delivery rate $R$ or request it to probe ($\text{AC}_{\text{Probe}}$) for a target
-bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
-\spd{}. The algorithm follows a state machine as described below:
+We then describe the adaptation algorithm; \autoref{fig:cc} shows the state
+machine model and an example trace for illustration.  AC loads the profile and
+sorts all configurations with an ascending order of bandwidth demand, resulting
+in a list $[c_1, \dots, c_{\max}]$.  These configurations follow a total order:
+$c_i < c_j$ if $B(c_i) < B(c_j)$.  We denote the current configuration as $c_i$
+and the next $c_{i+1}$.  AC receives messages from the \texttt{Queue}: message
+\qe{} when the queue is empty and $\text{Q}_\text{C}$ when queued items exceed a
+threshold. AC can query \texttt{Socket} for delivery rate $R$ or request it to
+probe ($\text{AC}_{\text{Probe}}$) for a target bandwidth, often
+$B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back \spd{}. The
+algorithm follows a state machine as described below:
 
 \begin{itemize}[leftmargin=*, topsep=3pt, itemsep=0pt]
 
@@ -104,7 +104,8 @@ bandwidth, often $B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back
 % \end{figure}
 
 \para{Resource Allocation and Fairness.} In addition to rate adaptation, the
-profile is also useful for controlling a single application's bandwidth usage or allocating resources among competing tasks.
+profile is also useful for controlling a single application's bandwidth usage or
+allocating resources among competing tasks.
 
 For individual applications, developers can pinpoint a configuration for a given
 bandwidth or accuracy goal. They can also specify a criterion to limit effective

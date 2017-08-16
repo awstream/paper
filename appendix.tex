@@ -62,8 +62,10 @@ the final results.
 
 The edge nodes perform two degradation operations: (1) a head (\texttt{N})
 operation that only takes the top \texttt{N} entries; (2) a threshold \texttt{T}
-that filters small entries. These two operations are not orthogonal. Their impact on data size reduction and quality degradation depends on
-the data distribution. For the accuracy function, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation measure of the
+that filters small entries. These two operations are not orthogonal. Their
+impact on data size reduction and quality degradation depends on the data
+distribution. For the accuracy function, we use
+Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation measure of the
 concordance between two ranked list. The output ranges from \(-1\) to 1,
 representing no agreement to complete agreement. To integrate with \sysname{},
 we convert Kendall's~$\tau$ to the range of [0, 1] with a linear transformation.
@@ -71,8 +73,8 @@ we convert Kendall's~$\tau$ to the range of [0, 1] with a linear transformation.
 Our Top-K application aims to find the fifty most accessed files from web server
 logs. We use Apache log files that record and store user access statistics for
 the \href{https://www.sec.gov}{SEC.gov} website. We split these logs into four
-groups, simulating four geo-distributed nodes monitoring web accesses.
-To match the load of popular web servers, we compress one hour's logs into one second.
+groups, simulating four geo-distributed nodes monitoring web accesses.  To match
+the load of popular web servers, we compress one hour's logs into one second.
 
 \section{Runtime Experiments}
 
