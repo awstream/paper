@@ -1,5 +1,16 @@
+\section{Implementation}
+\label{sec:implementation}
+
+While our proposed APIs are general and not language specific, we choose a safe
+language, Rust, to implement the core framework. \sysname{} is open-source on
+Github.\footnote{Url elided for anonymity.}  Applications built with \sysname{}
+run as a single process.  The execution mode---profiling, runtime as client, or
+runtime as server---is configurable with command line arguments or environment
+variables.  Our deployment manager is currently a shell script.
+
+
 \begin{table}
-  \footnotesize
+  \scriptsize
   \centering
   \begin{tabular}{c c c c}
     \toprule
@@ -17,7 +28,7 @@
     \specialcell{Log Analysis\\(Top-K)}
                 & \specialcell{head (N) \\ threshold (T) }
                 & \specialcell{Kendall's $\tau$}
-                        & \specialcell{\href{https://www.sec.gov}{SEC.gov} access logs~\cite{edgarlog} \\ training: 4 days \\
+                        & \specialcell{\href{https://www.sec.gov}{SEC.gov} logs~\cite{edgarlog} \\ training: 4 days \\
     testing: 16 days} \\
     \bottomrule
   \end{tabular}
@@ -25,15 +36,6 @@
   \label{tab:apps}
 \end{table}
 
-\section{Implementation}
-\label{sec:implementation}
-
-While our proposed APIs are general and not language specific, we choose a safe
-language, Rust, to implement the core framework. \sysname{} is open-source on
-Github.\footnote{Url elided for anonymity.}  Applications built with \sysname{}
-run as a single process.  The execution mode---profiling, runtime as client, or
-runtime as server---is configurable with command line arguments or environment
-variables.  Our deployment manager is currently a shell script.
 
 % First, Rust's memory safety guarantee can ensure applications running
 % continously for an extended period of time. Besides, the zero-cost abstraction

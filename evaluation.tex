@@ -33,7 +33,7 @@
 In this section, we show the evaluations of \sysname{}, summarizing the results
 as follows.
 
-\begin{itemize}
+\begin{itemize}[itemsep=0pt]
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
   profiles across multiple dimensions with precision
   (\autoref{fig:all-profiles}).
@@ -103,15 +103,16 @@ quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
   an input image to a fixed neural network size. Evaluating all images (with
   different resolutions) takes a similar amount of time.} But different
-configurations require different amounts of processing. For example, a \(10~\text{FPS}\)
-video has 1/3 of the frames to process in comparison to a \(30~\text{FPS}\) video.
-In our experiment, to evaluate all 216 configurations, it takes 52 seconds for 1-second
-worth of data. We denote such overhead as 52X\@. \autoref{sec:automatic-profiling} discusses techniques to improve the
+configurations require different amounts of processing. For example, a
+\(10~\text{FPS}\) video has 1/3 of the frames to process in comparison to a
+\(30~\text{FPS}\) video.  In our experiment, to evaluate all 216 configurations,
+it takes 52 seconds for 1-second worth of data. We denote such overhead as
+52X\@. \autoref{sec:automatic-profiling} discusses techniques to improve the
 profiling efficiency; we present their evaluations as follows.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\columnwidth]{figures/parallel.pdf}
+  \includegraphics[width=1.0\columnwidth]{figures/parallel.pdf}
   \caption{Parallelism speeds up both offline and online profiling.
   The y-axis shows the profiling time for 1-second video.}
   \label{fig:parallel}
@@ -230,6 +231,8 @@ and the importance of the job.
 
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
+
+\todo{add explanation to JetStream++.}
 
 \begin{figure}
   \centering

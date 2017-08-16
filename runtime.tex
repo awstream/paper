@@ -5,10 +5,9 @@ At runtime, \sysname{} performs application adaptation according to the learned
 profile. We choose to design our own runtime system and adaptation algorithm
 because prior solutions are not satisfactory: $(i)$~network protocols adapt to
 available resources without application accuracy guarantee; $(ii)$
-JetStream~\cite{rabkin2014aggregation} uses manual policies without the
-bandwidth demand of each rule, therefore it can only react slowly and adapt
-gradually, causing high latency; and $(iii)$~video streaming adaptation, such as
-Huang et al.~\cite{huang2014buffer}, relies on the playback buffer and incurs
+JetStream~\cite{rabkin2014aggregation} uses manual policies and doesn't support
+degradations along multiple dimensions; and $(iii)$~video streaming adaptation,
+such as Huang et al.~\cite{huang2014buffer}, uses the playback buffer and incurs
 high latency.
 
 Our runtime differs from prior systems in the ability to react
@@ -121,22 +120,22 @@ application $t$. We formulate utility fairness as follows:
 
 %% Pick one based on the space
 
-%\begin{equation}
- % \label{eq:multitask}
-%  \underset{c^t}{\max} \; \min({A^t(c^t)})
-%  \;
-%  \text{s.t.}
-%%  \;
-%%  \sum_t{B^t(c^t)} < R
-%% \end{equation}
-
 \begin{equation}
  \label{eq:multitask}
- \begin{aligned}
-    & \underset{c^t}{\text{maximize}} & & \min({A^t(c^t)}) & & \\
-    & \text{subject to} & & \sum_t{B^t(c^t)} < R & & \\
- \end{aligned}
+ \underset{c^t}{\max} \; \min({A^t(c^t)})
+ \;
+ \text{s.t.}
+ \;
+ \sum_t{B^t(c^t)} < R
 \end{equation}
+
+% \begin{equation}
+%  \label{eq:multitask}
+%  \begin{aligned}
+%     & \underset{c^t}{\text{maximize}} & & \min({A^t(c^t)}) & & \\
+%     & \text{subject to} & & \sum_t{B^t(c^t)} < R & & \\
+%  \end{aligned}
+% \end{equation}
 
 Solving this optimization is computationally hard. \sysname{} uses a heuristics
 approach. We start with $c_1^t$ and improve the application $t$ that has the

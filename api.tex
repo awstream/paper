@@ -1,3 +1,32 @@
+\subsection{APIs for Structured Adaptation}
+\label{sec:struct-adapt}
+
+%% Introduce graphs of operators model
+The majority of stream processing applications today are constructed as a
+directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized},
+where each operator transforms input streams into new streams. \sysname{}
+borrows the same computation model. We list some example operators, such as
+\texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
+
+To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
+that degrade data quality, yielding potential bandwidth savings.
+Our API design has three considerations:
+$(i)$~to free developers from specifying exact rules, the API should tolerate
+approximate specifications; $(ii)$~to allow combining multiple dimensions, the API
+should be modular: each operator is a unit and the developer can chain multiple
+operators; $(iii)$~to support flexible integration with arbitrary degradation
+functions, the API should take user-defined functions (UDFs). Therefore, our API
+is,
+
+\vspace{-2pt}
+\begin{lstlisting}
+        maybe(knobs: Vec<T>, f: (T, I) => I)
+\end{lstlisting}
+
+We illustrate the use of the \texttt{maybe} operator with an example that
+quantizes a stream of integers in the Rust programming language:
+
+
 \begin{table*}
   \small
   \centering
@@ -30,39 +59,11 @@
   \label{tab:operators}
 \end{table*}
 
-\subsection{APIs for Structured Adaptation}
-\label{sec:struct-adapt}
-
-%% Introduce graphs of operators model
-The majority of stream processing applications today are constructed as a
-directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized},
-where each operator transforms input streams into new streams. \sysname{}
-borrows the same computation model. We list some example operators, such as
-\texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
-
-To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
-that degrade data quality, yielding potential bandwidth savings.
-Our API design has three considerations:
-$(i)$~to free developers from specifying exact rules, the API should tolerate
-approximate specifications; $(ii)$~to allow combining multiple dimensions, the API
-should be modular: each operator is a unit and the developer can chain multiple
-operators; $(iii)$~to support flexible integration with arbitrary degradation
-functions, the API should take user-defined functions (UDFs). Therefore, our API
-is,
-
 \vspace{-2pt}
 \begin{lstlisting}
-        maybe(knobs: Vec<T>, f: (T, I) => I)
-\end{lstlisting}
-
-We illustrate the use of the \texttt{maybe} operator with an example that
-quantizes a stream of integers in the Rust programming language:
-
-\vspace{-2pt}
-\begin{lstlisting}
-  let quantized_stream = vec![1, 2, 3, 4].into_stream()
-    .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
-    .collect();
+let quantized_stream = vec![1, 2, 3, 4].into_stream()
+  .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
+  .collect();
 \end{lstlisting}
 
 The snippet creates a stream of integers, chains a degradation operation and
@@ -70,9 +71,9 @@ collects the execution result. In this example, the knob is [2, 4], and the
 degradation function performs a wrapping (modular) division where the divisor is
 the chosen knob. The knob value modifies the quantization level, affecting the
 output: [1, 2, 3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1]
-(k=4). If the stream is subsequently encoded---for example, run-length encoding
-as in JPEG~\cite{wallace1992jpeg}---for transmission, the bandwidth consumption
-will change according to the level of degradation.
+(k=4). If the stream is then encoded---e.g. run-length encoding as in
+JPEG~\cite{wallace1992jpeg}---for transmission, the bandwidth consumption will
+change according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will

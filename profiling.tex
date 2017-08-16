@@ -1,8 +1,8 @@
 \subsection{Automatic Profiling}
 \label{sec:automatic-profiling}
 
-After developers use \maybe{} operators to specify potential degradation operations,
-\sysname{} automatically builds an accurate application profile. The profile
+After developers use \maybe{} operators to specify potential degradation
+operations, \sysname{} automatically builds an accurate profile. The profile
 captures the relationship between application accuracy and bandwidth consumption
 under different combinations of data degradation operations. We describe the
 formalism, followed by techniques that efficiently perform offline and online
@@ -14,10 +14,10 @@ forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
 possible configurations $\mathbb{C}$ is the space that the profiling
 explores. For each configuration $c$, there are two mappings that are of
 particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
-its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations used in
-this paper.
+its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
+used in this paper.
 
-The profiling looks for all $c$ such that there is no alternative
+The profiling looks for all configuration $c$ such that there is no alternative
 configuration $c'$ that requires less bandwidth while giving a higher
 accuracy. These configurations form the Pareto-optimal set $\mathbb{P}$, defined
 as follows:
