@@ -75,37 +75,24 @@ groups, simulating four geo-distributed nodes monitoring web accesses.
 To match the load of popular web servers, we compress one hour's logs into one second.
 
 \section{Runtime Experiments}
-\begin{figure*}
-  \begin{subfigure}{\linewidth}
-    \centering
-    \includegraphics[width=0.5\columnwidth]{figures/runtime-legend.pdf}
-  \end{subfigure}
-  \\
-  \vspace{0.4em}
-  \begin{subfigure}{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/runtime-mot-verticle.pdf}
-    \caption{Pedestrian Detection (PD)}
-    \label{fig:pd-runtime}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.3\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/runtime-darknet-verticle.pdf}
-    \caption{Augmented Reality (AR)}
-    \label{fig:ar-runtime}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{0.3\textwidth}
-    \includegraphics[width=\textwidth]{figures/runtime-topk-verticle.pdf}
-    \caption{Top-K (TK)}
-    \label{fig:tk-runtime}
-  \end{subfigure}
-  \caption{Runtime behavior of \sysname{} applications in comparison with
-    streaming over TCP/UDP\@. AWStream simultaneously provides sub-second
-    latency (similar to UDP) and high accuracy (similar to TCP).}
-  \label{fig:all-runtime}
-\end{figure*}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/runtime-mot-verticle.pdf}
+  \caption{Runtime behavior of AR application in comparison with streaming over
+    TCP/UDP\@. AWStream simultaneously provides sub-second latency (similar to
+    UDP) and high accuracy (similar to TCP).}
+  \label{fig:pd-runtime}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/runtime-topk-verticle.pdf}
+  \caption{Runtime behavior of AR application in comparison with streaming over
+    TCP/UDP\@. AWStream simultaneously provides sub-second latency (similar to
+    UDP) and high accuracy (similar to TCP).}
+  \label{fig:tk-runtime}
+\end{figure}
 
 %%% Local Variables:
 %%% mode: latex

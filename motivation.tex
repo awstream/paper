@@ -52,8 +52,10 @@ worldwide~\cite{calder2013mapping}. This geo-distributed infrastructure
 continuously produces large volumes of data such as data access logs, server
 monitoring logs, and performance counters~\cite{pu2015low,
   alspaugh2014analyzing, vulimiri2015global}. While most log analysis today runs
-in batch mode on a daily basis, there is a trend towards analyzing logs in
-real time for rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve the overall efficiency by optimizing data placement if the access logs can be processed in real time.
+in batch mode on a daily basis, there is a trend towards analyzing logs in real
+time for rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can
+improve the overall efficiency by optimizing data placement if the access logs
+can be processed in real time.
 
 %% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
 %% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
@@ -76,11 +78,11 @@ systems~\cite{pu2015low, vulimiri2015global, vulimiri2015wananlytics,
 15x smaller than their LAN bandwidth on average, and up to 60x smaller in the
 worst case~\cite{hsieh17gaia}. In terms of pricing, as of April 2017, the
 average WAN bandwidth cost is up to 38x of the cost of renting two
-machines~\cite{amazon2017pricing}.
+machines~\cite{amazon2017pricing, hsieh17gaia}.
 
 In addition to the scarcity and cost, the large variability of WAN bandwidth
 also affects streaming workloads. We conducted a day-long measurement using
-iPerf~\cite{iperf3} to measure the pair-wise bandwidth between four Amazon EC2
+iPerf~\cite{iperf3} to measure pair-wise bandwidth between four Amazon EC2
 sites. The results show large variance in all pairs---\autoref{fig:bw} is one
 such pair. There are occasions when available bandwidth is below 25\% of the
 maximum bandwidth.
@@ -101,10 +103,10 @@ a system approach.
 \para{Manual polices are sub-optimal.} While existing systems such as
 JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} allow
 adaptation, they require developers to write manual policies. We illustrate the
-problems with manual policies using an example~\cite{rabkin2014aggregation}: \textit{if bandwidth is insufficient,
-  switch to sending images at 75\% fidelity, then 50\% if there still isn't
-  enough bandwidth. Beyond that point, reduce the frame rate, but keep the image
-  fidelity.}
+problems with manual policies using an example~\cite{rabkin2014aggregation}:
+\textit{if bandwidth is insufficient, switch to sending images at 75\% fidelity,
+  then 50\% if there still isn't enough bandwidth. Beyond that point, reduce the
+  frame rate, but keep the image fidelity.}
 
 First, this policy is not accurate.
 Developers write such rules based on heuristics and
