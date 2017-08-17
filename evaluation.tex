@@ -100,8 +100,8 @@ techniques---parallelism and sampling---do not make assumptions about the
 application; therefore, the evaluation results can be generalized to other
 applications.
 
-AR allows 216 different configurations: 6 resolutions, 6 frame rates and 6
-quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
+In AR, there are 216 different configurations: 6 resolutions, 6 frame rates and
+6 quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
   an input image to a fixed resolution (416x416) as required by the neural
   network. Evaluating all images (with different resolutions) takes a similar
@@ -181,11 +181,11 @@ configuration fails to predict runtime bandwidth, as illustrated in
   \centering
   \begin{tabular}{c c c}
     \toprule
-    online scheme & overhead & improvements \\
+    Online scheme & Overhead & Improvements \\
     \midrule
-    continuous & 52X & baseline \\
-    partial data & 17X & 3$\times$\\
-    partial configurations & 6X & 8.7$\times$ \\
+    Continuous & 52X & baseline \\
+    Partial data & 17X & 3$\times$\\
+    Partial configurations & 6X & 8.7$\times$ \\
     \bottomrule
   \end{tabular}
   \caption{Sampling techniques speed up the profiling. We use X to denote the
@@ -228,6 +228,8 @@ configurations continuously to check for model drifts will reduce the overhead
 to 1X\@. In practice, the amount of resources to use will depend on the budget
 and the importance of the job.
 
+\todo{discuss generalization.}
+
 %% Note that it is not always needed to do online profiling. PD's test data
 %% doesn't exhibit model drift.  Nor is online profiling always
 %% expensive. Processing TK over all configurations.
@@ -235,79 +237,86 @@ and the importance of the job.
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
 
-\todo{add explanation to JetStream++.}
+In this section, we evaluate the runtime systems by varying available bandwidth
+across geo-distributed sites and compare \sysname{} with baselines including
+streaming over TCP/UDP, JetStream and DASH. Our evaluation shows that \sysname{}
+achieves low latency and high accuracy simultaneously
+(\autoref{fig:ar-runtime}).
 
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/runtime-darknet-verticle.pdf}
-  \caption{Runtime behavior of AR application in comparison with streaming over
-    TCP/UDP\@. AWStream simultaneously provides sub-second latency (similar to
-    UDP) and high accuracy (similar to TCP).}
+  \caption{Runtime behavior of AR application. \sysname{} simultaneously
+    provides sub-second latency (similar to UDP) and high accuracy (similar to
+    TCP). Evaluations of other applications are in \
+    \autoref{appendix:more-runtime}. }
   \label{fig:ar-runtime}
 \end{figure}
 
-In this section, we evaluate the runtime performance for three applications. We
-first show that \sysname{} achieves low latency and high accuracy across all
-three applications (\autoref{fig:all-runtime}).
-We then focus on AR by evaluating how manual policies and
-application-specific solutions work poorly, i.e., describe the experiments for
-\autoref{fig:intro}.
+\para{Experiment setup.} We conduct our experiments on five geo-distributed
+machines from Amazon EC2, spanning different AWS regions. Four act as worker
+nodes (\textit{t2.micro} instances) and one acts as the aggregation server
+(\textit{m4.xlarge} instance to guarantee enough bandwidth).
 
-We conduct our experiments on five geo-distributed machines from Amazon EC2,
-spanning different AWS regions. Four act as worker nodes (\textit{t2.micro}
-instances) and one acts as the aggregation server (\textit{m4.xlarge} instance
-to guarantee enough bandwidth). During each experiment, the worker node
-transmits test data (\autoref{tab:apps}) for about 10 mins. If the duration of
-the test data is less than 10 mins, it loops.
-
-We compare \sysname{} applications with baseline applications built with vanilla
-TCP and UDP because they are universal for all applications. For streaming over
-TCP, we use \sysname{} but disable the adaptation. For streaming over UDP, our
-experiment setup is different: for video streaming (PD and AR), we use RTSP over
-UDP with ffmpeg~\cite{bellard2012ffmpeg}; for TK, we implemented a simple
-application protocol---packetization and a custom header---such that the
-receiver can still aggregate data in the presence of UDP packet loss.
-
-Because the baselines don't adapt the configuration and $B(c_{\max})$ is
-prohibitively large---for example, raw videos consumes 230 mbps---we use a
-reasonable configuration to limit the maximum rate. For PD, $c_{\max}$ is
-1920x1080 resolution, \(10~\text{FPS}\) and a quantization of 20; it consumes
-about 12 mbps. For AR, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and
-a quantization of 20; it consumes about 14 mbps.  For TK, $c_{\max}$ is $N=9750$
-for \texttt{head} and $T=0$ for \texttt{threshold}.
+During each experiment, the worker node transmits test data (\autoref{tab:apps})
+for about 10 mins. If the duration of the test data is less than 10 mins, it
+loops. Because $B(c_{\max})$ is prohibitively large---for example, raw videos
+consumes 230 mbps---we use a reasonable configuration to limit the maximum
+rate. For AR, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and a
+quantization of 20; it consumes about 14 mbps. For PD, $c_{\max}$ is 1920x1080
+resolution, \(10~\text{FPS}\) and a quantization of 20; it consumes about 12
+mbps. For TK, $c_{\max}$ is $N=9750$ for \texttt{head} and $T=0$ for
+\texttt{threshold}.
 
 Our controlled experiment follows JetStream~\cite{rabkin2014aggregation}. During
-the experiment, we use the Linux \texttt{tc} utility with HTB~\cite{lartc, htb}
+the experiment, we use the Linux \texttt{tc} utility with HTB~\cite{htb, lartc}
 to control the clients' outgoing bandwidth. Our experiments involve four phases:
 (i) before t=200s, there is no shaping; (ii) at t=200s, we start traffic shaping
 for 3 minutes (7.5 mbps for video streaming and 1 mbps for TK); (iii) at t=380s,
 we further decrease the available bandwidth (5 mbps for video streaming and 0.75
 mbps) for TK); (iv) at t=440s, we remove all traffic shaping. For UDP, HTB
-doesn't emulate the packet loss or out-of-order delivery; we use \texttt{netem}
-and configure the loss probability according to the delivery rate. Because
-different pair-wise connections have different capacity, we impose a
-\textit{background} bandwidth limit---25 mbps for PD and AR, 2.5 mbps for
+doesn't emulate the packet loss or out-of-order delivery; so we use
+\texttt{netem} and configure the loss probability according to the delivery
+rate. Because different pair-wise connections have different capacity, we impose
+a \textit{background} bandwidth limit---25 mbps for PD and AR, 2.5 mbps for
 TK---to simplify comparisons.
 
-The throughput figures of \autoref{fig:ar-runtime} show the effect of our
-traffic shaping. During the shaping, TCP and UDP make full use of the available
-bandwidth; in comparison, \sysname{} is conservative. When we stop the shaping,
-TCP has a ``catch-up'' phase where it's sending all the queued items as fast as
+\para{Baselines.} The first baseline applications are those using vanilla TCP
+and UDP. For streaming over TCP, we re-use \sysname{}'s implementation but
+disable the adaptation. For streaming over UDP, our experiment setup is
+different: for video streaming (AR and PD), we use RTSP over UDP with
+ffmpeg~\cite{bellard2012ffmpeg}; for TK, we implemented a simple application
+protocol for packetization with a custom header, such that the receiver can
+still aggregate data in the presence of UDP packet loss.
+
+The second baseline is JetStream~\cite{rabkin2014aggregation}. We modified
+JetStream with a custom operator that loads our profile as its manual policy for
+degradation. We use JetStream++ to denote this modified version of JetStream.
+
+\para{Results.} We show the time-series measurement of AR
+(\autoref{fig:ar-runtime}) to illustrate their runtime
+behaviors. \autoref{fig:all-performance} shows a summary of all three
+applications. \todo{include figure with barplot.}
+
+The throughput figure shows the effect of our traffic shaping. During the
+shaping, TCP and UDP make full use of the available bandwidth; in comparison,
+\sysname{} and JetStream++ are conservative. When we stop the shaping, TCP has a
+``catch-up'' phase where it's sending all the queued items as fast as
 possible. \sysname{} increases the throughput gradually instead of drastically
 as TCP/UDP does. This is when \sysname{} is slowly probing for more bandwidth.
 
-The latency figures show that \sysname{} maintains a bounded latency. Note the
-figures split in the middle because of the large variation in the measured
-latency. Specifically, during the traffic shaping, TCP queues items at the
-sender side for up to tens or hundreds of seconds. We plot such high latency
-measurements in log scale. UDP always transmits as fast as possible, leading to
-a consistent low latency. \sysname{}'s latency is slightly higher than UDP but
-considerable small in comparison to TCP\@. During the traffic shaping,
-\sysname{} controls the application's degradation to avoid data queueing up. For
-most of the time, we've maintained less than 500 ms latency for PD/AR, and 2.5
-seconds latency for TK\@. Because TK's source generates data every second after
-the \texttt{window} operation, two objects in the queue would lead to two
-seconds latency. The worst case happens at the start of bandwidth
+The latency figures show that \sysname{} maintains a bounded latency (and lower
+than JetStream++). Note the figures split in the middle because of the large
+variation in the measured latency. Specifically, during the traffic shaping, TCP
+queues items at the sender side for up to tens or hundreds of seconds. We plot
+such high latency measurements in log scale. UDP always transmits as fast as
+possible, leading to a consistent low latency. \sysname{}'s latency is slightly
+higher than UDP but considerable small in comparison to TCP\@. During the
+traffic shaping, \sysname{} controls the application's degradation to avoid data
+queueing up. For most of the time, we've maintained less than 500 ms latency for
+PD/AR, and 2.5 seconds latency for TK\@. Because TK's source generates data
+every second after the \texttt{window} operation, two objects in the queue would
+lead to two seconds latency. The worst case happens at the start of bandwidth
 drop: \sysname{} achieves sub-second latency for PD/AR and 5 seconds latency for
 TK at the worst case.
 
@@ -324,7 +333,7 @@ sees an accuracy drop during the traffic shaping, the amount is significant
 smaller: ~2\% drop on average in comparison to streaming over TCP\@.
 We attribute this to the knowledge of the profile and the use of Pareto-optimal configurations during traffic shaping.
 
-In summary, \autoref{fig:all-runtime} shows that \sysname{}'s adaptation achieves
+In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
 
 \para{Fidelity and freshness.} Here we explain our experiments for
