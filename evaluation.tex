@@ -304,8 +304,7 @@ JetStream.
 
 \para{Results.} We show the time-series measurement of AR
 (\autoref{fig:ar-runtime}) to illustrate their runtime
-behaviors. \autoref{fig:all-performance} shows a summary of all three
-applications. \todo{include figure with barplot.}
+behaviors. \autoref{fig:runtime-bar} shows a summary of all three applications.
 
 The throughput figure shows the effect of our traffic shaping. During the
 shaping, TCP and UDP make full use of the available bandwidth; in comparison,
@@ -329,6 +328,13 @@ lead to two seconds latency. The worst case happens at the start of bandwidth
 drop: \sysname{} achieves sub-second latency for PD/AR and 5 seconds latency for
 TK at the worst case.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\columnwidth]{figures/runtime-bar.pdf}
+  \caption{\sysname{} in comparison with JetStream++.}
+  \label{fig:runtime-bar}
+\end{figure}
+
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
 the experiments. TCP without adaptation always sends data at high fidelity
 (\textasciitilde 90\% for PD/AR and \textasciitilde 100\% for TK). It achieves
@@ -339,8 +345,9 @@ contain large blocks of pixels without content details. For TK, the accuracy has
 dropped to \textasciitilde 50\% during modest traffic shaping and dropped
 further to \textasciitilde 25\% during the severe shaping. While \sysname{} also
 sees an accuracy drop during the traffic shaping, the amount is significant
-smaller: ~2\% drop on average in comparison to streaming over TCP\@.
-We attribute this to the knowledge of the profile and the use of Pareto-optimal configurations during traffic shaping.
+smaller: ~2\% drop on average in comparison to streaming over TCP\@.  We
+attribute this to the knowledge of the profile and the use of Pareto-optimal
+configurations during traffic shaping.
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
