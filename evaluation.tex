@@ -124,19 +124,21 @@ evaluations as follows.
 \para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
 evaluating each individual configuration is independent of other configurations,
 we parallelize the profiling task by assigning configurations to GPUs.
-$(i)$~Our offline profiling assigns configurations randomly.
-With the increased number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.
-$(ii)$~Our online profiling assigns configurations based on the processing times collected during offline.
-\sysname{} currently uses LPT assignment and can reduce the overhead to 1.75X with 30 GPUs.
+$(i)$~Our offline profiling assigns configurations randomly.  With the increased
+number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.  $(ii)$~Our
+online profiling assigns configurations based on the processing times collected
+during offline.  \sysname{} currently uses LFS assignment and can reduce the
+overhead to 1.75X with 30 GPUs.
 
-\para{Sampling techniques speed up online profiling (\autoref{fig:online-tricks}).}
-Before we evaluate the speed up, we validate
-\textit{model drifts} with real-world data. We use the profile
-trained in an office environment.
-According to the profile, the application should operate at a configuration of 1280x720 resolution, 30 FPS and a quantization of 20 to meet 11 mbps available bandwidth.
-We test it against a home environment, and at about t=100s, the camera points out
-of the window to detect objects on the street. Because of the scene change, the
-configuration fails to predict runtime bandwidth, as illustrated in
+\para{Sampling techniques speed up online profiling
+  (\autoref{fig:online-tricks}).}
+Before we evaluate the speed up, we validate \textit{model drifts} with
+real-world data. We use the profile trained in an office environment.  According
+to the profile, the application should operate at a configuration of 1280x720
+resolution, 30 FPS and a quantization of 20 to meet 11 mbps available bandwidth.
+We test it against a home environment, and at about t=100s, the camera points
+out of the window to detect objects on the street. Because of the scene change,
+the configuration fails to predict runtime bandwidth, as illustrated in
 \autoref{fig:offline}.
 
 
@@ -168,7 +170,13 @@ configuration fails to predict runtime bandwidth, as illustrated in
     \caption{Partial configurations}
     \label{fig:online-trigger}
   \end{subfigure}
-  \caption{The horizontal reference line is the target bandwidth (11 mbps). We omit accuracy predictions  since in all schemes they are similarly high (\textasciitilde 90\%). (1) Online profiling is necessary to handle model drifts ((a) vs.\,(b-d)). (2) Sampling techniques---partial data (c) and partial configurations (d)---can correct model drifts with less profiling overhead (see \autoref{tab:online}), compared to continuous (b).}
+  \caption{The horizontal reference line is the target bandwidth (11 mbps). (1)
+    Online profiling is necessary to handle model drifts ((a) vs.\,(b-d)). (2)
+    Sampling techniques---partial data (c) and partial configurations (d)---can
+    correct model drifts with less profiling overhead (see
+    \autoref{tab:online}), compared to continuous (b).  We omit accuracy
+    predictions since in all schemes \sysname{} finds configurations that
+    achieve similarly high accuracy (\textasciitilde 90\%).  }
   \label{fig:online-tricks}
 \end{figure}
 
@@ -222,13 +230,12 @@ accurate bandwidth usage (compare \autoref{fig:online} and
 \autoref{fig:online-trigger}).  The overhead reduces to 6X because we run full
 profiling less often (only two times in this experiment).
 
-When we combine the parallelization and sampling-based profiling, we can further
-reduce the profiling overhead. For example, scheduling five GPUs running 5
-configurations continuously to check for model drifts will reduce the overhead
-to 1X\@. In practice, the amount of resources to use will depend on the budget
-and the importance of the job.
-
-\todo{discuss generalization.}
+Note that these techniques---parallelization, sampling data, and sampling
+configurations---can be combined together to further reduce the profiling
+overhead. For example, scheduling five GPUs running 5 configurations
+continuously to check for model drifts will reduce the overhead to 1X\@. In
+practice, the amount of resources to use depends on the budget and the
+importance of the job.
 
 %% Note that it is not always needed to do online profiling. PD's test data
 %% doesn't exhibit model drift.  Nor is online profiling always
@@ -245,7 +252,7 @@ achieves low latency and high accuracy simultaneously
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/runtime-darknet-verticle.pdf}
+  \includegraphics[width=0.95\columnwidth]{figures/runtime-darknet-verticle.pdf}
   \caption{Runtime behavior of AR application. \sysname{} simultaneously
     provides sub-second latency (similar to UDP) and high accuracy (similar to
     TCP). Evaluations of other applications are in \
