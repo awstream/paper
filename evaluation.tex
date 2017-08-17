@@ -42,7 +42,7 @@ as follows.
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
   achieve sub-second latency and nominal accuracy drop
-  (\autoref{fig:all-runtime}).
+  (\autoref{fig:ar-runtime}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
   resource allocations, such as utility fairness (\autoref{fig:multitask}).
 \end{itemize}
@@ -291,7 +291,9 @@ still aggregate data in the presence of UDP packet loss.
 
 The second baseline is JetStream~\cite{rabkin2014aggregation}. We modified
 JetStream with a custom operator that loads our profile as its manual policy for
-degradation. We use JetStream++ to denote this modified version of JetStream.
+degradation. We use JetStream++\footnote{\autoref{appendix:jetstream++}
+  describes how we modified JetStream.} to denote this modified version of
+JetStream.
 
 \para{Results.} We show the time-series measurement of AR
 (\autoref{fig:ar-runtime}) to illustrate their runtime
@@ -344,8 +346,8 @@ application-specific solutions, we apply PD's adaptation profile to control AR's
 behavior.
 
 For comparison, we use data collected during traffic shaping (between t=200s and
-t=440s). When facing insufficient bandwidth, their behaviors reflect
-the design choices within the design space of data fidelity and freshness:
+t=440s). When facing insufficient bandwidth, their behaviors reflect the design
+choices within the space of data fidelity and freshness:
 
 \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
 \item Streaming over TCP favors fidelity over freshness.
@@ -390,17 +392,17 @@ the design choices within the design space of data fidelity and freshness:
 We evaluate resource allocations with two applications. In this way, the results
 cover the case of a single application, and can generalize to more applications.
 
-We choose PD and AR as the example applications.
-We colocate the clients and servers of both applications so that they
-share the same bottleneck link. The experiment starts with sufficient
-bandwidth. At t=60s, we start traffic shaping to limit the total bandwidth
-at 6 mbps. When we allocate resource equally between two applications
-(\autoref{fig:eq-bw}), each application gets 3 mbps. Under this condition,
-PD runs with a higher accuracy (\textasciitilde 85\%) while AR only achieves
-\textasciitilde 77\%. In addition to resource fairness, \sysname{} supports utility fairness: it
-chooses configurations that maximize the minimal accuracy. In this experiment,
-PD receives 2 mbps and AR receives 4 mbps; and both achieve \textasciitilde 80\%
-accuracy (\autoref{fig:eq-acc}).
+We choose AR and PD as the example applications.  We colocate the clients and
+servers of both applications so that they share the same bottleneck link. The
+experiment starts with sufficient bandwidth. At t=60s, we start traffic shaping
+to limit the total bandwidth at 6 mbps. When we allocate resource equally
+between two applications (\autoref{fig:eq-bw}), each application gets 3
+mbps. Under this condition, PD runs with a higher accuracy (\textasciitilde
+85\%) while AR only achieves \textasciitilde 77\%. In addition to resource
+fairness, \sysname{} supports utility fairness: it chooses configurations that
+maximize the minimal accuracy. In this experiment, PD receives 2 mbps and AR
+receives 4 mbps; and both achieve \textasciitilde 80\% accuracy
+(\autoref{fig:eq-acc}).
 
 
 %%% Local Variables:

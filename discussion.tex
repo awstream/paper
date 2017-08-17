@@ -2,14 +2,23 @@
 \label{sec:discussion}
 
 We have presented \sysname{}, a stream processing system achieving low latency
-and high accuracy for the wide area. This section discusses some limitations and
-our future work.
+and high accuracy for the wide area. This section discusses limitations and
+future work.
+
+\para{Reducing developer efforts.} While \sysname{} focuses on reducing
+developer efforts from tedious manual policy construction, there are still
+application-specific aspects for developers: writing appropriate \maybe{} calls,
+providing training data, and specifying the accuracy function. Because
+\sysname{}'s APIs are extensible, we plan to build more libraries for common
+degradation operators and accuracy functions, similar to machine learning
+libraries.
 
 \para{Fault-tolerance and failure recovery.} \sysname{} tolerates bandwidth
-variation but not network partition or host failure. While the servers within
-the DCs can handle faults as existing systems---such as Spark
-Streaming~\cite{zaharia2013discretized}---do, it is difficult to make edge clients failure-oblivious.
-We leave failure detection and recovery of clients as a future work.
+variation but not network partition or host failure. Although the servers within
+the DCs can handle faults as existing systems, such as Spark
+Streaming~\cite{zaharia2013discretized}, do, it is difficult to make edge
+clients failure-oblivious.  We leave failure detection and recovery as a future
+work.
 
 \para{Profile modelling.} \sysname{} currently do not attempt to model $B(c)$
 and $A(c)$. Instead it performs an exhaustive search during the profiling. While
@@ -25,22 +34,23 @@ direction to improve our profiling.
 % three applications in this paper; and we are implement more application using
 % this framework to understand the expressiveness better.
 
-\para{Context detection.} \sysname{} is currently limited to one profile:
-the offline profiling uses one representative training dataset and the online profiling updates the single profile continuously.
-Real-world applications may produce data with a multi-modal
-distribution, where the mode changes upon context changes, such as indoor videos
-to outdoor videos. Therefore, one possible optimization to \sysname{} would be to allow multiple profiles
-for one application, detect context changes at runtime, and use the profile that
-best matches the current data distribution.
-Switching contexts could reduce, or even eliminate, the overhead during online profiling.
+\para{Context detection.} \sysname{} is currently limited to one profile: the
+offline profiling generates the default profile and the online profiling updates
+the single profile continuously.  Real-world applications may produce data with
+a multi-modal distribution, where the mode changes upon context changes, such as
+indoor videos to outdoor videos. Therefore, one possible optimization to
+\sysname{} is to allow multiple profiles for one application, detect context
+changes, and use the profile that best matches the current data distribution.
+Switching contexts could reduce, or even eliminate, the overhead during online
+profiling.
 
-\para{Predicting bandwidth changes.} Our runtime currently does not
-predict future bandwidth. While reacting to bandwidth changes is enough to
-achieve sub-second latency, if \sysname{} can accurately predict future
-bandwidth, we expect further improvements such as no latency spikes or a
-simplified probing state. Techniques such as model predictive control (MPC) have
-improved QoE in video streaming~\cite{yin2015control} with throughput
-prediction; we plan to investigate using MPC in \sysname{} as a future work.
+\para{Predicting bandwidth changes.} Our runtime currently does not predict
+future bandwidth. While reacting to bandwidth changes is enough to achieve
+sub-second latency, if \sysname{} can accurately predict future bandwidth, we
+expect further improvements such as no latency spikes or a simplified probing
+state. Techniques such as model predictive control (MPC) have improved QoE in
+video streaming~\cite{yin2015control} with throughput prediction; we plan to
+investigate using MPC in \sysname{} as a future work.
 
 %%% Local Variables:
 %%% mode: latex

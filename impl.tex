@@ -18,12 +18,12 @@ variables.  Our deployment manager is currently a shell script.
     \midrule
     \specialcell{Augmented\\Reality}
                 & \specialcell{resolution \\ frame rate \\ quantization }
-                & F1 score & \specialcell{iPhone video clips\\training: office (24 s)\\testing: home
+                & F1 score~\cite{Rijsbergen:1979:IR:539927} & \specialcell{iPhone video clips\\training: office (24 s)\\testing: home
     (246 s)} \\
     \midrule
     \specialcell{Pedestrian\\Detection}
                 & \specialcell{resolution \\ frame rate \\ quantization }
-                & F1 score~\cite{Rijsbergen:1979:IR:539927} & \specialcell{MOT16~\cite{milan2016mot16}\\training: MOT16-04\\testing: MOT16-03} \\
+                & F1 score & \specialcell{MOT16~\cite{milan2016mot16}\\training: MOT16-04\\testing: MOT16-03} \\
     \midrule
     \specialcell{Log Analysis\\(Top-K)}
                 & \specialcell{head (N) \\ threshold (T) }
@@ -74,8 +74,8 @@ variables.  Our deployment manager is currently a shell script.
 %   \label{fig:apps}
 % \end{figure*}
 
-We've built three applications: pedestrian detection surveillance, an augmented
-reality, and a distributed log analysis to extract the Top-K most access
+We've built three applications: augmented reality, pedestrian detection, and a
+distributed log analysis to extract the Top-K most access
 files. \autoref{tab:apps} summarizes the application-specific part: knobs,
 accuracy function, and the dataset we used for training and testing. More
 details about the implementation of three applications are in
