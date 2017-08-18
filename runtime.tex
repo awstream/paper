@@ -96,9 +96,10 @@ available bandwidth to select an appropriate configuration that satisfies the
 bandwidth constrain. In contrast, JetStream employs a latency-based measurement
 for capacity ratio, which only indirectly reflects available bandwidth and is
 less accurate. $(2)$ \sysname{} has an explicit probe phase while JetStream
-would change its policy immediately: it would wind up overcompensating and the
-system would oscillate. $(3)$ \sysname{} supports online profiling while
-policies in JetStream are fixed after development time.
+changes its policy immediately after capacity ratio changes: it easily winds up
+overcompensating and the system will oscillate. $(3)$ \sysname{} supports online
+profiling to keep the profile updated while policies in JetStream are fixed
+after development time.
 
 \subsection{Resource Allocation \& Fairness}
 
