@@ -104,14 +104,14 @@ In AR, there are 216 different configurations: 6 resolutions, 6 frame rates and
 6 quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
   an input image to a fixed resolution (416x416) as required by the neural
-  network. Evaluating all images (with different resolutions) takes a similar
-  amount of time.} But different configurations require different amounts of
-processing. For example, a \(10~\text{FPS}\) video has 1/3 of the frames to
-process in comparison to a \(30~\text{FPS}\) video.  In our experiment, to
-evaluate all 216 configurations, it takes 52 seconds for 1-second worth of
-data. We denote such overhead as 52X\@. \autoref{sec:automatic-profiling}
-discusses techniques to improve the profiling efficiency; we present their
-evaluations as follows.
+  network. It takes a similar amount of time to Evaluating each image (with
+  different resolutions).} But different configurations require different
+amounts of processing. For example, a \(10~\text{FPS}\) video has 1/3 of the
+frames to process in comparison to a \(30~\text{FPS}\) video.  In our
+experiment, to evaluate all 216 configurations, it takes 52 seconds for 1-second
+worth of data. We denote such overhead as
+52X\@. \autoref{sec:automatic-profiling} discusses techniques to improve the
+profiling efficiency; we present their evaluations as follows.
 
 \begin{figure}
   \centering
@@ -266,6 +266,8 @@ machines from Amazon EC2, spanning different AWS regions. Four act as worker
 nodes (\textit{t2.micro} instances) and one acts as the aggregation server
 (\textit{m4.xlarge} instance to guarantee enough bandwidth).
 
+%% Latency to sink: 65.2, 22.2, 50.3
+
 During each experiment, the worker node transmits test data (\autoref{tab:apps})
 for about 10 mins. If the duration of the test data is less than 10 mins, it
 loops. Because $B(c_{\max})$ is prohibitively large---for example, raw videos
@@ -332,9 +334,19 @@ TK at the worst case.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.95\columnwidth]{figures/darknet-runtime-bar.pdf}
-  \caption{\sysname{} in comparison with JetStream++.}
-  \label{fig:darknet-runtime-bar}
+  \begin{subfigure}[t]{\columnwidth}
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-cdf.pdf}
+    \caption{CDF of \sysname{} runtime evaluation.}
+    \label{fig:darknet-runtime-cdf}
+  \end{subfigure}
+  \\
+  \vspace{1em}
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-bar.pdf}
+    \caption{Bar plot for sysname{} runtime evaluation.}
+    \label{fig:darknet-runtime-bar}
+  \end{subfigure}
 \end{figure}
 
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
@@ -420,7 +432,6 @@ fairness, \sysname{} supports utility fairness: it chooses configurations that
 maximize the minimal accuracy. In this experiment, PD receives 2 mbps and AR
 receives 4 mbps; and both achieve \textasciitilde 80\% accuracy
 (\autoref{fig:eq-acc}).
-
 
 %%% Local Variables:
 %%% mode: latex
