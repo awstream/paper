@@ -253,7 +253,7 @@ achieves low latency and high accuracy simultaneously
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.95\columnwidth]{figures/runtime-darknet-verticle.pdf}
+  \includegraphics[width=0.95\columnwidth]{figures/runtime_darknet-timeseries.pdf}
   \caption{Runtime behavior of AR application. \sysname{} simultaneously
     provides sub-second latency (similar to UDP) and high accuracy (similar to
     TCP). Evaluations of other applications are in \
@@ -307,7 +307,7 @@ JetStream.
 
 \para{Results.} We show the time-series measurement of AR
 (\autoref{fig:ar-runtime}) to illustrate their runtime
-behaviors. \autoref{fig:darknet-runtime-bar} shows a summary of all three
+behaviors. \autoref{fig:darknet-runtime-boxplot} shows a summary of all three
 applications.
 
 The throughput figure shows the effect of our traffic shaping. During the
@@ -334,7 +334,7 @@ TK at the worst case.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/runtime_darknet-bar.pdf}
+  \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
   \caption{Box plot for \sysname{} runtime evaluation.}
   \label{fig:darknet-runtime}
 \end{figure}
