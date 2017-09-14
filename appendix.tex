@@ -85,39 +85,41 @@ In this section, we show the runtime experiments for other two applications:
 pedestrians detection and Top-K analysis.
 
 \begin{figure}
-  \centering
-  \includegraphics[width=0.95\columnwidth]{figures/mot-runtime-bar.pdf}
-  \caption{Pedestrian Detection. \sysname{} in comparison with JetStream++.}
-  \label{fig:mot-runtime-bar}
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-timeseries.pdf}
+    \caption{Runtime behavior of PD application.}
+    \label{fig:pd-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
+    \caption{Runtime behavior of PD application.}
+    \label{fig:pd-runtime-boxplot}
+  \end{subfigure}
+  \caption{Runtime PD}
+  \label{fig:pd-runtime}
 \end{figure}
 
-\begin{figure*}[htb]
-  \centering
-  \begin{subfigure}[t]{0.45\textwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime-mot-verticle.pdf}
-    \caption{Runtime behavior of PD application.}
-    \label{fig:pd-runtime}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.45\textwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime-topk-verticle.pdf}
-    \caption{Runtime behavior of TK application.}
-    \label{fig:tk-runtime}
-  \end{subfigure}
-  \caption{Application profiles of three applications. Each cross point is one
-    configuration $c$'s performance $(B(c), A(c))$. All figures show the Pareto
-    boundary as well as the performance if only tuning one dimension. Note the
-    x-axis is in log scale.}
-  \label{fig:all-profiles}
-\end{figure*}
-
 \begin{figure}
-  \centering
-  \includegraphics[width=0.95\columnwidth]{figures/runtime_mot-cdf.pdf}
-  \caption{\sysname{}}
-  \label{fig:darknet-runtime-cdf}
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-timeseries.pdf}
+    \caption{Runtime behavior of TK application.}
+    \label{fig:tk-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
+    \caption{Runtime behavior of TK application.}
+    \label{fig:tk-runtime-boxplot}
+  \end{subfigure}
+  \caption{Runtime TK}
+  \label{fig:tk-runtime}
 \end{figure}
 
 \section{JetStream++}
