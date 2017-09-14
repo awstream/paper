@@ -334,19 +334,9 @@ TK at the worst case.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{\columnwidth}
-    \includegraphics[width=\columnwidth]{figures/runtime_darknet-cdf.pdf}
-    \caption{CDF of \sysname{} runtime evaluation.}
-    \label{fig:darknet-runtime-cdf}
-  \end{subfigure}
-  \\
-  \vspace{1em}
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_darknet-bar.pdf}
-    \caption{Bar plot for sysname{} runtime evaluation.}
-    \label{fig:darknet-runtime-bar}
-  \end{subfigure}
+  \includegraphics[width=\columnwidth]{figures/runtime_darknet-bar.pdf}
+  \caption{Box plot for \sysname{} runtime evaluation.}
+  \label{fig:darknet-runtime}
 \end{figure}
 
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
@@ -365,6 +355,13 @@ configurations during traffic shaping.
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/runtime_darknet-bench.pdf}
+  \caption{CDF of \sysname{} when varying RTT.}
+  \label{fig:darknet-runtime-cdf}
+\end{figure}
 
 \para{Fidelity and freshness.} Here we explain our experiments for
 \autoref{fig:intro}. For streaming over TCP/UDP and \sysname{}, we use the
