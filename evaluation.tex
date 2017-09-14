@@ -339,6 +339,13 @@ TK at the worst case.
   \label{fig:darknet-runtime}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=.9\columnwidth]{figures/runtime_darknet-bench.pdf}
+  \caption{CDF of \sysname{} when varying RTT.}
+  \label{fig:darknet-runtime-cdf}
+\end{figure}
+
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
 the experiments. TCP without adaptation always sends data at high fidelity
 (\textasciitilde 90\% for PD/AR and \textasciitilde 100\% for TK). It achieves
@@ -355,13 +362,6 @@ configurations during traffic shaping.
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/runtime_darknet-bench.pdf}
-  \caption{CDF of \sysname{} when varying RTT.}
-  \label{fig:darknet-runtime-cdf}
-\end{figure}
 
 \para{Fidelity and freshness.} Here we explain our experiments for
 \autoref{fig:intro}. For streaming over TCP/UDP and \sysname{}, we use the
