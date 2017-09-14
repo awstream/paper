@@ -41,8 +41,8 @@ as follows.
   up offline and online profiling (\autoref{fig:parallel},
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
-  achieve sub-second latency and nominal accuracy drop
-  (\autoref{fig:ar-runtime}).
+  achieve sub-second latency and nominal accuracy drop across different network
+  conditions (\autoref{fig:ar-runtime}, \autoref{fig:ar-rtt}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
   resource allocations, such as utility fairness (\autoref{fig:multitask}).
 \end{itemize}
@@ -251,20 +251,17 @@ streaming over TCP/UDP, JetStream and DASH. Our evaluation shows that \sysname{}
 achieves low latency and high accuracy simultaneously
 (\autoref{fig:ar-runtime}).
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.95\columnwidth]{figures/runtime_darknet-timeseries.pdf}
-  \caption{Runtime behavior of AR application. \sysname{} simultaneously
-    provides sub-second latency (similar to UDP) and high accuracy (similar to
-    TCP). Evaluations of other applications are in \
-    \autoref{appendix:more-runtime}. }
-  \label{fig:ar-runtime}
-\end{figure}
+ %   JetStream++        JetStream      Streaming over TCP     AWStream
+ %  Min.   :0.04511   Min.   :0.5735   Min.   :0.7179      Min.   :0.6303
+ %  1st Qu.:0.82666   1st Qu.:0.7915   1st Qu.:0.8929      1st Qu.:0.8436
+ %  Median :0.89385   Median :0.8430   Median :0.9231      Median :0.8942
+ %  Mean   :0.84387   Mean   :0.8400   Mean   :0.9153      Mean   :0.8809
+ %  3rd Qu.:0.93551   3rd Qu.:0.8969   3rd Qu.:0.9524      3rd Qu.:0.9256
+ %  Max.   :0.98947   Max.   :0.9677   Max.   :1.0000      Max.   :0.9849
 
-\para{Experiment setup.} We conduct our experiments on five geo-distributed
-machines from Amazon EC2, spanning different AWS regions. Four act as worker
-nodes (\textit{t2.micro} instances) and one acts as the aggregation server
-(\textit{m4.xlarge} instance to guarantee enough bandwidth).
+\para{Experiment setup.} We conduct our experiments on four geo-distributed
+machines (\textit{t2.micro} instances) from Amazon EC2, spanning different AWS
+regions. Three act as worker nodes and one acts as the aggregation server.
 
 %% Latency to sink: 65.2, 22.2, 50.3
 
@@ -291,24 +288,37 @@ rate. Because different pair-wise connections have different capacity, we impose
 a \textit{background} bandwidth limit---25 mbps for PD and AR, 2.5 mbps for
 TK---to simplify comparisons.
 
-\para{Baselines.} The first baseline applications are those using vanilla TCP
-and UDP. For streaming over TCP, we re-use \sysname{}'s implementation but
-disable the adaptation. For streaming over UDP, our experiment setup is
-different: for video streaming (AR and PD), we use RTSP over UDP with
-ffmpeg~\cite{bellard2012ffmpeg}; for TK, we implemented a simple application
-protocol for packetization with a custom header, such that the receiver can
-still aggregate data in the presence of UDP packet loss.
+\para{Baselines.} $(i)$ The first baseline applications use vanilla TCP and
+UDP. For streaming over TCP, we re-use \sysname{}'s implementation but disable
+the adaptation. For streaming video over UDP, we use RTSP/UDP with
+ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$ The second baseline applications are
+built with JetStream~\cite{rabkin2014aggregation} that uses manual policies from
+the paper. $(iii)$ We then modified JetStream with a custom operator that loads
+our profile as its policy for degradation. We denote this baseline as
+JetStream++.\footnote{The appendix describes in details how we modified
+  JetStream.}
 
-The second baseline is JetStream~\cite{rabkin2014aggregation}. We modified
-JetStream with a custom operator that loads our profile as its manual policy for
-degradation. We use JetStream++\footnote{\autoref{appendix:jetstream++}
-  describes how we modified JetStream.} to denote this modified version of
-JetStream.
+\begin{figure}
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-timeseries.pdf}
+    \caption{Time-series plot.}
+    \label{fig:ar-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
+    \caption{Boxplot.}
+    \label{fig:ar-runtime-boxplot}
+  \end{subfigure}
+  \caption{Runtime behavior of AR application.}
+  \label{fig:ar-runtime}
+\end{figure}
 
 \para{Results.} We show the time-series measurement of AR
-(\autoref{fig:ar-runtime}) to illustrate their runtime
-behaviors. \autoref{fig:darknet-runtime-boxplot} shows a summary of all three
-applications.
+(\autoref{fig:ar-runtime}) to illustrate their runtime behaviors.
 
 The throughput figure shows the effect of our traffic shaping. During the
 shaping, TCP and UDP make full use of the available bandwidth; in comparison,
@@ -325,25 +335,14 @@ such high latency measurements in log scale. UDP always transmits as fast as
 possible, leading to a consistent low latency. \sysname{}'s latency is slightly
 higher than UDP but considerable small in comparison to TCP\@. During the
 traffic shaping, \sysname{} controls the application's degradation to avoid data
-queueing up. For most of the time, we've maintained less than 500 ms latency for
-PD/AR, and 2.5 seconds latency for TK\@. Because TK's source generates data
-every second after the \texttt{window} operation, two objects in the queue would
-lead to two seconds latency. The worst case happens at the start of bandwidth
-drop: \sysname{} achieves sub-second latency for PD/AR and 5 seconds latency for
-TK at the worst case.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
-  \caption{Box plot for \sysname{} runtime evaluation.}
-  \label{fig:darknet-runtime}
-\end{figure}
+queueing up. The worst case happens at the start of bandwidth drop: \sysname{}
+achieves sub-second latency for PD/AR.
 
 \begin{figure}
   \centering
   \includegraphics[width=.9\columnwidth]{figures/runtime_darknet-bench.pdf}
   \caption{CDF of \sysname{} when varying RTT.}
-  \label{fig:darknet-runtime-cdf}
+  \label{fig:ar-rtt}
 \end{figure}
 
 The accuracy figures show that \sysname{} maintains a high accuracy throughout
@@ -363,28 +362,13 @@ configurations during traffic shaping.
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously.
 
-\para{Fidelity and freshness.} Here we explain our experiments for
-\autoref{fig:intro}. For streaming over TCP/UDP and \sysname{}, we use the
-latency and accuracy measurements for AR\@. For manual policies, we implement the
-policy from the example in JetStream~\cite{rabkin2014aggregation}. For
-application-specific solutions, we apply PD's adaptation profile to control AR's
-behavior.
+\todo{explain boxplot.} For comparison, we use data collected during traffic
+shaping (between t=200s and t=380s). When facing insufficient bandwidth, their
+behaviors reflect the design choices within the space of data fidelity and
+freshness.  The data is shown in a different way in \autoref{fig:intro}.
 
-For comparison, we use data collected during traffic shaping (between t=200s and
-t=440s). When facing insufficient bandwidth, their behaviors reflect the design
-choices within the space of data fidelity and freshness:
+\todo{Varying RTT.}
 
-\begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
-\item Streaming over TCP favors fidelity over freshness.
-\item Streaming over UDP favors freshness over fidelity.
-\item Manual policies have limited rules with coarse granularity. A sudden
-  change from one rule to another incurs large latency (\textasciitilde 5
-  seconds).
-\item Application-specific solutions suffer from accuracy drop. PD's profile
-  prefers to reduce frame rate aggressively; these configurations work poorly
-  for AR\@.
-\item \sysname{} achieves both data fidelity and freshness.
-\end{itemize}
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}

@@ -22,8 +22,8 @@ Object recognition returns a list of bounding boxes with the type of the object,
 and each box is a rectangle with normalized coordinates on the image. We compare
 the detection against the reference result from raw data, and declare it success
 if the intersection over union (IOU) is greater than
-50\%~\cite{everingham2010pascal} and the object type matches. We use F1 score
-(\%)~\cite{Rijsbergen:1979:IR:539927} as the accuracy function. In terms of
+50\%~\cite{everingham2010pascal} and the object type matches. We use F1
+score~\cite{Rijsbergen:1979:IR:539927} as the accuracy function. In terms of
 dataset, we've collected our own video clips: the training data is a 24-second
 long video of an office environment; the test data is a 246-second long video of
 a home environment.
