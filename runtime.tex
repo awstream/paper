@@ -7,8 +7,6 @@ precision: the application reduces data rate to remain low latency and uses
 Pareto-optimal configurations for high accuracy. We defer the comparison with
 prior systems to \autoref{sec:related-work}.
 
-\todo{update runtime architecture to include congestion signaling.}
-
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
@@ -24,11 +22,13 @@ subsequently dequeued by \texttt{Socket}, which is sent over the network using
 TCP. When the data generation rate exceeds \texttt{Socket}'s departure rate, the
 queue grows. In this case, the adaptation controller (AC) queries the estimated
 bandwidth from \texttt{Socket} and regulates the source stream by updating the
-configuration.  After the data is sent through the network, the receiver
-extracts raw data to the online profiler and delivers data to the application
-analytics. Raw data is only transmitted when the queue is empty. When a new
-profile is learned by the online profiler, it is fed back to AC for subsequent
-adaptation.
+configuration. After the data is sent through the network, \texttt{Receiver}
+delivers data to the application analytics. \texttt{Receiver} also performs
+congestion detection and extracts raw data, if it presents.  \texttt{Congestion
+  Monitor} detects sudden latency increases and notify the client. Raw data is
+only transmitted when the queue is empty and online profiling is enabled. After
+a new profile is learned by the online profiler, it is fed back to AC for
+subsequent adaptation.
 
 \begin{figure}
   \begin{subfigure}[t]{\columnwidth}
@@ -57,23 +57,26 @@ in a list $[c_1, \dots, c_{\max}]$.  These configurations follow a total order:
 $c_i < c_j$ if $B(c_i) < B(c_j)$.  We denote the current configuration as $c_i$
 and the next $c_{i+1}$.  AC receives messages from the \texttt{Queue}: message
 \qe{} when the queue is empty and $\text{Q}_\text{C}$ when queued items exceed a
-threshold. AC can query \texttt{Socket} for delivery rate $R$ or request it to
-probe ($\text{AC}_{\text{Probe}}$) for a target bandwidth, often
-$B(c_{i+1})$. When $R > B(c_{i+1})$, \texttt{Socket} sends back \spd{}. The
-algorithm follows a state machine as described below:
+threshold. AC can query \texttt{Socket} for delivery rate $R$ or request the
+source to probe ($\text{AC}_{\text{Probe}}$) for a target bandwidth, often
+$B(c_{i+1})$. If there is no queue built up during the probing.  When
+$R > B(c_{i+1})$, \texttt{Socket} sends back \spd{}. The algorithm follows a
+state machine as described below:
 
 \begin{itemize}[leftmargin=*, topsep=3pt, itemsep=0pt]
 
 \item \textbf{Startup: rapid growth.} \sysname{} starts with $c_1$ and grows the
   rate ($c_i \Rightarrow c_{i+1}$) upon each \qe{}. The growth stops at
-  $c_{\max}$ (to \texttt{Steady}) or if it receives \qc{} (to \texttt{Degrade}).
+  $c_{\max}$ (to \texttt{Steady}) or if it receives \qc{}/\rc{} (to
+  \texttt{Degrade}).
 
-\item \textbf{Degrade: reacting to congestion.} When \texttt{Queue} grows and
-  exceeds a threshold, AC receives \qc{} and runs the \texttt{adapt()}
-  procedure. This involves two steps: (1) AC queries $R$ from \texttt{Socket};
-  (2) AC updates \texttt{Maybe} with the maximum-allowed $c$ that satisfies
+\item \textbf{Degrade: reacting to congestion.} Congestion is detected in two
+  ways: (1) when \texttt{Queue} grows and exceeds a threshold, AC receives
+  \qc{}; (2) when \texttt{Congestion Monitor} detects latency spikes, AC
+  receives \rc{}. During congestion, AC runs the \texttt{adapt()} procedure by
+  updating \texttt{Maybe} with the maximum-allowed $c$ that satisfies
   $B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
-  draining of the queue. After the queue is drained, \sysname{} changes to
+  draining of the queue. After the congestion is resolved, \sysname{} changes to
   \texttt{Steady}.
 
 \item \textbf{Steady: low latency delivery.} \sysname{} achieves low latency by
@@ -82,13 +85,14 @@ algorithm follows a state machine as described below:
   \qe{}, AC enters the \texttt{Probe} state to check for more available
   bandwidth.
 
-\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing the configuration
-  directly causes a drastic latency increase when $B(c_{i+1}) \gg B(c_i)$. To
-  allow a smooth increase, AC requests \texttt{Socket} to probe by sending
-  additional traffic controlled by \texttt{probe\_gain} (in
-  \texttt{inc\_pace()}, similar to BBR~\cite{cardwell2017bbr}). \sysname{} stops
-  probing under two conditions: (1) upon \spd{}, it advances $c_i$; (2) upon
-  \qc{}, it returns to \texttt{Steady}.
+\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing the
+  configuration directly causes a drastic latency increase when
+  $B(c_{i+1}) \gg B(c_i)$. To allow a smooth increase, AC requests
+  \texttt{Socket} to probe by sending additional traffic controlled by
+  \texttt{probe\_gain} (in \texttt{inc\_pace()}, similar to
+  BBR~\cite{cardwell2017bbr}). \sysname{} stops probing under two conditions:
+  (1) upon \spd{}, it advances $c_i$; (2) upon \qc{} or \rc{}, it returns to
+  \texttt{Steady}.
 
 \end{itemize}
 
