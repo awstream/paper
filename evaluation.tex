@@ -31,9 +31,9 @@
 \label{sec:evaluation}
 
 In this section, we show the evaluations of \sysname{}, summarizing the results
-as follows.
+as follows:
 
-\begin{itemize}[itemsep=0pt]
+\begin{itemize}[itemsep=0pt, topsep=3pt]
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
   profiles across multiple dimensions with precision
   (\autoref{fig:all-profiles}).
@@ -247,7 +247,7 @@ importance of the job.
 
 In this section, we evaluate the runtime performance by varying available
 bandwidth across geo-distributed sites and compare \sysname{} with baselines
-including streaming over TCP/UDP, JetStream and DASH. Our evaluation shows that
+including streaming over TCP/UDP, JetStream. Our evaluation shows that
 \sysname{} achieves low latency and high accuracy simultaneously across all
 applications. Due to space constraints, we only present the result of AR. The
 appendix includes evaluation results for PD and TK.
@@ -276,12 +276,12 @@ probability according to the delivery rate. Because different pair-wise
 connections have different capacity, we impose a \textit{background} bandwidth
 limit---25 mbps---to simplify comparisons.
 
-\para{Baselines.} $(i)$ The first baseline applications use vanilla TCP and
+\para{Baselines.} $(i)$~The first baseline applications use vanilla TCP and
 UDP. For streaming over TCP, we re-use \sysname{}'s implementation but disable
 the adaptation. For streaming video over UDP, we use RTSP/UDP with
-ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$ The second baseline application is built
-with JetStream that uses manual policies from the
-paper~\cite{rabkin2014aggregation}. $(iii)$ The third baseline is from a
+ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$~The second baseline application is built
+with JetStream~\cite{rabkin2014aggregation} that uses the manual policy in
+\autoref{sec:making-case-sys-approach}. $(iii)$~The third baseline is from a
 modified version of JetStream that can use the profile learned by \sysname{}. We
 denote this baseline as JetStream++.\footnote{The appendix describes in details
   how we modified JetStream.}
@@ -314,13 +314,13 @@ of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
 summarizes the latency and accuracy with box plots during bandwidth shaping
 (between t=200s and t=440s).
 
-The throughput figure in shows the effect of our traffic shaping. During the
-shaping, TCP and UDP make full use of the available bandwidth; in comparison,
-\sysname{}, JetStream, and JetStream++ are relatively conservative when
-performing degradation. When we stop the shaping at t=440s, TCP has a
+The throughput figure shows the effect of traffic shaping. During the shaping,
+TCP and UDP make full use of the available bandwidth; in comparison, \sysname{},
+JetStream, and JetStream++ are relatively conservative with data degradation
+(see their throughput drops). When we stop the shaping at t=440s, TCP has a
 ``catch-up'' phase when it's sending all queued items as fast as
-possible. JetStream also has queued items because the manual policy (with
-limited rules) cannot sustain 5 mpbs bandwidth. In comparison to all baselines,
+possible. JetStream also has queued items because the policy in use (with only
+three rules) cannot sustain 5 mpbs bandwidth. In comparison to all baselines,
 \sysname{} increases the throughput gradually because of the explicit probing
 phase.
 
