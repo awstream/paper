@@ -345,18 +345,20 @@ UDP.
 
 The accuracy figures shows that other than UDP, most schemes are able to
 maintain high accuracy during the experiment. TCP without adaptation always
-sends data at high fidelity, thus it has the highest accuracy of \textasciitilde
-92\%. But this comes with the cost of high latency. JetStream uses manual
-policies that are sub-optimal in comparison to our learned profile, so it
-achieves a low accuracy of \textasciitilde 84\%. Using Pareto-optimal
-configurations, JetStream++ is able to achieve a higher accuracy
-(\textasciitilde 89\%); but because JetStream runtime's policy oscillation, the
-accuracy has a large variation. In contrast, \sysname{} chooses configurations
-carefully so that it can stay in a steady state as much as possible.  It
-achieves a high accuracy of \textasciitilde 89\% with a small variation.
+sends data at high fidelity, achieving the highest accuracy of \textasciitilde
+92\%. But this comes with the cost of high latency. JetStream uses a manual
+policy that are sub-optimal in comparison to our learned profile, so its
+accuracy is low (\textasciitilde 84\%). Using Pareto-optimal configurations,
+JetStream++ is able to achieve a higher accuracy (\textasciitilde 89\%); but
+because JetStream runtime's policy oscillation, the accuracy has a large
+variation. In contrast, \sysname{} chooses configurations carefully so that it
+can stay in a steady state as much as possible.  It achieves a high accuracy of
+\textasciitilde 89\% with a small variation.
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
-low latency and high accuracy simultaneously.
+low latency and high accuracy simultaneously. We present the results in a
+different form in \autoref{fig:intro} to discuss the trade-off between fidelity
+and freshness.
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in
@@ -379,11 +381,11 @@ be as high as 500ms.
 \end{figure}
 
 \autoref{fig:ar-rtt} shows the runtime behavior with various added network
-delays. While the latency increases with the added delay, for all conditions,
-\sysname{} mostly manages to achieve sub-second latency. We see a higher
+delays. While the latency increases with the added delay, \sysname{} mostly
+manages to achieve sub-second latency for all conditions. We see a higher
 variation in latency and more outliers as network delay increases. This is
-caused by a longer time to detect congestion and adapt configurations. In terms
-of accuracy, \sysname{} achieves similarly high accuracy.
+caused by slow congestion detection when the RTT is high. In terms of accuracy,
+\sysname{} achieves similarly high accuracy.
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
@@ -422,12 +424,12 @@ servers of both applications so that they share the same bottleneck link. The
 experiment starts with sufficient bandwidth. At t=60s, we start traffic shaping
 to limit the total bandwidth at 6 mbps. When we allocate resource equally
 between two applications (\autoref{fig:eq-bw}), each application gets 3
-mbps. Under this condition, PD runs with a higher accuracy \textasciitilde of
-85\% while AR only achieves \textasciitilde 77\%. In addition to resource
-fairness, \sysname{} supports utility fairness: it chooses configurations that
-maximize the minimal accuracy. In this experiment, PD receives 2 mbps and AR
-receives 4 mbps; and both achieve \textasciitilde 80\% accuracy
-(\autoref{fig:eq-acc}).
+mbps. Under this condition, PD runs with a higher accuracy of
+\textasciitilde 85\% while AR only achieves \textasciitilde 77\%. In addition to
+resource fairness, \sysname{} supports utility fairness: it chooses
+configurations that maximize the minimal accuracy. In this experiment, PD
+receives 2 mbps and AR receives 4 mbps; and both achieve \textasciitilde 80\%
+accuracy (\autoref{fig:eq-acc}).
 
 %%% Local Variables:
 %%% mode: latex
