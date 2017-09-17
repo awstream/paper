@@ -3,9 +3,8 @@
 
 At runtime, \sysname{} performs application adaptation according to the learned
 profile. The profile allows the runtime to perform congestion control with
-precision: the application reduces data rate to remain low latency and uses
-Pareto-optimal configurations for high accuracy. We defer the comparison with
-prior systems to \autoref{sec:related-work}.
+precision. The application reduces data rate to remain low latency and uses
+Pareto-optimal configurations for high accuracy.
 
 \begin{figure}
   \centering
@@ -24,11 +23,12 @@ queue grows. In this case, the adaptation controller (AC) queries the estimated
 bandwidth from \texttt{Socket} and regulates the source stream by updating the
 configuration. After the data is sent through the network, \texttt{Receiver}
 delivers data to the application analytics. \texttt{Receiver} also performs
-congestion detection and extracts raw data, if it presents.  \texttt{Congestion
-  Monitor} detects sudden latency increases and notify the client. Raw data is
-only transmitted when the queue is empty and online profiling is enabled. After
-a new profile is learned by the online profiler, it is fed back to AC for
-subsequent adaptation.
+congestion detection and extracts raw data, if it presents.  It tracks minimal
+latency (similar to how BBR tracks \texttt{RTprop}~\cite{cardwell2017bbr} within
+a filter window) and reports sudden latency spikes to clients as congestion
+signalling. Raw data is only transmitted when the queue is empty and online
+profiling is enabled. After a new profile is learned by the online profiler, it
+is fed back to AC for subsequent adaptation.
 
 \begin{figure}
   \begin{subfigure}[t]{\columnwidth}
@@ -72,12 +72,12 @@ state machine as described below:
 
 \item \textbf{Degrade: reacting to congestion.} Congestion is detected in two
   ways: (1) when \texttt{Queue} grows and exceeds a threshold, AC receives
-  \qc{}; (2) when \texttt{Congestion Monitor} detects latency spikes, AC
-  receives \rc{}. During congestion, AC runs the \texttt{adapt()} procedure by
-  updating \texttt{Maybe} with the maximum-allowed $c$ that satisfies
-  $B(c) < \alpha R, \alpha \in (0, 1)$. A smaller $\alpha$ allows a quicker
-  draining of the queue. After the congestion is resolved, \sysname{} changes to
-  \texttt{Steady}.
+  \qc{}; (2) when \texttt{Receiver} detects latency spikes, AC receives
+  \rc{}. During congestion, AC runs the \texttt{adapt()} procedure by updating
+  \texttt{Maybe} with the maximum-allowed $c$ that satisfies $B(c) < \alpha R$,
+  $\alpha \in (0, 1)$ and $R$ is \texttt{Socket}'s current delivery rate. A
+  smaller $\alpha$ allows a quicker draining of the queue. After the congestion
+  is resolved (\qe{} received), \sysname{} changes to \texttt{Steady}.
 
 \item \textbf{Steady: low latency delivery.} \sysname{} achieves low latency by
   spending most of the time in the \texttt{Steady} state. It changes to
@@ -96,16 +96,19 @@ state machine as described below:
 
 \end{itemize}
 
-\para{Comparison with JetStream.} $(1)$ \sysname{} and JetStream use different
-feedback signals for rate adaptation. \sysname{} uses a direct measurement of
-available bandwidth to select an appropriate configuration that satisfies the
-bandwidth constrain. In contrast, JetStream employs a latency-based measurement
-for capacity ratio, which only indirectly reflects available bandwidth and is
-less accurate. $(2)$ \sysname{} has an explicit probe phase while JetStream
-changes its policy immediately after capacity ratio changes: it easily winds up
-overcompensating and the system will oscillate. $(3)$ \sysname{} supports online
-profiling to keep the profile updated while policies in JetStream are fixed
-after development time.
+\para{Comparison with JetStream (only runtime).} $(1)$ \sysname{} and JetStream
+use different feedback signals for rate adaptation. \sysname{} uses a direct
+measurement of delivery rate to select an appropriate configuration that
+satisfies the bandwidth constraint. In contrast, JetStream employs a
+latency-based measure of capacity ratio, which only indirectly reflects
+available bandwidth and is less accurate. $(2)$ \sysname{} has an explicit probe
+phase while JetStream changes its policy immediately after capacity ratio
+changes: it easily winds up overcompensating and the system will
+oscillate. $(3)$ \sysname{} supports online profiling to keep the profile
+updated while policies in JetStream are fixed after development time. In
+\autoref{sec:runtime-adaptation}, we present the evaluation between two runtime
+systems when using the same Pareto-optimal policies (compare \sysname{} with
+JetStream++).
 
 \subsection{Resource Allocation \& Fairness}
 
@@ -146,9 +149,8 @@ application $t$. We formulate utility fairness as follows:
 % \end{equation}
 
 Solving this optimization is computationally hard. \sysname{} uses a heuristics
-approach. We start with $c_1^t$ and improve the application $t$ that has the
-worst accuracy. This process repeats until we have allocated all available
-bandwidth.
+approach. It starts with $c^t_1$ and improves the application $t$ with the worst
+accuracy. This process repeats until all available bandwidth is allocated.
 
 %%% Local Variables:
 %%% mode: latex
