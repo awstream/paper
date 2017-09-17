@@ -23,19 +23,15 @@ traffic demands are growing at a staggering rate~\cite{index2013zettabyte}.
 
 Limited WAN bandwidth makes it neither practical nor efficient to back-haul all
 data to a central location.  Recent research on WAN-aware systems promotes
-pushing computations towards the edge~\cite{pu2015low, rabkin2014aggregation,
+pushing computations towards the edge~\cite{rabkin2014aggregation,
   satyanarayanan2009case}. However, communication is not entirely avoidable:
 $(i)$ some analytical jobs require joining or aggregating data from multiple
 geo-distributed sites~\cite{pu2015low, viswanathan2016clarinet}; $(ii)$ the edge
-benefits substantially from central computing resources such as GPUs and
+can benefit substantially from central computing resources such as GPUs and
 TPUs~\cite{abadi2016tensorflow} in the cloud; and $(iii)$ end-devices, such as
 cameras and mobile devices, still suffer from limited bandwidth in last-hop
 wireless links when running processing on nearby edge
 infrastructure~\cite{abari2017enabling, zhang2015design}.
-
-% could improve efficiency (such as GDA pushes queries out; cloudlet
-% etc). However, we still need data transmission for cloud off-loading or
-% aggregation purpose.
 
 When facing insufficient bandwidth, application developers need to make a
 decision within the design space of data fidelity versus freshness
@@ -56,30 +52,29 @@ data increases latency. On the other hand, streaming over UDP minimizes latency
 by sending packets as fast as possible, but uncontrolled loss devastates
 application accuracy.
 
-Degradation, as demonstrated by JetStream~\cite{rabkin2014aggregation}, allows
-developers to trade data fidelity for freshness. Specifying the trade-off---or
-policies---is easy for simple operations such as sampling. However, for general
-operations, writing accurate policies requires expertise and considerable
-efforts. In practice, polices are derived from heuristics and these inaccurate
-manual policies easily lead to sub-optimal performance for both freshness and
-fidelity.
+Manual policies, such as sampling, allow developers to trade data fidelity for
+freshness~\cite{rabkin2014aggregation}. However, it's difficult to write
+accurate policies without extensive expertise or without considerable effort. In
+practice, developers write manual policies based on heuristics rather than
+quantitative measurements. These inaccurate policies lead to sub-optimal
+performance for both freshness and delity.
 
-% Furthermore, application-specific optimizations do not generalize. A
-% fine-tuned adaptation algorithm for one application will work poorly for
-% another application, if performance metrics or data distributions change.  For
-% example, video streaming focuses on quality of experience
-% (QoE)~\cite{michalos2012dynamic, pantos2016http, yin2015control}. Because
-% humans favor smoothness over image quality, video streaming systems maintain a
-% high frame rate, e.g.\,\(25~\text{FPS}\), and reduce image resolutions under
-% bandwidth limit.  Adaptation by reducing resolutions is a poor match for
-% analytic jobs that rely on image details.
+Furthermore, application-specific optimizations do not generalize. A fine-tuned
+adaptation algorithm for one application will work poorly for another
+application, if performance metrics or data distributions change.  For example,
+video streaming focuses on quality of experience
+(QoE)~\cite{michalos2012dynamic, pantos2016http, yin2015control}. Because humans
+favor smoothness over image quality, these systems maintain a high frame rate,
+e.g.\,\(25~\text{FPS}\), and reduce image resolutions under bandwidth
+limitation.  Adaptation by reducing resolutions is a poor match for analytic
+jobs that rely on image details.
 
-To achieve low latency and high accuracy simultaneously with minimal developer
-effort, we design and implement \sysname{}, a stream processing system for the
-wide area. The key idea is to automatically build an accurate and precise
-performance model instead of relying on manual or application-specific
-policies. \sysname{}'s solution is three-fold: easy-to-use APIs, automatic
-profiling, and a low-latency runtime.
+In this paper, we design and implement \sysname{}, a stream processing system
+for the wide area that achieves low latency and high accuracy simultaneously
+with minimal developer effort. The key idea is to automatically build an
+accurate and precise performance model instead of relying on manual policies or
+application-specific optimizations. \sysname{}'s solution is three-fold:
+easy-to-use APIs, automatic profiling, and a low-latency runtime.
 
 \sysname{} augments existing stream processing operators with a new \maybe{}
 operator. Its basic form takes a list of values as a knob and a function that
@@ -129,8 +124,7 @@ results are as follows.
 
 \item Using runtime experiments on geo-distributed EC2 nodes, \sysname{}
   achieves low latency and high accuracy simultaneously for all
-  applications---sub-second latency and 2\% accuracy drop for video analytics,
-  4-second latency and 1\% accuracy drop for TK\@.
+  applications---sub-second latency and nominal accuracy drop (2-3\%).
 
 \end{itemize}
 
