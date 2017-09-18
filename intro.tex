@@ -65,9 +65,9 @@ application, if performance metrics or data distributions change.  For example,
 video streaming focuses on quality of experience
 (QoE)~\cite{michalos2012dynamic, pantos2016http, yin2015control}. Because humans
 favor smoothness over image quality, these systems maintain a high frame rate,
-e.g.\,\(25~\text{FPS}\), and reduce image resolutions under bandwidth
-limitation.  Adaptation by reducing resolutions is a poor match for analytic
-jobs that rely on image details.
+e.g.\,\(25~\text{FPS}\), and reduce resolutions under bandwidth limitation.
+Adaptation by reducing resolutions leads to poor accuracy for analytic jobs that
+rely on image details.
 
 In this paper, we design and implement \sysname{}, a stream processing system
 for the wide area that achieves low latency and high accuracy simultaneously
