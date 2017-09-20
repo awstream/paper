@@ -117,7 +117,7 @@ into one second.
     \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
     \caption{PD's performance summary of latency and accuracy during the traffic
       shaping (between t=200s and t=440s).}
-\label{fig:pd-runtime-boxplot}
+    \label{fig:pd-runtime-boxplot}
   \end{subfigure}
   \caption{PD runtime evaluation.}
   \label{fig:pd-runtime}
@@ -159,25 +159,33 @@ into one second.
   \label{fig:hls-arch}
 \end{figure*}
 
+In the main paper, we presented the evaluation results for AR. Now we show the
+relevant details and results for the remaining two applications: PD and TK.
+
 \paraf{Pedestrian Detection.} The setup for PD is the same with AR: three Amazon
 EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
 1920x1080 resolution, \(10~\text{FPS}\) and a quantization of 20; it consumes
-about 12 mbps. When running experiments, we use the same bandwidth shaping
-schedule. Baselines are also the same: Streaming over TCP/UDP, JetStream, and
-JetStream++.
+about 12 mbps. For PD, \sysname{} learns that frame rate is less important than
+resolution. It favors 10FPS with 1080p instead of 30FPS with 900p as in AR.
 
-\autoref{fig:pd-runtime} shows the runtime behavior of \sysname{} and all
-baselines in time series (throughout the experiment) and box plot (between
-t=200s and t=440s). The trend is quite similar to AR, so we omit a verbose
-description.
+When running experiments, we use the same bandwidth shaping schedule. Baselines
+are also the same: Streaming over TCP/UDP, JetStream, JetStream++, and HLS.
 
-\para{Top-K.} For TK, with our data is split into four groups, we use four
-Amazon EC2 as clients and one as server. We also limit the maximal configuration
-$c_{\max}$ as $N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}; it
-consumes about 1.2 mbps. Because the overall bandwidth consumption is much
-smaller than video analytics, we change the bandwidth parameter: during
+\autoref{fig:pd-runtime} shows the runtime behavior in both time series
+(throughout the experiment) and box plot (between t=200s and t=440s). The trend
+is quite similar to AR, so we omit a verbose description. The biggest difference
+with AR's result is that HLS achieves poor accuracy. Because HLS is designed to
+stream video for humans, its adaptation favors tuning resolutions. Low
+resolution hurts accuracy and high frame rate is unnecessary for pedestrian
+detection.
+
+\para{Top-K.} For TK, our logs are split into four groups. We then use four
+Amazon EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
+$N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}; it consumes about
+1.2 mbps. Because the overall bandwidth consumption is much smaller than video
+analytics, we change the bandwidth parameter for runtime evaluation: during
 t=200-380s, we limit the bandwidth to 750 kbps; during t=380-440s, the bandwidth
-is 500 kbps. The background bandwidth limit is 2.5 mpbs.
+is 500 kbps; the background limit is 2.5 mpbs.
 
 We've only compared \sysname{} with two baselines: streaming over TCP and
 streaming over UDP. For TCP baseline, we use AWStream but disable the
@@ -185,14 +193,14 @@ adaptation. For UDP baseline, we implemented a simple application
 protocol---packetization and a custom header---so that the receiver can still
 aggregate data in the presence of UDP packet loss.
 
-\autoref{fig:tk-runtime} shows the evaluation results for Top-K
+\autoref{fig:tk-runtime} shows the evaluation results for the Top-K
 application. Streaming over TCP has the highest accuracy (\textasciitilde
-99.7\%) but the worst latency (up to 40 seconds). Streaming over UDP has the low
-latency but its accuracy is the worst (\textasciitilde 52\%). \sysname{}
+99.7\%) but the worst latency (up to 40 seconds). Streaming over UDP has the
+lowest latency but its accuracy is the worst (\textasciitilde 52\%). \sysname{}
 achieves low latency (\textasciitilde 1.1 second) and high accuracy
 (\textasciitilde 98\%) simultaneously. Notice that because TK's source generates
-data every second after the window operation, one object in the queue leads to
-one seconds latency. \sysname{} manages to avoid queues for most times.
+data every second after the \texttt{Window} operation, one object in the queue
+leads to one seconds latency. \sysname{} manages to avoid queues for most times.
 
 % > summary(latency)
 %       Time       Streaming over TCP Streaming over UDP    AWStream
@@ -216,35 +224,35 @@ one seconds latency. \sysname{} manages to avoid queues for most times.
 
 We modified the open source version of
 JetStream\footnote{\url{https://github.com/princeton-sns/jetstream/}, commit
-  bf0931b2d74d20fdf891669188feb84c96AF84} in order to use our profile to act as
-manual policies. Because JetStream doesn't support simultaneous degradation in
-multiple dimensions, we implemented a simple \texttt{VideoSource} operator that
+  bf0931b2d74d20fdf891669188feb84c96AF84.} in order to use our profile as its
+manual policy. Because JetStream doesn't support simultaneous degradation across
+multiple operators, we implemented a simple \texttt{VideoSource} operator that
 understands how to change image resolutions, frame rate, and video encoding
 quantization. At runtime, \texttt{VideoSource} queries congestion policy manager
 and adjusts three dimensions simultaneously. This operator is then exposed to
-Python-implemented control plane. We call this modified version JetStream++.
+the Python-implemented control plane. We call this modified version
+JetStream++.\footnote{Url to our patch is elided for anonymity.}
+
+%% https://github.com/nebgnahz/jetstream-clone/pull/2/files}
 
 JetStream's code base is modular and extensible: the modifications include 53
 lines for the header file, 171 lines for implementation, 75 lines for unit test,
-and 49 lines of python as the application.
-
-While extending JetStream with our profile is not challenging, JetStream++
-performs degradation in a single operator and loses the composability. We could
-modify JetStream to support degradation across multiple operators, but that
-would require substantial changes to JetStream. Using JetStream++ with our
-profile, the comparison is enough to illustrate the difference between
-\sysname{} and JetStream's runtime.
+and 49 lines of python as the application. While extending JetStream with our
+profile is not challenging, JetStream++ performs degradation in a single
+operator and loses the composability. We could modify JetStream to support
+degradation across multiple operators, but that would require substantial
+changes to JetStream. Using JetStream++ with our profile, the comparison is
+enough to illustrate the difference between \sysname{}'s and JetStream's
+runtime.
 
 Regarding Top-K application, although JetStream provides a Top-K implementation,
-it is based on ``Three-Phase Uniform Threshold'' (TPUT) and not suitable for
-low-latency Top-K monitoring, according to the original
-paper~\cite{cao2004efficient}, \textit{``in our target environments the query is
+it is based on Three-Phase Uniform Threshold (TPUT) and not suitable for
+low-latency Top-K monitoring. We quote from the original paper of
+TPUT~\cite{cao2004efficient}, \textit{``in our target environments the query is
   asked hourly or daily. The intervals between the queries are typically long
-  enough that the top-k objects have changed completely.''} We did not implement
-our Top-K degradation with JetStream because video analytics suffices the
-purpose of comparison.
-
-%% Patches: https://github.com/nebgnahz/jetstream-clone/pull/2/files
+  enough that the top-k objects have changed completely.''} In addition, we did
+not implement our Top-K pipeline (\autoref{fig:topk}) with JetStream because
+video analytical applications suffice the purpose of comparison.
 
 \section{HTTP Live Streaming}
 \label{appendix:hls}
