@@ -90,13 +90,22 @@ QoE for video streaming has been a hot topic, including research
 projects~\cite{mao2017neural, yin2015control, sun2016cs2p} and industrial
 efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
   michalos2012dynamic}). Because they optimize QoE for humans, their results are
-not directly transferable to other video analytics. In comparison, \sysname{}
-generalizes adaptation by providing \maybe{} APIs to allows custom control over
-what parameters to tune. In this way, \sysname{} can effectively integrate
-existing and future techniques in video streaming, such as video encoding
-(H.264~\cite{richardson2011h} or VP9~\cite{grange2016vp9}). The main
-contribution of \sysname{} here is to provide a system for a wide range of
-streaming analytics to benefit from adaptation.
+not directly transferable to other video analytics. \para{Why HLS/DASH is a poor
+  match for video analytics?} It's hard to achieve ultra low latency using
+HLS/DASH: (1) HLS/DASH is pull-based: the client keeps requesting for new
+chunks; (2) HLS/DASH uses chunking: shorter chunks enable a lower latency, but
+induce a larger number of requests, and the chunk has to be made ready before
+the client can start fetching. There are proposals to reduce the latency, such
+as server push~\cite{wei2014low}, but they are still work in progress. For some
+applications, the accuracy can also be poor if these videos are limited to
+tuning resolution and encoding quality only, as demonstrated by in our PD
+evaluation. In comparison, \sysname{} generalizes adaptation by providing
+\maybe{} APIs to allows custom control over what parameters to tune. In this
+way, \sysname{} can effectively integrate existing and future techniques in
+video streaming, such as video encoding (H.264~\cite{richardson2011h} or
+VP9~\cite{grange2016vp9}). The main contribution of \sysname{} here is to
+provide a system for a wide range of streaming analytics to benefit from
+adaptation.
 
 \para{QoS.} Most QoS works~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focus on network-layer solutions that are
