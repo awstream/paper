@@ -299,15 +299,18 @@ probability according to the delivery rate. Because different pair-wise
 connections have different capacity, we impose a \textit{background} bandwidth
 limit---25 mbps---to simplify comparisons.
 
-\para{Baselines.} $(i)$~The first baseline applications use vanilla TCP and
-UDP. For streaming over TCP, we re-use \sysname{}'s implementation but disable
-the adaptation. For streaming video over UDP, we use RTSP/UDP with
-ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$~The second baseline application is built
-with JetStream~\cite{rabkin2014aggregation} that uses the manual policy in
-\autoref{sec:making-case-sys-approach}. $(iii)$~The third baseline is from a
-modified version of JetStream that can use the profile learned by \sysname{}. We
-denote this baseline as JetStream++.\footnote{The appendix describes the details
-  of our JetStream modifications.}
+\para{Baselines.} $(i)$~Streaming over vanilla TCP and UDP. For streaming over
+TCP, we re-use \sysname{}'s implementation but disable the adaptation. For
+streaming video over UDP, we use RTSP/UDP with
+ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$~JetStream~\cite{rabkin2014aggregation}. We
+use the manual policy described in
+\autoref{sec:making-case-sys-approach}. $(iii)$~JetStream++. This is a modified
+version of JetStream that can use the profile learned by
+\sysname{}.\footnote{The appendix includes details about how we modified
+  JetStream.} $(iv)$~HTTP Live Streaming (HLS). HLS represents the class of
+HTTP-based adaptive video streaming techniques. We configured HLS with a chunk
+size of 1 second (instead of typical 2-10 seconds) for low latency
+streaming.\footnote{The appendix includes details about our HLS setup.}
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
 of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
@@ -316,13 +319,13 @@ summarizes the latency and accuracy with box plots during bandwidth shaping
 
 The throughput figure shows the effect of traffic shaping. During the shaping,
 TCP and UDP make full use of the available bandwidth; in comparison, \sysname{},
-JetStream, and JetStream++ are relatively conservative with data degradation
-(see their throughput drops). When we stop the shaping at t=440s, TCP has a
-``catch-up'' phase when it's sending all queued items as fast as
+JetStream, JetStream++, and HLS are relatively conservative because of data
+degradation (see their throughput drops). When we stop the shaping at t=440s,
+TCP has a ``catch-up'' phase when it's sending all queued items as fast as
 possible. JetStream also has queued items because the policy in use (with only
-three rules) cannot sustain 5 mpbs bandwidth. In comparison to all baselines,
-\sysname{} increases the throughput gradually because of the explicit probing
-phase.
+three rules) cannot sustain 5 mpbs bandwidth. \sysname{} increases the
+throughput gradually because of the explicit probing phase. HLS is the most
+conservative scheme; it recovers from degradation after 60 seconds.
 
 The latency figures shows that \sysname{} is able to maintain sub-second
 latency. During the traffic shaping, TCP queues items at the sender side for up
@@ -331,8 +334,10 @@ leading to a consistent low latency.\footnote{FFmpeg discards packets that
   misses a deadline (33ms for 30FPS).} Both JetStream and JetStream++ are able
 to adapt during traffic shaping. But because JetStream's runtime reacts
 instantaneously when the congestion condition changes, they end up oscillating
-among polices. \sysname{} effectively addresses the oscillation with probing and
-achieves a much lower latency than all baselines other than UDP.
+among polices. HLS's latency fluctuates around 2-3 seconds due to chunking,
+buffering and network variations. \sysname{} effectively addresses the
+oscillation with probing and achieves a much lower latency than all baselines
+other than UDP.
 
  %   JetStream++        JetStream      Streaming over TCP     AWStream
  %  Min.   :0.04511   Min.   :0.5735   Min.   :0.7179      Min.   :0.6303
@@ -352,14 +357,17 @@ JetStream++ is able to achieve a higher accuracy (\textasciitilde 89\%); but
 because JetStream runtime's policy oscillation, the accuracy has a large
 variation. In contrast, \sysname{} chooses configurations carefully so that it
 can stay in a steady state as much as possible.  It achieves a high accuracy of
-\textasciitilde 89\% with a small variation.
+\textasciitilde 89\% with a small variation. HLS adapts by mostly adjusting
+resolution instead of frame rate, in this AR application, it also achieves high
+accuracy because our analytical task is sensitive to frame changes. In our PD
+application (figure shown in the appendix), HLS's resolution adaptation causes
+accuracy drop to \textasciitilde 10\%.
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
 low latency and high accuracy simultaneously. We present the performance during
 traffic shaping in a different form in \autoref{fig:intro} to assist discussing
-the trade-off between fidelity and freshness.\footnote{The performance data for
-  app-specific in \autoref{fig:intro} is obtained by feeding PD's profile to
-  AR.}
+the trade-off between fidelity and freshness.\footnote{We obtain
+  \autoref{fig:intro}'s app-specific data by feeding PD's profile to AR.}
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in
