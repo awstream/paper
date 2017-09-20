@@ -1,0 +1,97 @@
+\usepackage{usenix}
+
+\usepackage[T1]{fontenc}
+\usepackage[explicit]{titlesec}
+\usepackage[font=small,labelfont=bf]{caption}
+% \usepackage[toc,page]{appendix}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{balance}
+\usepackage{booktabs} % For formal tables
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{varwidth}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ACMRed,
+  urlcolor=ACMBlue,
+  citecolor=ACMRed,
+}
+
+\definecolor[named]{ACMBlue}{cmyk}{1,0.1,0,0.1}
+\definecolor[named]{ACMYellow}{cmyk}{0,0.16,1,0}
+\definecolor[named]{ACMOrange}{cmyk}{0,0.42,1,0.01}
+\definecolor[named]{ACMRed}{cmyk}{0,0.90,0.86,0}
+\definecolor[named]{ACMLightBlue}{cmyk}{0.49,0.01,0,0}
+\definecolor[named]{ACMGreen}{cmyk}{0.20,0,1,0.19}
+\definecolor[named]{ACMPurple}{cmyk}{0.55,1,0,0.15}
+\definecolor[named]{ACMDarkBlue}{cmyk}{1,0.58,0,0.21}
+
+\lstset{
+  captionpos=b,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  morekeywords={maybe_downsample, maybe_skip, maybe}
+}
+
+\captionsetup[lstlisting]{font={footnotesize}}
+\renewcommand{\lstlistingname}{Example}
+
+% \makeatletter
+% \newcommand\appendix@section[1]{%
+%   \refstepcounter{section}%
+%   \orig@section*{Appendix \@Alph\c@section: #1}%
+%   \addcontentsline{toc}{section}{Appendix \@Alph\c@section: #1}%
+% }
+% \let\orig@section\section
+% \g@addto@macro\appendix{\let\section\appendix@section}
+% \makeatother
+
+% \newcommand*{\Appendixautorefname}{Appendix}
+
+\frenchspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Paper setup
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\sysname}{AWStream}
+\newcommand{\para}[1]{\smallskip\noindent\textbf{#1}}
+\newcommand{\paraf}[1]{\noindent\textbf{#1}}
+\newcommand{\todo}[1]{{\color{ACMRed}\bf{TODO: #1}\normalfont}}
+\newcommand{\fixme}[1]{{\color{ACMRed}\bf{FIXME: #1}\normalfont}}
+\newcommand{\question}[1]{{\color{ACMRed}\footnotesize{Q: #1}\normalfont}}
+
+\newcommand{\maybe}{\texttt{maybe}}
+
+\def\Snospace~{\S{}}
+\renewcommand*\sectionautorefname{\Snospace}
+\renewcommand*\subsectionautorefname{\Snospace}
+\renewcommand*\subsubsectionautorefname{\Snospace}
+\renewcommand*{\equationautorefname}{Eq.}
+\renewcommand*{\figureautorefname}{Fig.}
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+    \node[shape=circle,draw,inner sep=0.5pt] (char) {#1};}}
+
+\newcommand*\qe{$\text{Q}_\text{E}$}
+\newcommand*\qc{$\text{Q}_\text{C}$}
+\newcommand*\rc{$\text{R}_\text{C}$}
+\newcommand*\spd{$\text{S}_\text{ProbeDone}$}

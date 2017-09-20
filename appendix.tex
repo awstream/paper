@@ -1,69 +1,10 @@
 \documentclass[twocolumn, 9pt]{article}
 
-\usepackage{usenix}
-
-\usepackage[T1]{fontenc}
-\usepackage[explicit]{titlesec}
-\usepackage[font=small,labelfont=bf]{caption}
-% \usepackage[toc,page]{appendix}
-\usepackage{algpseudocode}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{balance}
-\usepackage{booktabs} % For formal tables
-\usepackage{enumitem}
-\usepackage{hyperref}
-\usepackage{listings}
-\usepackage{microtype}
-\usepackage{multirow}
-\usepackage{subcaption}
-\usepackage{tikz}
-\usepackage{varwidth}
-\usepackage{xcolor}
-
-\hypersetup{
-  colorlinks=true,
-  linkcolor=ACMRed,
-  urlcolor=ACMBlue,
-  citecolor=ACMRed,
-}
-
-\definecolor[named]{ACMBlue}{cmyk}{1,0.1,0,0.1}
-\definecolor[named]{ACMYellow}{cmyk}{0,0.16,1,0}
-\definecolor[named]{ACMOrange}{cmyk}{0,0.42,1,0.01}
-\definecolor[named]{ACMRed}{cmyk}{0,0.90,0.86,0}
-\definecolor[named]{ACMLightBlue}{cmyk}{0.49,0.01,0,0}
-\definecolor[named]{ACMGreen}{cmyk}{0.20,0,1,0.19}
-\definecolor[named]{ACMPurple}{cmyk}{0.55,1,0,0.15}
-\definecolor[named]{ACMDarkBlue}{cmyk}{1,0.58,0,0.21}
-
-\lstset{
-  captionpos=b,
-  showspaces=false,
-  showtabs=false,
-  breaklines=true,
-  showstringspaces=false,
-  breakatwhitespace=true,
-  escapeinside={(*@}{@*)},
-  basicstyle=\footnotesize\ttfamily,
-  columns=fullflexible,
-  morekeywords={maybe_downsample, maybe_skip, maybe}
-}
-
-\captionsetup[lstlisting]{font={footnotesize}}
-\renewcommand{\lstlistingname}{Example}
-\frenchspacing
-
+\input{meta}
 \begin{document}
-
 \title{\sysname{}: Adaptive Wide-Area Streaming Analytics \\ Appendix}
-
-\author{
-  \textit{Paper \#8}
-}
+\author{ \textit{Paper \#8} }
 \date{}
-\input{macros}
-
 \maketitle
 
 \section{Application Implementations}
