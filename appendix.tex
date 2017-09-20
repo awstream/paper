@@ -288,14 +288,15 @@ each chunk to be 2-10 seconds~\cite{mao2017neural, sun2016cs2p,
 segment to be 1 second.
 
 \para{Analytics.} The HTTP client reads the index file and then fetches each
-chunk based on available bandwidth. We use \texttt{hls.js} \cite{hls.js}, a
-JavaScript library that implements an HLS client. It directly plays the video
-inside an HTML5 element. To avoid invoking the graphical front-end of a browser,
-we use Puppeteer~\cite{puppeteer}, a NodeJS library that provides a high-level
-API to control headless Chrome. During the runtime experiment, instead of
-playing the video, we record the metadata with each received chunk: its size,
-timestamp, and the quality level. We perform an offline analysis of the log
-files to calculate the throughput, latency, and accuracy.
+chunk based on available bandwidth. Our client uses \texttt{hls.js}
+\cite{hls.js}, a JavaScript library that implements an HLS client. It directly
+plays the video inside an HTML5 video element. To avoid invoking the graphical
+front-end of a browser, we use Puppeteer~\cite{puppeteer}, a NodeJS library that
+provides a high-level API to control headless Chrome. During the runtime
+experiment, instead of playing the video, we record the metadata with each
+received chunk: its size, timestamp, and the quality level. We perform an
+offline analysis of the log files to calculate the throughput, latency, and
+accuracy.
 
 Notice that the client-server relationship is reversed in HLS and \sysname{}. In
 HLS, the server hosts video source files; the client fetches videos and
