@@ -1,13 +1,73 @@
+\documentclass[twocolumn, 9pt]{article}
+
+\usepackage{usenix}
+
+\usepackage[T1]{fontenc}
+\usepackage[explicit]{titlesec}
+\usepackage[font=small,labelfont=bf]{caption}
+% \usepackage[toc,page]{appendix}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{balance}
+\usepackage{booktabs} % For formal tables
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{varwidth}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ACMRed,
+  urlcolor=ACMBlue,
+  citecolor=ACMRed,
+}
+
+\definecolor[named]{ACMBlue}{cmyk}{1,0.1,0,0.1}
+\definecolor[named]{ACMYellow}{cmyk}{0,0.16,1,0}
+\definecolor[named]{ACMOrange}{cmyk}{0,0.42,1,0.01}
+\definecolor[named]{ACMRed}{cmyk}{0,0.90,0.86,0}
+\definecolor[named]{ACMLightBlue}{cmyk}{0.49,0.01,0,0}
+\definecolor[named]{ACMGreen}{cmyk}{0.20,0,1,0.19}
+\definecolor[named]{ACMPurple}{cmyk}{0.55,1,0,0.15}
+\definecolor[named]{ACMDarkBlue}{cmyk}{1,0.58,0,0.21}
+
+\lstset{
+  captionpos=b,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  morekeywords={maybe_downsample, maybe_skip, maybe}
+}
+
+\captionsetup[lstlisting]{font={footnotesize}}
+\renewcommand{\lstlistingname}{Example}
+\frenchspacing
+
+\begin{document}
+
+\title{\sysname{}: Adaptive Wide-Area Streaming Analytics \\ Appendix}
+
+\author{
+  \textit{Paper \#8}
+}
+\date{}
+\input{macros}
+
+\maketitle
+
 \section{Application Implementations}
 \label{appendix:appl-impl}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/apps.pdf}
-  \caption{Illustration of our three applications: pedestrian detection,
-    augmented reality, and distributed Top-K.}
-  \label{fig:three-apps}
-\end{figure}
 
 Below we provide details about how we implement our three applications
 (\autoref{fig:three-apps}), including the libraries we use and how we integrate
@@ -47,6 +107,15 @@ implementation. Because we do not recognize individual pedestrians, a successful
 detection in this case only requires matching the bounding box.  MOT16
 dataset~\cite{milan2016mot16} is used for both training and testing.
 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/apps.pdf}
+  \caption{Illustration of our three applications: pedestrian detection,
+    augmented reality, and distributed Top-K.}
+  \label{fig:three-apps}
+\end{figure}
+
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{figures/topk.pdf}
@@ -54,7 +123,6 @@ dataset~\cite{milan2016mot16} is used for both training and testing.
     \texttt{head} and \texttt{threshold}.}
   \label{fig:topk}
 \end{figure}
-
 
 \para{Distributed Top-K.} Many monitoring applications need to answer the
 \textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
@@ -131,6 +199,20 @@ into one second.
   \caption{TK runtime evaluation.}
   \label{fig:tk-runtime}
 \end{figure}
+
+\begin{figure*}[!htb]
+  \centering
+  \includegraphics[width=\textwidth]{figures/hls-arch.pdf}
+  \caption{HLS setup. (Left) High-level overview: machine 1 generates video and
+    stores it in the server; machine 2 fetches the data and performs
+    analytics. (Right) Detailed view: (1)~FFmpeg encodes video with multiple
+    bitrates and groups them into MPEG-TS programs; (2)~\texttt{nginx-ts-module}
+    then generates HLS chunks on the fly and store them for nginx serving;
+    (3)~the client (using \texttt{hls.js}) periodically fetches the latest index
+    file (\texttt{index.m3u8}) and then download right chunk according to
+    network conditions.}
+  \label{fig:hls-arch}
+\end{figure*}
 
 \paraf{Pedestrian Detection.} The setup for PD is the same with AR: three Amazon
 EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
@@ -219,7 +301,37 @@ purpose of comparison.
 
 %% Patches: https://github.com/nebgnahz/jetstream-clone/pull/2/files
 
+\section{HTTP Live Streaming}
+\label{appendix:hls}
+
+In this section, we describe our HLS setup used as the baseline for video
+analytics.
+
+\para{Video.} We use \texttt{FFmpeg} encode the video source with
+multiple bitrates: all with 30FPS, but with different resolutions and H.264
+encoding quality. We then use \texttt{FFmpeg} to re-publish the stream to an
+Nginx web server that accepts MPEG-TS over HTTP.
+
+\para{Server.} The server uses nginx with \cite{nginx-ts-module} receives
+MPEG-TS over HTTP, produces live HLS and MPEG-DASH chunks. We found that HLS is
+more stable than DASH, so in our experiment, we used HLS. We configured each
+segment to be 1 second for low latency. Typically 4 seconds~\cite{mao2017neural,
+  sun2016cs2p, wang2016anatomy}.
+
+\para{Analytics.} The machine, we did not perform analytics online, instead, we
+recorded the chunk information (resolution and encoding quality) and calculate
+the application performance (accuracy) offline. Our client uses
+Puppeteer~\cite{puppeteer}, Puppeteer is a Node library which provides a
+high-level API to control headless Chrome over the DevTools Protocol. It can
+also be configured to use full (non-headless) Chrome. and hls.js~\cite{hls.js}
+hls.js is a JavaScript library which implements an HTTP Live Streaming
+client. It relies on HTML5 video and MediaSource Extensions for playback.
+
+{\footnotesize \bibliographystyle{acm}
+  \bibliography{awstream}}
+
+\end{document}
 %%% Local Variables:
 %%% mode: latex
-%%% TeX-master: "awstream"
+%%% TeX-master: t
 %%% End:

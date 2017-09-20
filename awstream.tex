@@ -5,7 +5,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[explicit]{titlesec}
 \usepackage[font=small,labelfont=bf]{caption}
-\usepackage[toc,page]{appendix}
+% \usepackage[toc,page]{appendix}
 \usepackage{algpseudocode}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -53,17 +53,17 @@
 \captionsetup[lstlisting]{font={footnotesize}}
 \renewcommand{\lstlistingname}{Example}
 
-\makeatletter
-\newcommand\appendix@section[1]{%
-  \refstepcounter{section}%
-  \orig@section*{Appendix \@Alph\c@section: #1}%
-  \addcontentsline{toc}{section}{Appendix \@Alph\c@section: #1}%
-}
-\let\orig@section\section
-\g@addto@macro\appendix{\let\section\appendix@section}
-\makeatother
+% \makeatletter
+% \newcommand\appendix@section[1]{%
+%   \refstepcounter{section}%
+%   \orig@section*{Appendix \@Alph\c@section: #1}%
+%   \addcontentsline{toc}{section}{Appendix \@Alph\c@section: #1}%
+% }
+% \let\orig@section\section
+% \g@addto@macro\appendix{\let\section\appendix@section}
+% \makeatother
 
-\newcommand*{\Appendixautorefname}{Appendix}
+% \newcommand*{\Appendixautorefname}{Appendix}
 
 \frenchspacing
 
@@ -117,10 +117,10 @@ sub-second latency with nominal accuracy drop (2-3\%).
 {\footnotesize \bibliographystyle{acm}
 \bibliography{awstream}}
 
-\newpage
-\begin{appendices}
-\input{appendix.tex}
-\end{appendices}
+% \newpage
+% \begin{appendices}
+% \input{appendix.tex}
+% \end{appendices}
 
 \end{document}
 
