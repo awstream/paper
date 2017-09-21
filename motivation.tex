@@ -12,11 +12,11 @@ application-specific optimizations solve the problem.
 aggregates camera feeds---from stationary ground cameras and moving aerial
 vehicles---and analyzes video streams in real-time for surveillance, anomaly
 detection or business intelligence~\cite{oh2011large}. Traditionally, video
-analysis requires humans involvement. Recent advances in computer vision and
-deep learning have dramatically increased the accuracy for automatic visual
-scene analysis, such as pedestrian detection~\cite{dollar2012pedestrian},
-vehicle tracking~\cite{coifman1998real}, and facial recognition to locate people
-of interest~\cite{parkhi2015deep, Lu:2015:SHF:2888116.2888245}. While some
+analysis requires human involvement. Recent advances in computer vision and deep
+learning have dramatically increased the accuracy for automatic visual scene
+analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
+tracking~\cite{coifman1998real}, and facial recognition to locate people of
+interest~\cite{Lu:2015:SHF:2888116.2888245, parkhi2015deep}. While some
 surveillance cameras use dedicated links, an increasing number of surveillance
 systems, such as Dropcam~\cite{dropcam} and Vigil~\cite{zhang2015design}, use
 the public Internet and wireless links to reduce the cost of deployment and
@@ -33,12 +33,12 @@ management.
 10--100s of data centers (DCs) and edge clusters
 worldwide~\cite{calder2013mapping}. This geo-distributed infrastructure
 continuously produces large volumes of data such as data access logs, server
-monitoring logs, and performance counters~\cite{pu2015low,
-  alspaugh2014analyzing, vulimiri2015global}. While most log analysis today runs
-in batch mode on a daily basis, there is a trend towards analyzing logs in real
-time for rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can
-improve the overall efficiency by optimizing data placement if the access logs
-can be processed in real time.
+monitoring logs, and performance counters~\cite{alspaugh2014analyzing,
+  pu2015low, vulimiri2015global}. While most log analysis today runs in a batch
+mode on a daily basis, there is a trend towards analyzing logs in real time for
+rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve
+the overall efficiency by optimizing data placement if the access logs can be
+processed in real time.
 
 %% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
 %% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
@@ -56,23 +56,23 @@ can be processed in real time.
 \label{sec:wide-area-bandwidth}
 
 WAN bandwidth is insufficient and costly, as demonstrated by recent WAN-aware
-systems~\cite{pu2015low, vulimiri2015global, vulimiri2015wananlytics,
-  hsieh17gaia}. Using Amazon EC2 as a case study, the WAN bandwidth capacity is
-15x smaller than their LAN bandwidth on average, and up to 60x smaller in the
-worst case~\cite{hsieh17gaia}. In terms of pricing, the average WAN bandwidth
-cost is up to 38x of the cost of renting two machines~\cite{amazon2017pricing,
-  hsieh17gaia}.
+systems~\cite{hsieh17gaia, pu2015low, vulimiri2015wananlytics,
+  vulimiri2015global}. Using Amazon EC2 as a case study, the WAN bandwidth
+capacity is 15x smaller than their LAN bandwidth on average, and up to 60x
+smaller in the worst case~\cite{hsieh17gaia}. In terms of pricing, the average
+WAN bandwidth cost is up to 38x of the cost of renting two
+machines~\cite{amazon2017pricing, hsieh17gaia}.
 
 In addition to the scarcity and cost, the large variability of WAN bandwidth
-also affects streaming workloads. We conducted a day-long measurement using
-iPerf~\cite{iperf3} to measure pair-wise bandwidth between four Amazon EC2
+also affects streaming workloads. We conducted a day-long measurement with
+iPerf~\cite{iperf3} to study the pair-wise bandwidth between four Amazon EC2
 sites. The results show large variance in all pairs---\autoref{fig:bw} is one
-such pair. There are occasions when available bandwidth is below 25\% of the
+such pair. There are occasions when the available bandwidth is below 25\% of the
 maximum bandwidth.
 
 \begin{figure}
   \centering
-  \includegraphics[width=.9\linewidth]{figures/aws-variation.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/aws-variation.pdf}
   \caption{Bandwidth variations throughout the day between Amazon EC2 sites
     (from Ireland to California).}
   \label{fig:bw}
@@ -104,24 +104,24 @@ heuristics and don't back them up with measurements. Images with 75\% fidelity
 do not necessarily lead to 75\% application accuracy. In terms of bandwidth,
 naively one would think that reducing the frame rate by half will also half the
 data rate. But if video encoding such as H.264~\cite{richardson2011h} is used, a
-reduction in frame rate increases the inter-frame difference, creating larger
-P-frames. \hyperref[fig:app-specific]{Fig.~3e} shows that by reducing the frame
-rate to one-third (from \(30~\text{FPS}\) to \(10~\text{FPS}\)), the bandwidth
-demand is still more than 50\%.
+reduction in frame rate increases the inter-frame difference and creates
+P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3e} shows that when
+reducing the frame rate to 33\% (from \(30~\text{FPS}\) to \(10~\text{FPS}\)),
+the bandwidth demand can still be more than 50\%.
 
-Second, it is not scalable to specify rules in this way. When the policy
-involves multiple dimensions or developers desire a fine-grain control, the
-policy will end up with too many rules.  Writing such rules manually is a
-tedious and error-prone process.
+Second, it is not scalable to specify rules one by one. When the policy involves
+multiple dimensions or developers desire a fine-grain control, the policy will
+end up with too many rules.  Writing such rules manually is a tedious and
+error-prone process.
 
 Lastly, this abstraction is too low-level. It forces developers to study and
 measure the impact of individual operations, prohibiting its wide adoption in
 practice.
 
-\para{Application-specific solutions don't generalize.} Because each application
-has a different performance metric, relies on different features, and targets
-different data distributions, a fine-tuned policy for one application will often
-work poorly for others.
+\para{Application-specific optimizations do not generalize.} Because each
+application has a different performance metric, relies on different features,
+and targets different data distributions, a fine-tuned policy for one
+application will often work poorly for others.
 
 Analytical applications have their own goals, entailing different optimization
 metrics and different algorithms. In video analytics, for instance, object
@@ -129,7 +129,7 @@ detection algorithms depend on the edge
 information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
 while object tracking~\cite{allen2004object} works best when the inter-frame
 difference is small. The former is sensitive to resolution changes while the
-latter frame rate changes.
+latter frame to rate changes.
 
 \begin{figure*}
   \centering
@@ -146,11 +146,11 @@ latter frame rate changes.
 
 Similar applications face different data distributions, as shown in
 \autoref{fig:app-specific} between stationary cameras detecting pedestrians and
-mobile cameras recognizing objects. In the former application, when we take the
-pedestrians' slow walking speed into consideration, a high frame rate is not
-necessary. But high-resolution images are crucial as surveillance cameras are
-far from the targets. In the latter application, because mobile cameras move,
-reducing the frame rate will introduce significant errors.
+mobile cameras recognizing objects. For stationary cameras, when we consider the
+slow walking speed of pedestrians, a high frame rate is not necessary. But
+high-resolution images are crucial because these surveillance cameras are far
+away from the targets. In the mobile camera case, because the cameras move,
+reducing the frame rate introduces significant errors.
 
 %%% Local Variables:
 %%% mode: latex
