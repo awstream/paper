@@ -9,7 +9,7 @@ equipped with a wide variety of sensors to improve energy efficiency and
 occupant comfort~\cite{krioukov2012building}. Geo-distributed infrastructure,
 such as content delivery networks (CDNs), analyzes requests from machine logs
 over the globe~\cite{mukerjee2015practical}. These applications need to
-transport, distill and process streams of data across the wide area in real
+transport, distill, and process streams of data across the wide area in real
 time.
 
 Although existing stream processing systems, such as
@@ -28,18 +28,18 @@ pushing computations towards the edge~\cite{rabkin2014aggregation,
 $(i)$ some analytical jobs require joining or aggregating data from multiple
 geo-distributed sites~\cite{pu2015low, viswanathan2016clarinet}; $(ii)$ the edge
 can benefit substantially from central computing resources such as GPUs and
-TPUs~\cite{abadi2016tensorflow} in the cloud; and $(iii)$ end-devices, such as
-cameras and mobile devices, still suffer from limited bandwidth in last-hop
+TPUs~\cite{abadi2016tensorflow} in the cloud; and $(iii)$ end devices, such as
+cameras and mobile phones, still suffer from limited bandwidth in last-hop
 wireless links when running processing on nearby edge
 infrastructure~\cite{abari2017enabling, zhang2015design}.
 
 When facing insufficient bandwidth, application developers need to make a
-decision within the design space of data fidelity versus freshness
-(\autoref{fig:intro}).
+decision within the design space of data fidelity versus freshness, as
+illustrated in \autoref{fig:intro}.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\columnwidth]{figures/figure1.pdf}
+  \includegraphics[width=0.9\columnwidth]{figures/figure1.pdf}
   \caption{The trade-off space between data freshness and fidelity when facing
     insufficient bandwidth (details in \autoref{sec:runtime-adaptation}).}
   \label{fig:intro}
@@ -54,20 +54,20 @@ application accuracy.
 
 Manual policies, such as sampling, allow developers to trade data fidelity for
 freshness~\cite{rabkin2014aggregation}. However, it's difficult to write
-accurate policies without extensive expertise or without considerable effort. In
-practice, developers write manual policies based on heuristics rather than
-quantitative measurements. These inaccurate policies lead to sub-optimal
-performance for both freshness and delity.
+accurate policies without extensive expertise or without considerable
+efforts. In practice, developers write manual policies based on heuristics
+rather than quantitative measurements. These inaccurate policies lead to
+sub-optimal performance for both freshness and fidelity.
 
 Furthermore, application-specific optimizations do not generalize. A fine-tuned
-adaptation algorithm for one application will work poorly for another
+adaptation algorithm for one application works poorly for a different
 application, if performance metrics or data distributions change.  For example,
 video streaming focuses on quality of experience
 (QoE)~\cite{michalos2012dynamic, pantos2016http, yin2015control}. Because humans
 favor smoothness over image quality, these systems maintain a high frame rate,
-e.g.\,\(25~\text{FPS}\), and reduce resolutions under bandwidth limitation.
-Adaptation by reducing resolutions leads to poor accuracy for analytic jobs that
-rely on image details.
+e.g.\,\(25~\text{FPS}\), and reduce the resolution under bandwidth limitation.
+Low resolution images lead to poor accuracy for analytic jobs that rely on image
+details.
 
 In this paper, we design and implement \sysname{}, a stream processing system
 for the wide area that achieves low latency and high accuracy simultaneously
@@ -101,14 +101,14 @@ bandwidth, and high accuracy by using Pareto-optimal configurations from the
 profile. Upon network congestion, our rate adaptation algorithm increases the
 degradation level to reduce data rate, such that no persistent queue builds
 up. To recover, it progressively decreases the degradation level after probing
-for more available bandwidth. The runtime also provides additional options for
-developers to control application behaviors, e.g., limiting the maximum allowed
-WAN bandwidth. For multiple applications, the profiles allow bandwidth
-allocation among competing tasks for utility fairness.
+for more available bandwidth. The runtime also provides additional options to
+control application behaviors, such as limiting the maximum allowed WAN
+bandwidth. For multiple applications, the profiles can be used to allocate
+bandwidth among competing tasks for utility fairness.
 
-To evaluate \sysname{}, we've built three streaming applications: augmented
-reality (AR), pedestrian detection (PD), and distributed Top-K analysis (TK). We
-use real-world data to profile these applications and evaluate their runtime
+To evaluate \sysname{}, we have built three streaming applications: augmented
+reality (AR), pedestrian detection (PD), and distributed Top-K (TK). We use
+real-world data to profile these applications and evaluate their runtime
 performance on a geo-distributed public cloud. Our contributions and evaluation
 results are as follows.
 
