@@ -26,9 +26,8 @@ is,
 We illustrate the use of the \texttt{maybe} operator with an example that
 quantizes a stream of integers in the Rust programming language:
 
-
 \begin{table*}
-  \small
+  \footnotesize
   \centering
   \begin{tabular}{ c r l }
     \toprule
@@ -66,7 +65,7 @@ let quantized_stream = vec![1, 2, 3, 4].into_stream()
   .collect();
 \end{lstlisting}
 
-The snippet creates a stream of integers, chains a degradation operation and
+The snippet creates a stream of integers, chains a degradation operation, and
 collects the execution result. In this example, the knob is [2, 4], and the
 degradation function performs a wrapping (modular) division where the divisor is
 the chosen knob. The knob value modifies the quantization level, affecting the
@@ -77,10 +76,10 @@ change according to the level of degradation.
 
 Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
 operations for common data types. For instance, \texttt{maybe\_head} will
-optionally takes the top values of a vector; and
-\texttt{maybe\_downsample} can adjust the image resolution to a
-configured target. \sysname{} provides a number of such operations as a library for
-developers (\autoref{tab:operators}).
+optionally takes the top values of a list; and \texttt{maybe\_downsample} can
+adjust the image resolution to a configured target. \sysname{} provides a number
+of such operations as a library to simplify application development
+(\autoref{tab:operators}).
 
 With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
 can now be implemented as follows:

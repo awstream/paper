@@ -17,10 +17,11 @@ particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
 its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
 used in this paper.
 
-The profiling looks for all configuration $c$ such that there is no alternative
-configuration $c'$ that requires less bandwidth while giving a higher
-accuracy. These configurations form the Pareto-optimal set $\mathbb{P}$, defined
-as follows:
+The profiling looks Pareto-optimal configurations, that is, for any
+configuration $c$ in the Pareto-optimal set, there is no alternative
+configuration $c'$ that requires less bandwidth and offers a higher
+accuracy. The Pareto-optimal set $\mathbb{P}$ is defined mathematically as
+follows:
 
 {\small \vspace{-1em}
   \begin{equation}
@@ -65,7 +66,7 @@ developer-supplied training data.  We measure $B(c)$ at the point of
 transmission. The accuracy $A(c)$ is measured either against the ground-truth,
 or the reference results when all degradation operations are off.  We show
 examples of concrete knobs, configurations, accuracy functions when we present
-applications in \autoref{sec:implementation}.
+applications in \autoref{tab:apps}.
 
 \para{Offline Profiling.} We first use an offline process to build a bootstrap
 profile (or default profile).  \sysname{} makes no assumptions on the
@@ -96,28 +97,29 @@ data is prohibitively labor intensive and time
 consuming~\cite{russell2008labelme}, \sysname{} currently uses raw data as the
 reference. At runtime, if the application streams raw data, the data is used for
 online profiling. Otherwise, we allocate additional bandwidth to back-haul raw
-data, but only do so when we detect additional bandwidth. $(ii)$~Exhaustive
-profiling is expensive. If it takes too much time, the newly-learned profile may
-already be stale. \sysname{} uses a combination of parallelism and sampling
+data, but only do so when there is spare capacity. $(ii)$~Exhaustive profiling
+is expensive. If the profiling takes too much time, the newly-learned profile
+may already be stale. \sysname{} uses a combination of parallelism and sampling
 techniques to speed up this process, as below:
 
 \begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
 
-\item Degradation-aware parallelization: Evaluating each configuration takes a
-  different amount of time. Typically, an increase in the level of degradation
-  leads to a decrease in computation, e.g.\,the smaller the FPS, the fewer
-  images to process. Therefore, we collect processing times for each
-  configuration from the offline process and schedule online profiling with
-  longest first schedule (LFS)~\cite{karger2010scheduling} for parallelization.
+\item Parallelization with degradation-aware scheduling. Evaluating each
+  configuration takes a different amount of time. Typically, an increase in the
+  level of degradation leads to a decrease in computation; for example, a
+  smaller FPS means fewer images to process. Therefore, we collect processing
+  times for each configuration from the offline process and schedule online
+  profiling with longest first schedule (LFS)~\cite{karger2010scheduling} during
+  parallelization.
 
-\item Sampling-based profiling: Online profiling can speed up if we only profile
-  a subset of all data or a subset of all configurations.  The former case
-  reduces the amount of data to process, but at a cost of generating a less
-  accurate profile. In the latter case, we can evaluate a subset of the
-  configurations and compare their performances with the existing profile. A
-  substantial difference, such as more than 1 mbps of bandwidth estimation,
-  triggers a full profiling over all configurations to update the current
-  profile.
+\item Sampling-based profiling. Online profiling can speed up if we only profile
+  a subset of all data or a subset of all configurations.  Sampling data reduces
+  the amount of data to process, but at a cost of generating less accurate
+  profiles. When sampling configuration, we can evaluate a subset of the
+  Pareto-optimal configurations and compare their performances with the existing
+  profile. A substantial difference, such as more than 1 mbps of bandwidth
+  estimation, triggers a full profiling over all configurations to update the
+  current profile.
 
 \end{itemize}
 

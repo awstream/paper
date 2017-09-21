@@ -2,13 +2,13 @@
 \label{sec:system}
 
 \sysname{} avoids the problems with manual policies or application-specific
-solutions by structuring adaptation as a set of approximate, modular and
+optimizations by structuring adaptation as a set of approximate, modular and
 extensible specifications, or APIs (\autoref{sec:struct-adapt}). The
 well-defined structure allowed us to build a generic profiling tool that learns
 an accurate relationship (the profile) between bandwidth consumption and
 application accuracy (\autoref{sec:automatic-profiling}). The accurate profile
-then allows the runtime to react with precision: achieving low latency and high
-accuracy when facing bandwidth variation
+then guides the runtime to react with precision: achieving low latency and high
+accuracy when facing bandwidth limitations
 (\autoref{sec:runtime}). \autoref{fig:overview} shows the high-level overview of
 \sysname{}.
 
