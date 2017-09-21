@@ -14,20 +14,20 @@ The emerging class of wide-area streaming analytics faces the challenge of
 scarce and variable WAN bandwidth. Applications that solely rely on transport
 protocols like TCP and UDP suffer from increased latency or degraded
 accuracy. Existing approaches that adapt to network changes require developer
-efforts to write manual policies or are limited to application-specific
-solutions.
+efforts to write sub-optimal manual policies or are limited to
+application-specific optimizations.
 
 We present \sysname{}, a stream processing system that simultaneously achieves
 low latency and high accuracy in the wide area, requiring minimal developer
-effort. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
+efforts. To realize this, \sysname{} uses three ideas: $(i)$ it integrates
 application adaptation as a first-class programming abstraction in the stream
 processing model; $(ii)$ with a combination of offline and online profiling, it
-automatically learns an accurate and precise profile that models accuracy and
-bandwidth trade-off; and $(iii)$ at runtime, it carefully adjusts the
-application data rate to match the available bandwidth. We evaluate \sysname{}
-using three real-world applications: augmented reality, pedestrian detection,
-and monitoring log analysis. Our experiments show that \sysname{} achieves
-sub-second latency with nominal accuracy drop (2-3\%).
+automatically learns an accurate profile that models accuracy and bandwidth
+trade-off; and $(iii)$ at runtime, it carefully adjusts the application data
+rate to match the available bandwidth while maximizing the achievable
+accuracy. We evaluate \sysname{} with three real-world applications: augmented
+reality, pedestrian detection, and monitoring log analysis. Our experiments show
+that \sysname{} achieves sub-second latency with nominal accuracy drop (2-3\%).
 
 \input{intro}
 \input{motivation}
