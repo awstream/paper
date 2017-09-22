@@ -5,12 +5,14 @@ appendix:
 	bibtex $@
 	pdflatex $@
 	pdflatex $@
+	rm -f appendix.{ps,log,aux,out,dvi,bbl,blg}
 
 awstream:
 	pdflatex -halt-on-error $@
 	bibtex $@
 	pdflatex $@
 	pdflatex $@
+	rm -f awstream.{ps,log,aux,out,dvi,bbl,blg}
 
 quick:
 	pdflatex awstream.tex
@@ -20,6 +22,6 @@ join:
 		-o join.pdf awstream.pdf appendix.pdf
 
 clean:
-	rm -f ${filename}.{ps,pdf,log,aux,out,dvi,bbl,blg}
+	rm -f awstream.{ps,pdf,log,aux,out,dvi,bbl,blg}
 	rm -f appendix.{ps,pdf,log,aux,out,dvi,bbl,blg}
 	rm -rf auto
