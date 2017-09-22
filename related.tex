@@ -7,15 +7,14 @@ analytics, WAN-aware systems, adaptive video streaming, and quality of service
 (QoS).
 
 \para{JetStream.} Both \sysname{} and JetStream target at wide-area streaming
-analytics and use degradation for low latency. Compared to JetStream, \sysname{}
-makes the following major contributions: $(1)$ novel APIs designs that simplify
-the development of adaptive applications; $(2)$ techniques for composing
-different degradation schemes in an optimal and automated manner; $(3)$ support
-for multiple degradation operators with automated selection of when and how
-operators are applied; $(4)$ online profiling to address model drift; $(5)$
-support for different resource allocation policies for multiple applications. In
-addition to the high-level goals and designs, the differences between two
-runtime systems are already discussed in \autoref{sec:runtime}.
+analytics and use degradation to reduce latency. Compared to JetStream,
+\sysname{} makes the following major contributions: $(1)$ a novel API design
+that simplifies the development of adaptive applications; $(2)$ techniques for
+composing degradation across operators in an optimal and automated manner; $(3)$
+online profiling to address model drift; $(4)$ runtime implementation that
+utilizes the learned profile and achieves sub-second latency (comparison made in
+\autoref{sec:runtime}). $(5)$ support for different resource allocation policies
+for multiple applications.
 
 \para{Stream processing systems.} Streaming databases, such as
 Borealis~\cite{abadi2005design},
@@ -57,11 +56,10 @@ WANalytics~\cite{vulimiri2015wananlytics}, Geode~\cite{vulimiri2015global},
 Iridium~\cite{pu2015low}, Pixida~\cite{kloudas2015pixida},
 Clarinet~\cite{viswanathan2016clarinet}, etc. They minimize data movement by
 incorporating heterogeneous wide-area bandwidth information into query
-optimization and data/task placement. While effective in improving analytics
-efficiency, these systems focus on batch tasks such as MapReduce jobs or
-SQL queries. Such tasks are often executed once, without real time constrain. In
-contrast, \sysname{} focuses on streaming analytics that process streams of data
-continuously in real time.
+optimization and data/task placement. While effective in speeding up analytics,
+these systems focus on batch tasks such as MapReduce jobs or SQL queries. Such
+tasks are often executed once, without real time constrain. In contrast,
+\sysname{} processes streams continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.
@@ -85,27 +83,22 @@ continuously in real time.
 %% \cite{heintz2015towards} discusses the complex tradeoffs involved in
 %% wide-area analytics.
 
-\para{Adaptive video streaming.} Designing a good adaptation strategy to improve
-QoE for video streaming has been a hot topic, including research
-projects~\cite{mao2017neural, yin2015control, sun2016cs2p} and industrial
-efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
-  michalos2012dynamic}). Because they optimize QoE for humans, their results are
-not directly transferable to other video analytics. \para{Why HLS/DASH is a poor
-  match for video analytics?} It's hard to achieve ultra low latency using
-HLS/DASH: (1) HLS/DASH is pull-based: the client keeps requesting for new
-chunks; (2) HLS/DASH uses chunking: shorter chunks enable a lower latency, but
-induce a larger number of requests, and the chunk has to be made ready before
-the client can start fetching. There are proposals to reduce the latency, such
-as server push~\cite{wei2014low}, but they are still work in progress. For some
-applications, the accuracy can also be poor if these videos are limited to
-tuning resolution and encoding quality only, as demonstrated by in our PD
-evaluation. In comparison, \sysname{} generalizes adaptation by providing
-\maybe{} APIs to allows custom control over what parameters to tune. In this
-way, \sysname{} can effectively integrate existing and future techniques in
-video streaming, such as video encoding (H.264~\cite{richardson2011h} or
-VP9~\cite{grange2016vp9}). The main contribution of \sysname{} here is to
-provide a system for a wide range of streaming analytics to benefit from
-adaptation.
+\para{(Adaptive) video streaming.} Multimedia streaming protocols, such as
+RTP~\cite{schulzrinne2006rtp}, aims to be fast instead of reliable. While they
+can achieve low latency, their accuracy can be poor without adaptation.  Recent
+works on multimedia streaming have moved towards using TCP (primarily
+HTTP-based) and focused on designing good adaptation strategy to improve QoE, as
+in research projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and
+industrial efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
+  michalos2012dynamic}). These adaptation strategies work great for video on
+demand (VoD), but they are not for ultra low latency streaming: $(i)$ they use
+pulling: the client keeps refreshing index file and fetching new chunks; $(ii)$
+chunking introduces latency: each chunk has to be ready before the client
+fetches.  In addition, because they optimize QoE for humans, the adaptation can
+be a mismatch for analytics that rely on image details (e.g.\,10\% accuracy for
+PD). In contrast, \sysname{} learns adaptation strategy for each application
+(also not limited to video analytics); and the runtime is optimized for ultra
+low latency.
 
 \para{QoS.} Most QoS works~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focus on network-layer solutions that are

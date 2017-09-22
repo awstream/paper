@@ -20,11 +20,10 @@ Streaming~\cite{zaharia2013discretized}, do, it is difficult to make edge
 clients failure-oblivious.  We leave failure detection and recovery as a future
 work.
 
-\para{Profile modelling.} \sysname{} currently do not attempt to model $B(c)$
-and $A(c)$. Instead, it performs an exhaustive search during the
-profiling. While parallelism and sampling techniques can speed up, \sysname{}
-can benefit further from statistical techniques. Bayesian
-Optimization~\cite{snoek2012practical}, as demonstrated by
+\para{Profile modelling.} \sysname{} currently does not model $B(c)$/$A(c)$. It
+performs an exhaustive search when profiling. While parallelism and sampling
+techniques can speed up, \sysname{} can benefit further from statistical
+techniques. Bayesian Optimization~\cite{snoek2012practical}, as demonstrated by
 CherryPick~\cite{alipourfard2017cherrypick}, models black-box functions and
 speeds up profiling by searching for near-optimal configurations. We plan to
 explore this direction to improve our profiling.
@@ -39,18 +38,17 @@ explore this direction to improve our profiling.
 offline profiling generates the default profile and the online profiling updates
 the single profile continuously.  Real-world applications may produce data with
 a multi-modal distribution, where the mode changes upon context changes, such as
-indoor videos to outdoor videos. Therefore, one possible optimization to
-\sysname{} is to allow multiple profiles for one application, detect context
-changes, and use the profile that best matches the current data distribution.
-Switching contexts could reduce, or even eliminate, the overhead during online
-profiling.
+indoor versus outdoor. Therefore, one possible optimization to \sysname{} is to
+allow multiple profiles for one application, detect context changes, and use the
+profile that best matches the current data distribution.  Switching contexts
+could reduce, or even eliminate, the overhead of online profiling.
 
 \para{Predicting bandwidth changes.} Our runtime currently does not predict
 future bandwidth. While reacting to bandwidth changes is enough to achieve
 sub-second latency, if \sysname{} can accurately predict future bandwidth, we
-expect further improvements such as no latency spikes or a simplified probing
-state. Techniques such as model predictive control (MPC) have improved QoE in
-video streaming~\cite{yin2015control} with throughput prediction; we plan to
+expect further improvements such as no latency spikes or a simplified runtime
+design. Techniques such as model predictive control (MPC) have improved QoE in
+video streaming with throughput prediction~\cite{yin2015control}; we plan to
 investigate using MPC in \sysname{} as a future work.
 
 %%% Local Variables:
