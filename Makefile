@@ -1,19 +1,19 @@
-filename=awstream
+all: appendix awstream
 
 appendix:
-	pdflatex appendix.tex
-	bibtex appendix
-	pdflatex appendix.tex
-	pdflatex appendix.tex
+	pdflatex -halt-on-error $@
+	bibtex $@
+	pdflatex $@
+	pdflatex $@
 
-pdf:
-	pdflatex ${filename}.tex
-	bibtex ${filename}
-	pdflatex ${filename}.tex
-	pdflatex ${filename}.tex
+awstream:
+	pdflatex -halt-on-error $@
+	bibtex $@
+	pdflatex $@
+	pdflatex $@
 
 quick:
-	pdflatex ${filename}.tex
+	pdflatex awstream.tex
 
 join:
 	"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" \
@@ -22,3 +22,4 @@ join:
 clean:
 	rm -f ${filename}.{ps,pdf,log,aux,out,dvi,bbl,blg}
 	rm -f appendix.{ps,pdf,log,aux,out,dvi,bbl,blg}
+	rm -rf auto
