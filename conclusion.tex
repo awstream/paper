@@ -1,17 +1,22 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-To support the emerging class of wide-area streaming analytics in the face of
-scarce and variable bandwidth, we propose \sysname{}, a stream
-processing system specialized for wide area networks. \sysname{} supports a wide
+The emerging class of wide-area streaming analytics faces the challenge of
+scarce and variable bandwidth. Developers need to make a tradeoff between data
+freshness and fidelity. While it is easy to build applications for either high
+accuracy or low latency, achieving both simultaneously is challenging. Previous
+approaches using manual policies end up with sub-optimal
+performance. Application-specific optimizations do not generalize to cover the
+variety and scales of potential applications.
+
+In this paper, we present \sysname{}, a stream processing system for a wide
 variety of applications by enabling developers to customize degradation
 operations with \maybe{} APIs. Our automatic profiling tool generates an
-accurate profile that characterizes the tradeoff between bandwidth consumption and application
-accuracy. The profile allows the runtime to react with precision. Our evaluation
-with three applications shows that \sysname{} achieves low latency (sub-second)
-with nominal accuracy drop. In summary, \sysname{} allows resilient execution of
-wide-area streaming analytics continuously over time with minimal developer
-efforts.
+accurate profile that characterizes the tradeoff between bandwidth consumption
+and application accuracy. The profile allows the runtime to react with
+precision. Evaluations with three applications show that \sysname{} achieves
+sub-second latency with nominal accuracy drop. \sysname{} enables resilient
+execution of wide-area streaming analytics with minimal developer efforts.
 
 %%% Local Variables:
 %%% mode: latex
