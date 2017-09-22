@@ -44,7 +44,8 @@ as follows:
   achieve sub-second latency and nominal accuracy drop across different network
   conditions (\autoref{fig:ar-runtime}, \autoref{fig:ar-rtt}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
-  resource allocations, such as utility fairness (\autoref{fig:multitask}).
+  resource allocations: resource fairness and utility fairness
+  (\autoref{fig:multitask}).
 \end{itemize}
 
 \subsection{Application Profiles}
@@ -72,10 +73,9 @@ configuration even under severe network deterioration.
 \para{Multiple dimensions achieve the optimal.} Comparing dashed lines in each
 profile, we see that the Pareto-optimal configurations are only achievable when
 multiple knobs are in effect. Tuning only one dimension often leads to
-sub-optimal performance. Although Top-K's Pareto-optimal boundary aligns with
-the performance of tuning \texttt{N}, i.e.\,tuning \texttt{T} doesn't contribute
-much for this dataset, for another dataset with a different distribution,
-the behavior will probably change.
+sub-optimal performance. Although TK's Pareto-optimal boundary is aligned with
+tuning \texttt{N}, for another dataset with a different distribution, this
+behavior will change.
 
 \para{Each dimension affects differently}. Within a single profile, the
 difference between tuning individual dimensions is evident. For PD, tuning
@@ -106,13 +106,13 @@ In AR, there are 216 different configurations: 6 resolutions, 6 frame rates and
 GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
   an input image to a fixed resolution (416x416) as required by the neural
   network. It takes a similar amount of time to Evaluating each image (with
-  different resolutions).} But different configurations require different
-amounts of processing. For example, a \(10~\text{FPS}\) video has 1/3 of the
-frames to process in comparison to a \(30~\text{FPS}\) video.  In our
-experiment, to evaluate all 216 configurations, it takes 52 seconds for 1-second
-worth of data. We denote such overhead as
-52X\@. \autoref{sec:automatic-profiling} discusses techniques to improve the
-profiling efficiency; we present their evaluations as follows.
+  different resolutions).} But different configurations require different times
+for processing. For example, a \(10~\text{FPS}\) video has 1/3 of the frames to
+process in comparison to a \(30~\text{FPS}\) video.  In our experiment, to
+evaluate all 216 configurations, it takes 52 seconds for 1-second worth of
+data. We denote such overhead as 52X\@. \autoref{sec:automatic-profiling}
+discusses techniques to improve the profiling efficiency; we present their
+evaluations as follows.
 
 \begin{figure}
   \centering
@@ -236,7 +236,8 @@ configurations---can be combined together to further reduce the profiling
 overhead. For example, scheduling five GPUs running 5 configurations
 continuously to check for model drifts will reduce the overhead to 1X\@. In
 practice, the amount of resources to use depends on the budget and the
-importance of the job.
+importance of the job. \sysname{} currently requires developers to configure the
+application with proper online profiling techniques.
 
 %% Note that it is not always needed to do online profiling. PD's test data
 %% doesn't exhibit model drift.  Nor is online profiling always
@@ -244,6 +245,37 @@ importance of the job.
 
 \subsection{Runtime Adaptation}
 \label{sec:runtime-adaptation}
+
+In this section, we evaluate the runtime performance by controlling available
+bandwidth across geo-distributed sites and compare \sysname{} with baselines
+including streaming over TCP/UDP, JetStream, and video streaming. Our evaluation
+shows that \sysname{} achieves low latency and high accuracy simultaneously
+across all applications. Due to space constraints, we only present the result of
+AR. The results for PD/TK are in the appendix.
+
+\para{Experiment setup.} We conduct our experiments on four geo-distributed
+machines from Amazon EC2, spanning four different regions. Three act as worker
+nodes and one acts as the aggregation server. The average RTTs from worker to
+server are 65.2 ms, 22.2 ms, and 50.3 ms.
+
+During the experiment, each worker transmits test data (\autoref{tab:apps}) for
+about 10 mins. If the duration of the test data is less than 10 mins, it
+loops. Because $B(c_{\max})$ is prohibitively large (raw videos consumes 230
+mbps), we use a reasonable configuration to limit the maximum rate. In our AR
+experiment, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and a
+quantization of 20; it consumes about 14 mbps.
+
+Our bandwidth control scheme follows
+JetStream~\cite{rabkin2014aggregation}. During the experiment, we use the Linux
+\texttt{tc} utility with HTB~\cite{htb, lartc} to control the clients' outgoing
+bandwidth. Each experiment involves four phases: $(i)$~before t=200s, there is
+no shaping; $(ii)$~at t=200s, we limit the bandwidth to 7.5 mbps for 3 minutes;
+$(iii)$~at t=380s, we further decrease the available bandwidth to 5 mbps;
+$(iv)$~ at t=440s, we remove all traffic shaping. For UDP, HTB doesn't emulate
+the packet loss or out-of-order delivery; so we use \texttt{netem} and configure
+the loss probability according to the delivery rate. Because each pair-wise
+connection has a different capacity, we impose a \textit{background} bandwidth
+limit---25 mbps---to simplify comparisons.
 
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
@@ -268,49 +300,22 @@ importance of the job.
   \label{fig:ar-runtime}
 \end{figure}
 
-In this section, we evaluate the runtime performance by varying available
-bandwidth across geo-distributed sites and compare \sysname{} with baselines
-including streaming over TCP/UDP, JetStream. Our evaluation shows that
-\sysname{} achieves low latency and high accuracy simultaneously across all
-applications. Due to space constraints, we only present the result of AR. The
-appendix includes evaluation results for PD and TK.
-
-\para{Experiment setup.} We conduct our experiments on four geo-distributed
-machines from Amazon EC2, spanning four different regions. Three act as worker
-nodes and one acts as the aggregation server. The average RTTs from worker to
-server are: 65.2 ms, 22.2 ms, 50.3 ms.
-
-During the experiment, each worker transmits test data (\autoref{tab:apps}) for
-about 10 mins. If the duration of the test data is less than 10 mins, it
-loops. Because $B(c_{\max})$ is prohibitively large (raw videos consumes 230
-mbps), we use a reasonable configuration to limit the maximum rate. In our AR
-experiment, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and a
-quantization of 20; it consumes about 14 mbps.
-
-Our bandwidth control scheme follows
-JetStream~\cite{rabkin2014aggregation}. During the experiment, we use the Linux
-\texttt{tc} utility with HTB~\cite{htb, lartc} to control the clients' outgoing
-bandwidth. Our experiments involve four phases: (i) before t=200s, there is no
-shaping; (ii) at t=200s, we limit the bandwidth to 7.5 mbps for 3 minutes ;
-(iii) at t=380s, we further decrease the available bandwidth to 5 mbps; (iv) at
-t=440s, we remove all traffic shaping. For UDP, HTB doesn't emulate the packet
-loss or out-of-order delivery; so we use \texttt{netem} and configure the loss
-probability according to the delivery rate. Because different pair-wise
-connections have different capacity, we impose a \textit{background} bandwidth
-limit---25 mbps---to simplify comparisons.
-
-\para{Baselines.} $(i)$~Streaming over vanilla TCP and UDP. For streaming over
-TCP, we re-use \sysname{}'s implementation but disable the adaptation. For
-streaming video over UDP, we use RTSP/UDP with
-ffmpeg~\cite{bellard2012ffmpeg}. $(ii)$~JetStream~\cite{rabkin2014aggregation}. We
-use the manual policy described in
-\autoref{sec:making-case-sys-approach}. $(iii)$~JetStream++. This is a modified
-version of JetStream that can use the profile learned by
-\sysname{}.\footnote{The appendix includes details about how we modified
-  JetStream.} $(iv)$~HTTP Live Streaming (HLS). HLS represents the class of
-HTTP-based adaptive video streaming techniques. We configured HLS with a chunk
-size of 1 second (instead of typical 2-10 seconds) for low latency
-streaming.\footnote{The appendix includes details about our HLS setup.}
+\para{Baselines.} $(i)$~Streaming over TCP. We re-use \sysname{}'s runtime that
+runs over TCP but disable the adaptation. $(ii)$~Streaming over UDP. We use
+FFmpeg~\cite{bellard2012ffmpeg} to stream video:
+RTP/UDP~\cite{schulzrinne2006rtp} for media and RTSP for
+signaling~\cite{schulzrinne1998rtsp}. This is a common setup for video
+conferencing and IP cameras~\cite{durresi2005rtp,
+  king2009cisco}. $(iii)$~JetStream~\cite{rabkin2014aggregation}. We use the
+manual policy described in
+\autoref{sec:making-case-sys-approach}. $(iv)$~JetStream++ is a modified version
+of JetStream that can use the profile learned by \sysname{}.\footnote{The
+  appendix includes details about how we modified JetStream.} $(v)$~HTTP Live
+Streaming (HLS). HLS represents a class of HTTP-based adaptive video streaming
+techniques. Our setup resembles personalized live streaming
+systems~\cite{wang2016anatomy} but uses a smaller chunk for low latency (1
+second instead of typical 2-10 seconds).\footnote{The appendix includes details
+  about our HLS setup.}
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
 of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
@@ -319,25 +324,26 @@ summarizes the latency and accuracy with box plots during bandwidth shaping
 
 The throughput figure shows the effect of traffic shaping. During the shaping,
 TCP and UDP make full use of the available bandwidth; in comparison, \sysname{},
-JetStream, JetStream++, and HLS are relatively conservative because of data
-degradation (see their throughput drops). When we stop the shaping at t=440s,
-TCP has a ``catch-up'' phase when it's sending all queued items as fast as
+JetStream, JetStream++, and HLS are conservative because of adaptation (see
+their throughput drops). When we stop the shaping at t=440s, TCP has a
+``catch-up'' phase when it's sending all queued items as fast as
 possible. JetStream also has queued items because the policy in use (with only
 three rules) cannot sustain 5 mpbs bandwidth. \sysname{} increases the
-throughput gradually because of the explicit probing phase. HLS is the most
-conservative scheme; it recovers from degradation after 60 seconds.
+throughput gradually due to the explicit probing phase. HLS is the most
+conservative scheme; it does not recover from degradation until t=500s.
 
-The latency figures shows that \sysname{} is able to maintain sub-second
-latency. During the traffic shaping, TCP queues items at the sender side for up
-to hundreds of seconds. In contrast, UDP always transmits as fast as possible,
-leading to a consistent low latency.\footnote{FFmpeg discards packets that
-  misses a deadline (33ms for 30FPS).} Both JetStream and JetStream++ are able
-to adapt during traffic shaping. But because JetStream's runtime reacts
-instantaneously when the congestion condition changes, they end up oscillating
-among polices. HLS's latency fluctuates around 2-3 seconds due to chunking,
-buffering and network variations. \sysname{} effectively addresses the
-oscillation with probing and achieves a much lower latency than all baselines
-other than UDP.
+The latency figures (both time series and box plot) show that \sysname{} is able
+to maintain sub-second latency. During the traffic shaping, TCP queues items at
+the sender side for up to hundreds of seconds. In contrast, UDP always transmits
+as fast as possible, leading to a consistent low latency.\footnote{FFmpeg
+  discards packets that misses a deadline (33ms for 30FPS).} HLS's latency
+fluctuates around 2-3 seconds due to chunking, buffering, and network
+variations, on par with recent literature~\cite{wang2016anatomy}. Both JetStream
+and JetStream++ are able to adapt during traffic shaping. But because
+JetStream's runtime reacts instantaneously when the congestion condition
+changes, they end up oscillating among polices. \sysname{} effectively addresses
+the oscillation with probing and achieves a much lower latency than all
+baselines except UDP.
 
  %   JetStream++        JetStream      Streaming over TCP     AWStream
  %  Min.   :0.04511   Min.   :0.5735   Min.   :0.7179      Min.   :0.6303
@@ -347,26 +353,26 @@ other than UDP.
  %  3rd Qu.:0.93551   3rd Qu.:0.8969   3rd Qu.:0.9524      3rd Qu.:0.9256
  %  Max.   :0.98947   Max.   :0.9677   Max.   :1.0000      Max.   :0.9849
 
-The accuracy figures shows that other than UDP, most schemes are able to
+The two accuracy figures shows that other than UDP, most schemes are able to
 maintain high accuracy during the experiment. TCP without adaptation always
 sends data at high fidelity, achieving the highest accuracy of \textasciitilde
-92\%. But this comes with the cost of high latency. JetStream uses a manual
-policy that are sub-optimal in comparison to our learned profile, so its
-accuracy is low (\textasciitilde 84\%). Using Pareto-optimal configurations,
-JetStream++ is able to achieve a higher accuracy (\textasciitilde 89\%); but
-because JetStream runtime's policy oscillation, the accuracy has a large
-variation. In contrast, \sysname{} chooses configurations carefully so that it
-can stay in a steady state as much as possible.  It achieves a high accuracy of
-\textasciitilde 89\% with a small variation. HLS adapts by mostly adjusting
-resolution instead of frame rate, in this AR application, it also achieves high
-accuracy because our analytical task is sensitive to frame changes. In our PD
-application (figure shown in the appendix), HLS's resolution adaptation causes
-accuracy drop to \textasciitilde 10\%.
+92\%. But TCP's high accuracy comes with the cost of high latency. JetStream
+uses a manual policy that are sub-optimal in comparison to our learned profile,
+so its accuracy is low (\textasciitilde 84\%). Using Pareto-optimal
+configurations, JetStream++ is able to achieve a higher accuracy
+(\textasciitilde 89\%); but because JetStream runtime's policy oscillation, the
+accuracy has a large variation. In contrast, \sysname{} chooses configurations
+carefully so that it can stay in a steady state as much as possible.  It
+achieves a high accuracy of \textasciitilde 89\% with a small variation. HLS
+also achieves high accuracy because tuning resolution and encoding quality is
+effective in AR. In our PD application where image details matter, HLS's
+adaptation leads to a poor accuracy of \textasciitilde 10\% (the figure is in
+the appendix).
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
-low latency and high accuracy simultaneously. We present the performance during
-traffic shaping in a different form in \autoref{fig:intro} to assist discussing
-the trade-off between fidelity and freshness.\footnote{We obtain
+low latency and high accuracy simultaneously. The results during traffic
+shaping, in a different form, is shown in \autoref{fig:intro} for discussing the
+trade-off between fidelity and freshness.\footnote{We obtain
   \autoref{fig:intro}'s app-specific data by feeding PD's profile to AR.}
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
@@ -376,10 +382,10 @@ real-world setup on Amazon EC2, the latency between EC2 sites is relatively low.
 To evaluate how \sysname{} performs with increased network delays, we conducted
 another experiment with one pair of client and server under different network
 conditions. We use \texttt{netem} to add delays in addition to our bandwidth
-shaping. The one-way delays ranges from 50ms to 250ms, following a normal
-distribution where the variation is 10\% of the additional delay, e.g.
-$250\pm 25\text{ms}$. We add delays in both direction, so the additional RTT can
-be as high as 500ms.
+shaping. The additional one-way delays ranges from 0ms to 250ms, following a
+normal distribution where the variation is 10\% of the added delay, e.g.
+$250\pm 25\text{ms}$. We add delays in both direction, so the added RTT can be
+as high as 500ms.
 
 \begin{figure}
   \centering
@@ -394,13 +400,12 @@ delays. While the latency increases with the added delay, \sysname{} mostly
 manages to achieve sub-second latency for all conditions. We see a higher
 variation in latency and more outliers as network delay increases. This is
 caused by a slow congestion detection when RTT is high. In terms of accuracy,
-because \sysname{} stays in \texttt{Steady} state as much as possible and
-accuracy only depends on the level of degradation, \sysname{} achieves similar
-accuracy for different network delays.
+because \sysname{} mostly stays in \texttt{Steady} state and accuracy only
+depends on the level of degradation, \sysname{} achieves similar accuracy for
+different network delays.
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
-
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.8\columnwidth}
@@ -427,15 +432,16 @@ accuracy for different network delays.
   \label{fig:multitask}
 \end{figure}
 
-We evaluate resource allocations with two applications. In this way, the results
-cover the case of a single application, and can generalize to more applications.
+We evaluate resource allocations with two applications. In this way, the result
+also covers the case of a single application, and can generalize to more
+applications.
 
-We choose AR and PD as the example applications.  We colocate the clients and
-servers of both applications so that they share the same bottleneck link. The
-experiment starts with sufficient bandwidth. At t=60s, we start traffic shaping
-to limit the total bandwidth at 6 mbps. When we allocate resource equally
-between two applications (\autoref{fig:eq-bw}), each application gets 3
-mbps. Under this condition, PD runs with a higher accuracy of
+We choose AR and PD as the example applications.  The clients and servers of
+both applications are co-located so that they share the same bottleneck
+link. The experiment starts with sufficient bandwidth. At t=60s, we start
+traffic shaping to limit the total bandwidth to 6 mbps. When we allocate
+resource equally between two applications (\autoref{fig:eq-bw}), each
+application gets 3 mbps. Under this condition, PD runs with a higher accuracy of
 \textasciitilde 85\% while AR only achieves \textasciitilde 77\%. In addition to
 resource fairness, \sysname{} supports utility fairness: it chooses
 configurations that maximize the minimal accuracy. In this experiment, PD
