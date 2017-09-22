@@ -38,7 +38,8 @@ monitoring logs, and performance counters~\cite{alspaugh2014analyzing,
 mode on a daily basis, there is a trend towards analyzing logs in real time for
 rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve
 the overall efficiency by optimizing data placement if the access logs can be
-processed in real time.
+processed in real time. \fixme{one or two sentences about industrial IoT (factory
+monitoring), e.g., GE. Citing some news articles is enough.}
 
 %% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
 %% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
@@ -66,8 +67,11 @@ machines~\cite{amazon2017pricing, hsieh17gaia}.
 In addition to the scarcity and cost, the large variability of WAN bandwidth
 also affects streaming workloads. We conducted a day-long measurement with
 iPerf~\cite{iperf3} to study the pair-wise bandwidth between four Amazon EC2
-sites. The results show large variance in all pairs---\autoref{fig:bw} is one
-such pair. There are occasions when the available bandwidth is below 25\% of the
+sites. \fixme{specify the four sites.} The results show large variance in all pairs---
+\autoref{fig:bw} is one
+such pair. \fixme{do the results hold for all pairs? We did not pick the worst
+pair. Say we have results for all pairs in appendix.} There are occasions when
+the available bandwidth is below 25\% of the
 maximum bandwidth.
 
 \begin{figure}
@@ -82,19 +86,24 @@ The back-haul links between EC2 sites are better---if not at least
 representative---in comparison to general WAN links. Similar scarcity and
 variations have been reported in wireless networks~\cite{biswas2015large},
 broadband access networks~\cite{grover2013peeking, sundaresan2014bismark} and
-cellular networks~\cite{nikravesh2014mobile}.
+cellular networks~\cite{nikravesh2014mobile}. \fixme{what about clients (your laptops)
+to DC. Say for normal users (e.g., you deploy a Dropcam at home and run analytics
+at EC2). The situation could be worse.}
 
 \subsection{The Case for a System Approach}
 \label{sec:making-case-sys-approach}
 
 To address bandwidth limitation, existing solutions use manual policies and
 application-specific solutions. We discuss their drawbacks to motivate a system
-approach.
+approach. \fixme{implying others, e.g., JetStream, are not a system approach. Need
+a different subtitle, e.g., Motivation for AWStream}
 
 \para{Manual polices are sub-optimal.} While existing systems such as
-JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} allow
+JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} \fixme{is DASH
+manual?} allow
 adaptation, they require developers to write manual policies. We illustrate the
-problems with manual policies using an example~\cite{rabkin2014aggregation}:
+problems with manual policies using an example~\cite{rabkin2014aggregation} \fixme{Be
+careful here. Need to be specific, e.g., which section/page of JetStream}:
 \textit{if bandwidth is insufficient, switch to sending images at 75\% fidelity,
   then 50\% if there still isn't enough bandwidth. Beyond that point, reduce the
   frame rate, but keep the image fidelity.}
@@ -112,7 +121,8 @@ the bandwidth demand can still be more than 50\%.
 Second, it is not scalable to specify rules one by one. When the policy involves
 multiple dimensions or developers desire a fine-grain control, the policy will
 end up with too many rules.  Writing such rules manually is a tedious and
-error-prone process.
+error-prone process. \fixme{Mention profiling is also a pain. Need better tools for
+the entire process.}
 
 Lastly, this abstraction is too low-level. It forces developers to study and
 measure the impact of individual operations, prohibiting its wide adoption in
@@ -121,7 +131,8 @@ practice.
 \para{Application-specific optimizations do not generalize.} Because each
 application has a different performance metric, relies on different features,
 and targets different data distributions, a fine-tuned policy for one
-application will often work poorly for others.
+application will often work poorly for others. \fixme{DASH should be moved to this
+section.}
 
 Analytical applications have their own goals, entailing different optimization
 metrics and different algorithms. In video analytics, for instance, object
@@ -140,7 +151,7 @@ latter frame to rate changes.
     resolution in (b).  (2) The same degradation strategy has different impacts
     on different applications, e.g., degrading frame rates works well for
     stationary camera (a), but not well for mobile camera (e). (c-g) shows
-    example measurement frames.}
+    example measurement frames. \fixme{this example is not described in text.}}
   \label{fig:app-specific}
 \end{figure*}
 

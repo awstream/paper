@@ -75,7 +75,7 @@ profile, we see that the Pareto-optimal configurations are only achievable when
 multiple knobs are in effect. Tuning only one dimension often leads to
 sub-optimal performance. Although TK's Pareto-optimal boundary is aligned with
 tuning \texttt{N}, for another dataset with a different distribution, this
-behavior will change.
+behavior will change. \fixme{weak}
 
 \para{Each dimension affects differently}. Within a single profile, the
 difference between tuning individual dimensions is evident. For PD, tuning
@@ -129,7 +129,7 @@ $(i)$~Our offline profiling assigns configurations randomly.  With the increased
 number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.  $(ii)$~Our
 online profiling assigns configurations based on the processing times collected
 during offline.  \sysname{} currently uses LFS assignment and can reduce the
-overhead to 1.75X with 30 GPUs.
+overhead to 1.75X with 30 GPUs. \fixme{why?}
 
 \para{Sampling techniques speed up online profiling
   (\autoref{fig:online-tricks}).}
@@ -199,7 +199,7 @@ the configuration fails to predict runtime bandwidth, as illustrated in
   \end{tabular}
   \caption{Sampling techniques speed up the profiling. We use X to denote the
     overhead of processing one-second worth of data; and $\times$ for the
-    improvements.}
+    improvements. \fixme{Then the baseline should be 1X.}}
   \label{tab:online}
 \end{table}
 
@@ -214,7 +214,8 @@ parallelism, \sysname{} uses two other techniques for online profiling
 
 (i) Partial data: Instead of using all the past data, we run profiling with only
 a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
-prediction if we only use 10 seconds of data out of the past 30 seconds. In this
+prediction \fixme{bandwidth? not prediction?} if we only use 10 seconds of data out
+of the past 30 seconds. In this
 way, although the profile may be less accurate (the mis-prediction at
 t=80--100s), and there is a delay in reacting to data change (the mis-prediction
 is corrected after t=125s), we save the online profiling by 3$\times$ (from 52X
@@ -254,7 +255,8 @@ across all applications. Due to space constraints, we only present the result of
 AR. The results for PD/TK are in the appendix.
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
-machines from Amazon EC2, spanning four different regions. Three act as worker
+machines from Amazon EC2, spanning four different regions \fixme{which four?}. Three
+act as worker
 nodes and one acts as the aggregation server. The average RTTs from worker to
 server are 65.2 ms, 22.2 ms, and 50.3 ms.
 
@@ -292,11 +294,11 @@ limit---25 mbps---to simplify comparisons.
     \centering
     \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
     \caption{Summary of latency and accuracy during the traffic shaping (between
-      t=200s and t=440s).}
+      t=200s and t=440s). \fixme{not explained.}}
     \label{fig:ar-runtime-boxplot}
   \end{subfigure}
   \caption{Runtime performance. \sysname{} simultaneously achieves low latency
-    and high accuracy (with smaller variation).}
+    and high accuracy (with smaller variation). \fixme{not clear in black-white}}
   \label{fig:ar-runtime}
 \end{figure}
 

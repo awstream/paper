@@ -3,8 +3,9 @@
 
 After developers use \maybe{} operators to specify potential degradation
 operations, \sysname{} automatically builds an accurate profile. The profile
-captures the relationship between application accuracy and bandwidth consumption
-under different combinations of data degradation operations. We describe the
+captures the relationship between \textit{application accuracy} and \textit{bandwidth
+consumption}
+under different \textit{combinations} of data degradation operations. We describe the
 formalism, followed by techniques that efficiently perform offline and online
 profiling.
 
@@ -63,8 +64,8 @@ Because \sysname{} allows arbitrary functions as the degradation functions, it
 does not assume a closed-form relation for $B(c)$ and $A(c)$. Instead,
 \sysname{} takes a data-driven approach: profiling applications with
 developer-supplied training data.  We measure $B(c)$ at the point of
-transmission. The accuracy $A(c)$ is measured either against the ground-truth,
-or the reference results when all degradation operations are off.  We show
+\textit{transmission}. The accuracy $A(c)$ is measured either against the \textit{ground-truth},
+or the reference results when \textit{all degradation operations are off}.  We show
 examples of concrete knobs, configurations, accuracy functions when we present
 applications in \autoref{tab:apps}.
 
@@ -94,8 +95,9 @@ continuously to refine the profile. The refinement handles \textit{model
 accurately. There are two challenges with online profiling.  $(i)$~There is no
 ground-truth labels or reference data to compute accuracy. Because labelling
 data is prohibitively labor intensive and time
-consuming~\cite{russell2008labelme}, \sysname{} currently uses raw data as the
-reference. At runtime, if the application streams raw data, the data is used for
+consuming~\cite{russell2008labelme}, \sysname{} currently uses \textit{raw data as
+the
+reference}. At runtime, if the application streams raw data, the data is used for
 online profiling. Otherwise, we allocate additional bandwidth to back-haul raw
 data, but only do so when there is spare capacity. $(ii)$~Exhaustive profiling
 is expensive. If the profiling takes too much time, the newly-learned profile

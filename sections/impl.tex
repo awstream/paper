@@ -3,10 +3,12 @@
 
 While our proposed APIs are general and not language specific, we choose a safe
 language, Rust, to implement our prototype. \sysname{} is open-source on
-Github.\footnote{Url elided for anonymity.}  Applications built with \sysname{}
+Github.\footnote{URL elided for anonymity.}  Applications built with \sysname{}
 run as a single process.  The execution mode---profiling, runtime as client, or
 runtime as server---is configurable with command line arguments or environment
-variables. Our deployment manager is currently a shell script.
+variables. Our deployment manager is currently a shell script. \textit{We implemented
+the deployment manager which can start, stop and update the modules in clients and
+servers.}
 
 
 \begin{table}
@@ -39,7 +41,7 @@ variables. Our deployment manager is currently a shell script.
 \end{table}
 
 We've built three applications: augmented reality (AR), pedestrian detection
-(PD), and a distributed log analysis to extract the Top-K most access
+(PD), and a distributed log analysis to extract the Top-K mostly accessed
 files. \autoref{tab:apps} summarizes the application-specific part: knobs,
 accuracy function, and the dataset we used for training and testing. To conserve
 space, the appendix describes applications in detail.

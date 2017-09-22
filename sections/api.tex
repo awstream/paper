@@ -10,11 +10,11 @@ borrows the same computation model. We list some example operators, such as
 
 To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
 that degrade data quality, yielding potential bandwidth savings.
-Our API design has three considerations:
-$(i)$~to free developers from specifying exact rules, the API should tolerate
-approximate specifications; $(ii)$~to allow combining multiple dimensions, the API
+Our API design has three considerations.
+$(i)$~To free developers from specifying exact rules, the API should tolerate
+approximate specifications. $(ii)$~To allow combining multiple dimensions, the API
 should be modular: each operator is a unit and the developer can chain multiple
-operators; $(iii)$~to support flexible integration with arbitrary degradation
+operators. $(iii)$~To support flexible integration with arbitrary degradation
 functions, the API should take user-defined functions (UDFs). Therefore, our API
 is,
 
@@ -96,7 +96,7 @@ can now be implemented as follows:
 This snippet first instantiates a \texttt{Camera} source, which produces
 \texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS\@. Two degradation
 operations follow the source: one that downsamples the image to either 1600x900 or
-1280x720 resolution, and one that skips frames with a parameter of 2 or 5, resulting
+1280x720 resolution, and the other that skips frames with a parameter of 2 or 5, resulting
 in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows degraded images
 on the display. In practice, operators for further processing, such as encoding and
 transmission, can be chained.

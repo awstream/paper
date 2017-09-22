@@ -18,7 +18,10 @@ and VideoStorm~\cite{zhang2017live}, can handle large streams of data, they are
 designed to work within a single cluster, where the network is not the
 bottleneck.  In contrast, the wide area network (WAN) has limited
 bandwidth~\cite{hsieh17gaia, vulimiri2015global}. Moreover, WAN bandwidth growth
-has been decelerating for many years~\cite{global2016telegeography} while
+has been decelerating \fixme{too strong, just say demands grow at a much faster rate
+than WAN bandwidth growth. Demands are due to these new applications. WAN bandwidths
+are expensive, not only equipment, but burying pipes, buy lands, government regulations,
+etc.} for many years~\cite{global2016telegeography} while
 traffic demands are growing at a staggering rate~\cite{index2013zettabyte}.
 
 Limited WAN bandwidth makes it neither practical nor efficient to back-haul all
@@ -71,30 +74,32 @@ details.
 
 In this paper, we design and implement \sysname{}, a stream processing system
 for the wide area that achieves low latency and high accuracy simultaneously
-with minimal developer effort. The key idea is to automatically build an
-accurate and precise performance model instead of relying on manual policies or
-application-specific optimizations. \sysname{}'s solution is three-fold:
-easy-to-use APIs, automatic profiling, and a low-latency runtime.
+with minimal developer effort. The key idea is to \textit{automatically} build an
+accurate and precise \textit{performance model} instead of relying on manual policies
+or application-specific optimizations. \sysname{}'s solution is three-fold:
+easy-to-use APIs \fixme{use an API consistently throughout the paper}, automatic profiling,
+and a low-latency runtime.
 
 \sysname{} augments existing stream processing operators with a new \maybe{}
 operator. Its basic form takes a list of values as a knob and a function that
 degrades the input stream. The knob specifies the degradation level that affects
 data size and data fidelity. We extend the basic form with a library of
 specialized operators for common data types, such as \texttt{maybe\_downsample}
-for images. Our APIs are simple, composable and extensible. Developers do not
+for images. Our APIs are \textit{simple}, \textit{composable} and \textit{extensible}. Developers do
+not
 need to be an expert in the application domain as the knobs tolerate approximate
 specifications. Multiple operators form a configuration that affects the
 adaptation jointly. Arbitrary functions and external libraries can be embedded
 with our operators.
 
 \sysname{} then uses a data-driven approach to automatically build application
-performance profiles with minimal developer effort. The profiles accurately
+performance profiles with minimal developer efforts. The profiles accurately
 capture the relationship between application accuracy and bandwidth consumption
-under different combinations of data degradation operations. We use an offline
+under different \textit{combinations} of data degradation operations. We use an \textit{offline}
 process to bootstrap our system with developer-supplied training data, and
-continuously refine the profile online to handle model drifts. We exploit
+continuously refine the profile \textit{online} to handle \textit{model drifts}. We exploit
 parallelism and sampling-based profiling to efficiently explore the
-configuration space and learn a Pareto-optimal adaptation strategy.
+configuration space and learn a \textit{Pareto-optimal} adaptation strategy.
 
 At runtime, \sysname{} achieves low latency by matching data rate to available
 bandwidth, and high accuracy by using Pareto-optimal configurations from the
@@ -104,7 +109,7 @@ up. To recover, it progressively decreases the degradation level after probing
 for more available bandwidth. The runtime also provides additional options to
 control application behaviors, such as limiting the maximum allowed WAN
 bandwidth. For multiple applications, the profiles can be used to allocate
-bandwidth among competing tasks for utility fairness.
+bandwidth among competing tasks for \textit{utility fairness}.
 
 To evaluate \sysname{}, we have built three streaming applications: augmented
 reality (AR), pedestrian detection (PD), and distributed Top-K (TK). We use

@@ -16,7 +16,7 @@ libraries.
 \para{Fault-tolerance and failure recovery.} \sysname{} tolerates bandwidth
 variation but not network partition or host failure. Although the servers within
 the DCs can handle faults as existing systems, such as Spark
-Streaming~\cite{zaharia2013discretized}, do, it is difficult to make edge
+Streaming~\cite{zaharia2013discretized}, do, \fixme{do?} it is difficult to make edge
 clients failure-oblivious.  We leave failure detection and recovery as a future
 work.
 
@@ -37,7 +37,8 @@ explore this direction to improve our profiling.
 \para{Context detection.} \sysname{} is currently limited to one profile: the
 offline profiling generates the default profile and the online profiling updates
 the single profile continuously.  Real-world applications may produce data with
-a multi-modal distribution, where the mode changes upon context changes, such as
+a multi-modal distribution, where the mode \fixme{model?} changes upon context changes,
+such as
 indoor versus outdoor. Therefore, one possible optimization to \sysname{} is to
 allow multiple profiles for one application, detect context changes, and use the
 profile that best matches the current data distribution.  Switching contexts
