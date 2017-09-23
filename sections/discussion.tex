@@ -9,16 +9,15 @@ future work.
 developer efforts from tedious manual policy construction, there are still
 application-specific aspects for developers: writing appropriate \maybe{} calls,
 providing training data, and specifying the accuracy function. Because
-\sysname{}'s APIs are extensible, we plan to build more libraries for common
+\sysname{}'s API is extensible, we plan to build more libraries for common
 degradation operators and accuracy functions, similar to machine learning
 libraries.
 
 \para{Fault-tolerance and failure recovery.} \sysname{} tolerates bandwidth
 variation but not network partition or host failure. Although the servers within
-the DCs can handle faults as existing systems, such as Spark
-Streaming~\cite{zaharia2013discretized}, do, \fixme{do?} it is difficult to make edge
-clients failure-oblivious.  We leave failure detection and recovery as a future
-work.
+the DCs can handle faults in existing systems, such as Spark
+Streaming~\cite{zaharia2013discretized}, it is difficult to make edge clients
+failure-oblivious.  We leave failure detection and recovery as a future work.
 
 \para{Profile modelling.} \sysname{} currently does not model $B(c)$/$A(c)$. It
 performs an exhaustive search when profiling. While parallelism and sampling
@@ -37,11 +36,10 @@ explore this direction to improve our profiling.
 \para{Context detection.} \sysname{} is currently limited to one profile: the
 offline profiling generates the default profile and the online profiling updates
 the single profile continuously.  Real-world applications may produce data with
-a multi-modal distribution, where the mode \fixme{model?} changes upon context changes,
-such as
-indoor versus outdoor. Therefore, one possible optimization to \sysname{} is to
-allow multiple profiles for one application, detect context changes, and use the
-profile that best matches the current data distribution.  Switching contexts
+a multi-modal distribution, where the model changes upon context changes, such
+as indoor versus outdoor. Therefore, one possible optimization to \sysname{} is
+to allow multiple profiles for one application, detect context changes, and use
+the profile that best matches the current data distribution.  Switching contexts
 could reduce, or even eliminate, the overhead of online profiling.
 
 \para{Predicting bandwidth changes.} Our runtime currently does not predict

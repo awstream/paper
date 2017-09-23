@@ -1,22 +1,15 @@
 \section{Related Work}
 \label{sec:related-work}
 
-We first compare \sysname{} with JetStream~\cite{rabkin2014aggregation} and then
-divide all other related works into stream processing systems, approximate
-analytics, WAN-aware systems, adaptive video streaming, and quality of service
-(QoS). \fixme{can remove this paragraph.}
-
-\para{JetStream.} \fixme{JetStream is the closest system to AWStream.} Both \sysname{}
-and JetStream target at wide-area streaming
-analytics and use degradation to reduce latency. Compared to JetStream,
-\sysname{} makes the following major contributions: $(1)$ a novel API design
-that simplifies the development of adaptive applications; $(2)$ techniques for
-composing degradation across operators in an optimal and automated manner; $(3)$
-\fixme{add offline here} online profiling to address model drift; $(4)$ runtime implementation
-that
-utilizes the learned profile and achieves sub-second latency (comparison made in
-\autoref{sec:runtime}). $(5)$ support for different resource allocation policies
-for multiple applications.
+\para{JetStream.} JetStream first proposes to use degradation to reduce latency
+for wide-area streaming analytics. Compared to JetStream, \sysname{} makes the
+following major contributions: $(1)$ a novel API design to specify degradation
+operations in a simple and composable manner; $(2)$ automatic offline profiling
+to search for Pareto-optimal configurations; $(3)$ online profiling to address
+model drift; $(4)$ runtime implementation that utilizes the learned profile and
+achieves sub-second latency (comparison made in
+\autoref{sec:runtime-adaptation}). $(5)$ support for different resource
+allocation policies for multiple applications.
 
 \para{Stream processing systems.} Streaming databases, such as
 Borealis~\cite{abadi2005design},
@@ -106,7 +99,7 @@ low latency.
   shenker1995fundamental} in the 1990s focus on network-layer solutions that are
 not widely deployable. \sysname{} adopts an end-host and application-layer
 approach ready today for WAN. For existing application-layer
-approaches~\cite{vandalore2001survey}, \sysname{}'s APIs can incorporate their
+approaches~\cite{vandalore2001survey}, \sysname{}'s API can incorporate their
 techniques, such as encoding the number of layers as a knob to realize the
 layered approach in Rejaie et al~\cite{rejaie2000layered}. Fundamentally,
 \sysname{} does not provide hard QoS guarantees; instead \sysname{} maximizes

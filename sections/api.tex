@@ -1,12 +1,12 @@
-\subsection{APIs for Structured Adaptation}
+\subsection{API for Structured Adaptation}
 \label{sec:struct-adapt}
 
 %% Introduce graphs of operators model
-The majority of stream processing applications today are constructed as a
-directed graph of operators~\cite{toshniwal2014storm, zaharia2013discretized},
-where each operator transforms input streams into new streams. \sysname{}
-borrows the same computation model. We list some example operators, such as
-\texttt{map} and \texttt{skip}, in \autoref{tab:operators}.
+Most stream processing systems construct applications as a directed graph of
+operators~\cite{toshniwal2014storm, zaharia2013discretized}, where each operator
+transforms input streams into new streams. \sysname{} borrows the same
+computation model. We list some example operators, such as \texttt{map} and
+\texttt{skip}, in \autoref{tab:operators}.
 
 To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
 that degrade data quality, yielding potential bandwidth savings.
@@ -81,7 +81,7 @@ adjust the image resolution to a configured target. \sysname{} provides a number
 of such operations as a library to simplify application development
 (\autoref{tab:operators}).
 
-With our APIs, the example mentioned in \autoref{sec:making-case-sys-approach}
+With our API, the example mentioned in \autoref{sec:making-case-sys-approach}
 can now be implemented as follows:
 
 \vspace{-2pt}

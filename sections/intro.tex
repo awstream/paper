@@ -17,11 +17,8 @@ Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized},
 and VideoStorm~\cite{zhang2017live}, can handle large streams of data, they are
 designed to work within a single cluster, where the network is not the
 bottleneck.  In contrast, the wide area network (WAN) has limited
-bandwidth~\cite{hsieh17gaia, vulimiri2015global}. Moreover, WAN bandwidth growth
-has been decelerating \fixme{too strong, just say demands grow at a much faster rate
-than WAN bandwidth growth. Demands are due to these new applications. WAN bandwidths
-are expensive, not only equipment, but burying pipes, buy lands, government regulations,
-etc.} for many years~\cite{global2016telegeography} while
+bandwidth~\cite{hsieh17gaia, vulimiri2015global}.  Moreover, WAN bandwidth
+growth has been decelerating for many years~\cite{global2016telegeography} while
 traffic demands are growing at a staggering rate~\cite{index2013zettabyte}.
 
 Limited WAN bandwidth makes it neither practical nor efficient to back-haul all
@@ -74,32 +71,31 @@ details.
 
 In this paper, we design and implement \sysname{}, a stream processing system
 for the wide area that achieves low latency and high accuracy simultaneously
-with minimal developer effort. The key idea is to \textit{automatically} build an
-accurate and precise \textit{performance model} instead of relying on manual policies
-or application-specific optimizations. \sysname{}'s solution is three-fold:
-easy-to-use APIs \fixme{use an API consistently throughout the paper}, automatic profiling,
-and a low-latency runtime.
+with minimal developer effort. The key idea is to \textit{automatically} build
+an accurate and precise \textit{performance model} instead of relying on manual
+policies or application-specific optimizations. \sysname{}'s solution is
+three-fold: an easy-to-use API, automatic profiling, and a low-latency runtime.
 
 \sysname{} augments existing stream processing operators with a new \maybe{}
 operator. Its basic form takes a list of values as a knob and a function that
 degrades the input stream. The knob specifies the degradation level that affects
 data size and data fidelity. We extend the basic form with a library of
 specialized operators for common data types, such as \texttt{maybe\_downsample}
-for images. Our APIs are \textit{simple}, \textit{composable} and \textit{extensible}. Developers do
-not
-need to be an expert in the application domain as the knobs tolerate approximate
-specifications. Multiple operators form a configuration that affects the
-adaptation jointly. Arbitrary functions and external libraries can be embedded
-with our operators.
+for images. Our API is \textit{simple}, \textit{composable} and
+\textit{extensible}. Developers do not need to be an expert in the application
+domain as the knobs tolerate approximate specifications. Multiple operators form
+a configuration that affects the adaptation jointly. Arbitrary functions and
+external libraries can be embedded with our operators.
 
 \sysname{} then uses a data-driven approach to automatically build application
 performance profiles with minimal developer efforts. The profiles accurately
 capture the relationship between application accuracy and bandwidth consumption
-under different \textit{combinations} of data degradation operations. We use an \textit{offline}
-process to bootstrap our system with developer-supplied training data, and
-continuously refine the profile \textit{online} to handle \textit{model drifts}. We exploit
-parallelism and sampling-based profiling to efficiently explore the
-configuration space and learn a \textit{Pareto-optimal} adaptation strategy.
+under different \textit{combinations} of data degradation operations. We use an
+\textit{offline} process to bootstrap our system with developer-supplied
+training data, and continuously refine the profile \textit{online} to handle
+\textit{model drifts}. We exploit parallelism and sampling-based profiling to
+efficiently explore the configuration space and learn a \textit{Pareto-optimal}
+adaptation strategy.
 
 At runtime, \sysname{} achieves low latency by matching data rate to available
 bandwidth, and high accuracy by using Pareto-optimal configurations from the
@@ -117,19 +113,20 @@ real-world data to profile these applications and evaluate their runtime
 performance on a geo-distributed public cloud. Our contributions and evaluation
 results are as follows.
 
-\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=0pt]
 
 \item We propose \maybe{} operators to incorporate adaptation with existing
   stream processing models. Our programming abstraction is simple, composable
   and extensible.
 
 \item We show that \sysname{}'s data-driven approach generates an accurate and
-  precise profile for each application. Parallelism and sampling techniques
-  can speed up the profiling substantially, up to 29$\times$ and 9$\times$\@.
+  precise profile for each application. Parallelism and sampling techniques can
+  speed up the profiling substantially, up to 29$\times$ and 8.7$\times$\@.
 
 \item Using runtime experiments on geo-distributed EC2 nodes, \sysname{}
-  achieves low latency and high accuracy simultaneously for all
-  applications---sub-second latency and nominal accuracy drop (2-3\%).
+  achieves sub-second latency and nominal accuracy drop for all
+  applications. Compared with state-of-the-art systems like JetStream,
+  \sysname{} improves latency by 21$\times$ and accuracy by 4\%.
 
 \end{itemize}
 

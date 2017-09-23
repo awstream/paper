@@ -3,20 +3,18 @@
 
 \sysname{} avoids the problems with manual policies or application-specific
 optimizations by structuring adaptation as a set of approximate, modular and
-extensible specifications, or APIs (\autoref{sec:struct-adapt}). The
-well-defined structure allowed us to build a generic profiling tool that learns
-an accurate relationship (the profile) between bandwidth consumption and
-application accuracy (\autoref{sec:automatic-profiling}). The accurate profile
-then guides the runtime to react with precision: achieving low latency and high
-accuracy when facing bandwidth limitations
-(\autoref{sec:runtime}). \autoref{fig:overview} shows the high-level overview of
-\sysname{}.
+extensible specifications (\autoref{sec:struct-adapt}). The well-defined
+structure allows us to build a generic profiling tool that learns an accurate
+relationship, the profile, between bandwidth consumption and application
+accuracy (\autoref{sec:automatic-profiling}). The profile then guides the
+runtime to react with precision: achieving low latency and high accuracy when
+facing bandwidth limitations (\autoref{sec:runtime}). \autoref{fig:overview}
+shows the high-level overview of \sysname{}.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.8\linewidth]{figures/system.pdf}
-  \caption{High-level overview of \sysname{}. \fixme{put client/server in the bottom
-  figure.}}
+  \caption{High-level overview of \sysname{}.}
   \label{fig:overview}
 \end{figure}
 

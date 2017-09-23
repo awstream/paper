@@ -70,21 +70,16 @@ reduces to 1 mbps (less than 1\% of the maximum), the accuracy is still above
 75\%. The large variation allows \sysname{} to operate at a high accuracy
 configuration even under severe network deterioration.
 
-\para{Multiple dimensions achieve the optimal.} Comparing dashed lines in each
+\para{Distinct effects by each dimension.} Comparing dashed lines in each
 profile, we see that the Pareto-optimal configurations are only achievable when
 multiple knobs are in effect. Tuning only one dimension often leads to
-sub-optimal performance. Although TK's Pareto-optimal boundary is aligned with
-tuning \texttt{N}, for another dataset with a different distribution, this
-behavior will change. \fixme{weak}
-
-\para{Each dimension affects differently}. Within a single profile, the
-difference between tuning individual dimensions is evident. For PD, tuning
-resolution (the red line) leads to a quicker accuracy drop than tuning frame
-rate (the yellow line). Comparing AR and PD, the same dimension has different
-impact. Tuning resolution is less harmful in AR than PD; while tuning frame rate
-hurts AR more than PD\@. This echoes our initial observation
-in~\autoref{sec:making-case-sys-approach} that application- and context-specific
-optimizations don't generalize.
+sub-optimal performance. Within a single profile, the difference between tuning
+individual dimensions is evident. For PD, tuning resolution (the red line) leads
+to a quicker accuracy drop than tuning frame rate (the yellow line). Comparing
+AR and PD, the same dimension has different impact. Tuning resolution is less
+harmful in AR than PD; while tuning frame rate hurts AR more than PD\@. This
+echoes our initial observation in~\autoref{sec:making-case-sys-approach} that
+application- and context-specific optimizations don't generalize.
 
 % \para{Quantification with precision}. The generated profiles are actionable
 % configurations that control the knobs with precision. For example, if PD
@@ -128,8 +123,8 @@ we parallelize the profiling task by assigning configurations to GPUs.
 $(i)$~Our offline profiling assigns configurations randomly.  With the increased
 number of GPUs, the overhead reduces from 52X to 4X with 30 GPUs.  $(ii)$~Our
 online profiling assigns configurations based on the processing times collected
-during offline.  \sysname{} currently uses LFS assignment and can reduce the
-overhead to 1.75X with 30 GPUs. \fixme{why?}
+during offline.  \sysname{} uses LFS~\cite{karger2010scheduling} to minimize the
+makespan and reduces the overhead to 1.75X with 30 GPUs (29$\times$ gain).
 
 \para{Sampling techniques speed up online profiling
   (\autoref{fig:online-tricks}).}
@@ -197,9 +192,8 @@ the configuration fails to predict runtime bandwidth, as illustrated in
     Partial configurations & 6X & 8.7$\times$ \\
     \bottomrule
   \end{tabular}
-  \caption{Sampling techniques speed up the profiling. We use X to denote the
-    overhead of processing one-second worth of data; and $\times$ for the
-    improvements. \fixme{Then the baseline should be 1X.}}
+  \caption{Compared to the continuous profiling baseline (52X overhead), our
+    sampling techniques speed up by 3$\times$ or 8.7$\times$.}
   \label{tab:online}
 \end{table}
 
@@ -214,12 +208,11 @@ parallelism, \sysname{} uses two other techniques for online profiling
 
 (i) Partial data: Instead of using all the past data, we run profiling with only
 a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
-prediction \fixme{bandwidth? not prediction?} if we only use 10 seconds of data out
-of the past 30 seconds. In this
-way, although the profile may be less accurate (the mis-prediction at
-t=80--100s), and there is a delay in reacting to data change (the mis-prediction
-is corrected after t=125s), we save the online profiling by 3$\times$ (from 52X
-to 17X).
+consumption if the profiling uses only 10 seconds of data out of the past 30
+seconds. In this way, although the profile may be less accurate (the
+mis-prediction at t=80--100s), and there is a delay in reacting to data change
+(the mis-prediction is corrected after t=125s), we save the online profiling by
+3$\times$ (from 52X to 17X).
 
 (ii) Partial configurations: If we use the past profile as a reference and only
 measure a subset of all Pareto-optimal configurations, the savings can be
@@ -255,10 +248,10 @@ across all applications. Due to space constraints, we only present the result of
 AR. The results for PD/TK are in the appendix.
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
-machines from Amazon EC2, spanning four different regions \fixme{which four?}. Three
-act as worker
-nodes and one acts as the aggregation server. The average RTTs from worker to
-server are 65.2 ms, 22.2 ms, and 50.3 ms.
+machines from Amazon EC2, spanning four different regions. Three (N. Virgnia,
+Ohio, Oregan) act as worker nodes and one (N. California) acts as the
+aggregation server. The average RTTs from worker to server are 65.2 ms, 22.2 ms,
+and 50.3 ms.
 
 During the experiment, each worker transmits test data (\autoref{tab:apps}) for
 about 10 mins. If the duration of the test data is less than 10 mins, it
@@ -294,11 +287,11 @@ limit---25 mbps---to simplify comparisons.
     \centering
     \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
     \caption{Summary of latency and accuracy during the traffic shaping (between
-      t=200s and t=440s). \fixme{not explained.}}
+      t=200s and t=440s).}
     \label{fig:ar-runtime-boxplot}
   \end{subfigure}
   \caption{Runtime performance. \sysname{} simultaneously achieves low latency
-    and high accuracy (with smaller variation). \fixme{not clear in black-white}}
+    and high accuracy (with smaller variation).}
   \label{fig:ar-runtime}
 \end{figure}
 
@@ -334,6 +327,22 @@ three rules) cannot sustain 5 mpbs bandwidth. \sysname{} increases the
 throughput gradually due to the explicit probing phase. HLS is the most
 conservative scheme; it does not recover from degradation until t=500s.
 
+ % summary(latency)
+ %      Time        JetStream++        JetStream            HLS
+ % Min.   :206.0   Min.   :  47.14   Min.   :  541.6   Min.   :3750
+ % 1st Qu.:264.2   1st Qu.: 331.97   1st Qu.: 1544.6   1st Qu.:4960
+ % Median :322.5   Median : 539.26   Median : 1732.1   Median :5438
+ % Mean   :322.5   Mean   : 575.11   Mean   : 3105.8   Mean   :5578
+ % 3rd Qu.:380.8   3rd Qu.: 771.06   3rd Qu.: 1951.0   3rd Qu.:6270
+ % Max.   :439.0   Max.   :1599.51   Max.   :14245.7   Max.   :7085
+ % Streaming over TCP Streaming over UDP    AWStream
+ % Min.   :   290.8   Min.   :29.73      Min.   : 42.62
+ % 1st Qu.: 28042.5   1st Qu.:31.51      1st Qu.: 50.59
+ % Median : 54315.2   Median :33.18      Median : 79.51
+ % Mean   : 55596.7   Mean   :33.08      Mean   :117.72
+ % 3rd Qu.: 81514.5   3rd Qu.:34.90      3rd Qu.:156.22
+ % Max.   :117780.4   Max.   :36.29      Max.   :648.08
+
 The latency figures (both time series and box plot) show that \sysname{} is able
 to maintain sub-second latency. During the traffic shaping, TCP queues items at
 the sender side for up to hundreds of seconds. In contrast, UDP always transmits
@@ -347,13 +356,21 @@ changes, they end up oscillating among polices. \sysname{} effectively addresses
 the oscillation with probing and achieves a much lower latency than all
 baselines except UDP.
 
- %   JetStream++        JetStream      Streaming over TCP     AWStream
- %  Min.   :0.04511   Min.   :0.5735   Min.   :0.7179      Min.   :0.6303
- %  1st Qu.:0.82666   1st Qu.:0.7915   1st Qu.:0.8929      1st Qu.:0.8436
- %  Median :0.89385   Median :0.8430   Median :0.9231      Median :0.8942
- %  Mean   :0.84387   Mean   :0.8400   Mean   :0.9153      Mean   :0.8809
- %  3rd Qu.:0.93551   3rd Qu.:0.8969   3rd Qu.:0.9524      3rd Qu.:0.9256
- %  Max.   :0.98947   Max.   :0.9677   Max.   :1.0000      Max.   :0.9849
+% summary(accuracy)
+%       Time        JetStream++        JetStream           HLS
+%  Min.   :206.0   Min.   :0.04511   Min.   :0.5714   Min.   :0.4839
+%  1st Qu.:264.2   1st Qu.:0.82776   1st Qu.:0.7854   1st Qu.:0.8414
+%  Median :322.5   Median :0.89079   Median :0.8401   Median :0.8795
+%  Mean   :322.5   Mean   :0.84882   Mean   :0.8335   Mean   :0.8684
+%  3rd Qu.:380.8   3rd Qu.:0.93502   3rd Qu.:0.8952   3rd Qu.:0.9222
+%  Max.   :439.0   Max.   :0.98947   Max.   :0.9677   Max.   :0.9712
+%  Streaming over TCP Streaming over UDP     AWStream
+%  Min.   :0.7105     Min.   :-0.015114   Min.   :0.4516
+%  1st Qu.:0.8942     1st Qu.:-0.003649   1st Qu.:0.8340
+%  Median :0.9261     Median : 0.003017   Median :0.8851
+%  Mean   :0.9181     Mean   : 0.032091   Mean   :0.8692
+%  3rd Qu.:0.9545     3rd Qu.: 0.009415   3rd Qu.:0.9213
+%  Max.   :1.0000     Max.   : 0.925875   Max.   :0.9712
 
 The two accuracy figures shows that other than UDP, most schemes are able to
 maintain high accuracy during the experiment. TCP without adaptation always

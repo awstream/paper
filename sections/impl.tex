@@ -1,15 +1,13 @@
 \section{Implementation}
 \label{sec:implementation}
 
-While our proposed APIs are general and not language specific, we choose a safe
+While our proposed API is general and not language specific, we choose a safe
 language, Rust, to implement our prototype. \sysname{} is open-source on
 Github.\footnote{URL elided for anonymity.}  Applications built with \sysname{}
 run as a single process.  The execution mode---profiling, runtime as client, or
 runtime as server---is configurable with command line arguments or environment
-variables. Our deployment manager is currently a shell script. \textit{We implemented
-the deployment manager which can start, stop and update the modules in clients and
-servers.}
-
+variables. We implemented the deployment manager that can start, stop and update
+the modules in clients and servers.
 
 \begin{table}
   \scriptsize

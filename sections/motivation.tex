@@ -9,14 +9,13 @@ application-specific optimizations solve the problem.
 \label{sec:wide-area-streaming}
 
 \paraf{Video Surveillance.} We envisage a city-wide monitoring system that
-aggregates camera feeds---from stationary ground cameras and moving aerial
-vehicles---and analyzes video streams in real-time for surveillance, anomaly
-detection or business intelligence~\cite{oh2011large}. Traditionally, video
-analysis requires human involvement. Recent advances in computer vision and deep
-learning have dramatically increased the accuracy for automatic visual scene
-analysis, such as pedestrian detection~\cite{dollar2012pedestrian}, vehicle
-tracking~\cite{coifman1998real}, and facial recognition to locate people of
-interest~\cite{Lu:2015:SHF:2888116.2888245, parkhi2015deep}. While some
+aggregates camera feeds, from stationary ground cameras and moving aerial
+vehicles, and analyzes video streams in real-time for surveillance, anomaly
+detection or business intelligence~\cite{oh2011large}. Recent advances in
+computer vision have dramatically increased the accuracy for automatic visual
+scene analysis, such as pedestrian detection~\cite{dollar2012pedestrian},
+vehicle tracking~\cite{coifman1998real}, and facial recognition to locate people
+of interest~\cite{Lu:2015:SHF:2888116.2888245, parkhi2015deep}. While some
 surveillance cameras use dedicated links, an increasing number of surveillance
 systems, such as Dropcam~\cite{dropcam} and Vigil~\cite{zhang2015design}, use
 the public Internet and wireless links to reduce the cost of deployment and
@@ -38,8 +37,9 @@ monitoring logs, and performance counters~\cite{alspaugh2014analyzing,
 mode on a daily basis, there is a trend towards analyzing logs in real time for
 rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve
 the overall efficiency by optimizing data placement if the access logs can be
-processed in real time. \fixme{one or two sentences about industrial IoT (factory
-monitoring), e.g., GE. Citing some news articles is enough.}
+processed in real time. Real-time sensor monitoring is becoming pervasive in
+industrial IoT to detect anomalies, direct controls, and predict maintenance
+~\cite{balani2016enterprise, ge}.
 
 %% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
 %% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
@@ -67,12 +67,10 @@ machines~\cite{amazon2017pricing, hsieh17gaia}.
 In addition to the scarcity and cost, the large variability of WAN bandwidth
 also affects streaming workloads. We conducted a day-long measurement with
 iPerf~\cite{iperf3} to study the pair-wise bandwidth between four Amazon EC2
-sites. \fixme{specify the four sites.} The results show large variance in all pairs---
-\autoref{fig:bw} is one
-such pair. \fixme{do the results hold for all pairs? We did not pick the worst
-pair. Say we have results for all pairs in appendix.} There are occasions when
-the available bandwidth is below 25\% of the
-maximum bandwidth.
+sites (N. California, N. Virginia, Tokyo, Ireland).  The results show large
+variance in all pairs--- \autoref{fig:bw} is one such pair.\footnote{The
+  measurements of other pairs are in the appendix.} There are occasions when the
+available bandwidth is below 25\% of the maximum bandwidth.
 
 \begin{figure}
   \centering
@@ -86,27 +84,25 @@ The back-haul links between EC2 sites are better---if not at least
 representative---in comparison to general WAN links. Similar scarcity and
 variations have been reported in wireless networks~\cite{biswas2015large},
 broadband access networks~\cite{grover2013peeking, sundaresan2014bismark} and
-cellular networks~\cite{nikravesh2014mobile}. \fixme{what about clients (your laptops)
-to DC. Say for normal users (e.g., you deploy a Dropcam at home and run analytics
-at EC2). The situation could be worse.}
+cellular networks~\cite{nikravesh2014mobile}.
 
-\subsection{The Case for a System Approach}
+\subsection{Motivation for \sysname{}}
 \label{sec:making-case-sys-approach}
 
-To address bandwidth limitation, existing solutions use manual policies and
-application-specific solutions. We discuss their drawbacks to motivate a system
-approach. \fixme{implying others, e.g., JetStream, are not a system approach. Need
-a different subtitle, e.g., Motivation for AWStream}
+To address bandwidth limits, existing solutions use manual policies or
+application-specific solutions. We discuss their drawbacks to motivate
+\sysname{} (design in \autoref{sec:system}).
 
-\para{Manual polices are sub-optimal.} While existing systems such as
-JetStream~\cite{rabkin2014aggregation} and DASH~\cite{sodagar2011mpeg} \fixme{is DASH
-manual?} allow
-adaptation, they require developers to write manual policies. We illustrate the
-problems with manual policies using an example~\cite{rabkin2014aggregation} \fixme{Be
-careful here. Need to be specific, e.g., which section/page of JetStream}:
-\textit{if bandwidth is insufficient, switch to sending images at 75\% fidelity,
-  then 50\% if there still isn't enough bandwidth. Beyond that point, reduce the
-  frame rate, but keep the image fidelity.}
+\para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
+the first wide-area analysis system that uses data degradation to address
+bandwidth limits. While effective in comparison to non-adaptive systems,
+JetStream requires developers to write manual policies, e.g. \textit{``if
+  bandwidth is insufficient, switch to sending images at 75\% fidelity, then
+  50\% if there still isn't enough bandwidth. Beyond that point, reduce the
+  frame rate, but keep the image fidelity.''}\footnote{Excerpt from
+  JetStream~\cite{rabkin2014aggregation} \S 4.3.} We discuss the problems with
+manual policies below and present quantatative evaluations in
+\autoref{sec:runtime-adaptation}.
 
 First, this policy is not accurate.  Developers write such rules based on
 heuristics and don't back them up with measurements. Images with 75\% fidelity
@@ -118,40 +114,35 @@ P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3e} shows that when
 reducing the frame rate to 33\% (from \(30~\text{FPS}\) to \(10~\text{FPS}\)),
 the bandwidth demand can still be more than 50\%.
 
-Second, it is not scalable to specify rules one by one. When the policy involves
-multiple dimensions or developers desire a fine-grain control, the policy will
-end up with too many rules.  Writing such rules manually is a tedious and
-error-prone process. \fixme{Mention profiling is also a pain. Need better tools for
-the entire process.}
+Second, it is not scalable to specify rules one by one. A fine-grain control
+requires many rules in the policy. Applications can degrade in multiple
+dimensions and each dimension has different impacts (compare
+\hyperref[fig:app-specific]{Fig.~3a} with \hyperref[fig:app-specific]{Fig.~3b}).
+Specifying rules in detail and across dimensions manually is a tedious and
+error-prone process.
 
 Lastly, this abstraction is too low-level. It forces developers to study and
 measure the impact of individual operations, prohibiting its wide adoption in
 practice.
 
-\para{Application-specific optimizations do not generalize.} Because each
-application has a different performance metric, relies on different features,
-and targets different data distributions, a fine-tuned policy for one
-application will often work poorly for others. \fixme{DASH should be moved to this
-section.}
-
-Analytical applications have their own goals, entailing different optimization
-metrics and different algorithms. In video analytics, for instance, object
-detection algorithms depend on the edge
-information~\cite{canny1986computational, lowe2004distinctive, viola2001rapid}
-while object tracking~\cite{allen2004object} works best when the inter-frame
-difference is small. The former is sensitive to resolution changes while the
-latter frame to rate changes.
+\para{Application-specific optimizations do not generalize.} Because
+applications have different performance metrics and rely on different features,
+a fine-tuned policy for one application will often work poorly for others. For
+example, DASH~\cite{sodagar2011mpeg} optimizes QoE for video streaming; it keeps
+a high frame rate and reduces resolutions for adaptation. Its policy that lowers
+the resolution is a poor match for video analytics that relies on image details,
+such as object detection~\cite{lowe2004distinctive, viola2001rapid} (see
+accuracy drop in \hyperref[fig:app-specific]{Fig.~3b}).
 
 \begin{figure*}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
   \caption{The measured bandwidth and application accuracy for two video
-    analytics applications.  (1) Different degradation strategies have different
-    impacts on accuracy, e.g., degrading frame rate in (a) vs.\,degrading
-    resolution in (b).  (2) The same degradation strategy has different impacts
-    on different applications, e.g., degrading frame rates works well for
-    stationary camera (a), but not well for mobile camera (e). (c-g) shows
-    example measurement frames. \fixme{this example is not described in text.}}
+    analytics applications. (1) Manual policies lack precision without
+    measurements and need to handle multiple dimensions (in a, b, e, f). (2)
+    Application-specific optimizes does not generalize: degrading frame rates
+    works well for stationary camera (a), but not well for mobile camera
+    (e). (c, d, g, h) shows example frames.}
   \label{fig:app-specific}
 \end{figure*}
 
