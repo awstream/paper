@@ -295,22 +295,40 @@ limit---25 mbps---to simplify comparisons.
   \label{fig:ar-runtime}
 \end{figure}
 
-\para{Baselines.} $(i)$~Streaming over TCP. We re-use \sysname{}'s runtime that
-runs over TCP but disable the adaptation. $(ii)$~Streaming over UDP. We use
-FFmpeg~\cite{bellard2012ffmpeg} to stream video:
-RTP/UDP~\cite{schulzrinne2006rtp} for media and RTSP for
-signaling~\cite{schulzrinne1998rtsp}. This is a common setup for video
-conferencing and IP cameras~\cite{durresi2005rtp,
-  king2009cisco}. $(iii)$~JetStream~\cite{rabkin2014aggregation}. We use the
-manual policy described in
-\autoref{sec:making-case-sys-approach}. $(iv)$~JetStream++ is a modified version
-of JetStream that can use the profile learned by \sysname{}.\footnote{The
-  appendix includes details about how we modified JetStream.} $(v)$~HTTP Live
-Streaming (HLS). HLS represents a class of HTTP-based adaptive video streaming
-techniques. Our setup resembles personalized live streaming
-systems~\cite{wang2016anatomy} but uses a smaller chunk for low latency (1
-second instead of typical 2-10 seconds).\footnote{The appendix includes details
-  about our HLS setup.}
+We compare \sysname{} with the following baselines:
+
+\begin{itemize}[noitemsep, nolistsep, leftmargin=*]
+
+\item Streaming over TCP/UDP (non-adaptive). $(i)$~For TCP, we re-use
+  \sysname{}'s runtime that runs over TCP but disable the adaptation. $(ii)$~For
+  UDP, we use FFmpeg~\cite{bellard2012ffmpeg} to stream video:
+  RTP/UDP~\cite{schulzrinne2006rtp} for media and RTSP for
+  signaling~\cite{schulzrinne1998rtsp}. This is a common setup for video
+  conferencing and IP cameras~\cite{durresi2005rtp, king2009cisco}.
+
+\item Adaptive video streaming. We use HTTP Live Streaming (HLS) to represent
+  popular adaptive video streaming techniques. Our setup resembles personalized
+  live streaming systems~\cite{wang2016anatomy} but uses a smaller chunk for low
+  latency (1 second instead of typical 2-10 seconds).\footnote{The appendix
+    includes details about our HLS setup.}
+
+\item JetStream with the manual policy described in
+  \autoref{sec:making-case-sys-approach}.
+
+\item JetStream++, a modified version of JetStream that uses the profile learned
+  by \sysname{}.\footnote{The appendix includes details about how we modified
+    JetStream.}
+
+\end{itemize}
+
+During runtime, \sysname{} differs from JetStream in both policy and
+adaptation. JetStream++ improves JetStream by using our Pareto-optimal
+profile. The comparison between \sysname{} and JetStream++ demonstrates the
+improvements of our runtime: $(i)$~\sysname{} directly measures delivery rate to
+select an appropriate configuration to match the bandwidth while JetStream
+employs a latency-based measure of capacity ratio. $(ii)$ \sysname{} has an
+explicit probe phase while JetStream changes its policy immediately after
+capacity ratio changes.
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
 of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
