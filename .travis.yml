@@ -1,0 +1,23 @@
+language: ruby
+sudo: required
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y texlive-science
+  - sudo apt-get install -y texlive-pictures
+  - sudo apt-get install -y texlive-latex-extra
+  - sudo apt-get install -y texlive-fonts-recommended
+  - sudo apt-get install -y make
+
+script:
+  - make
+  - mkdir -p pdf
+  - mv awstream.pdf appendix.pdf pdf/
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  local_dir: pdf
+  on:
+    branch: master
