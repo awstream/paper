@@ -24,7 +24,7 @@ is,
 \end{lstlisting}
 
 We illustrate the use of the \texttt{maybe} operator with an example that
-quantizes a stream of integers in the Rust programming language:
+quantizes a stream of integers in Rust:
 
 \begin{table*}
   \footnotesize
@@ -39,8 +39,8 @@ quantizes a stream of integers in the Rust programming language:
                                                                             Stream<O> \\
     % & \textit{tumbling\_window} (count: Integer, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
     %                                                                          Stream<O> \\
-    & \textit{timed\_window} (time: Duration, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
-                                                                          Stream<O> \\
+    % & \textit{timed\_window} (time: Duration, f: Vec<I> $\Rightarrow$ O) & Stream<I> $\Rightarrow$
+    %                                                                      Stream<O> \\
     & ... & ... \\
     \midrule
     \multirow{5}{*}{Degradation Operators}
@@ -56,6 +56,7 @@ quantizes a stream of integers in the Rust programming language:
   \caption{Stream processing operators in \sysname{}. \texttt{Vec<T>} represents
     a list of elements with type \texttt{T}.}
   \label{tab:operators}
+  \vspace{-1em}
 \end{table*}
 
 \vspace{-2pt}

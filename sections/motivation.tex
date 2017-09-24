@@ -75,9 +75,11 @@ available bandwidth is below 25\% of the maximum bandwidth.
 \begin{figure}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/aws-variation.pdf}
+  \vspace{-0.8em}
   \caption{Bandwidth variations throughout the day between Amazon EC2 sites
     (from Ireland to California).}
   \label{fig:bw}
+  \vspace{-1em}
 \end{figure}
 
 The back-haul links between EC2 sites are better---if not at least
@@ -99,9 +101,9 @@ bandwidth limits. While effective in comparison to non-adaptive systems,
 JetStream requires developers to write manual policies, e.g. \textit{``if
   bandwidth is insufficient, switch to sending images at 75\% fidelity, then
   50\% if there still isn't enough bandwidth. Beyond that point, reduce the
-  frame rate, but keep the image fidelity.''}\footnote{Excerpt from
-  JetStream~\cite{rabkin2014aggregation} \S 4.3.} We discuss the problems with
-manual policies below and present quantatative evaluations in
+  frame rate, but keep the image fidelity.''}\footnote{Excerpt from JetStream \S
+  4.3~\cite{rabkin2014aggregation}.} We discuss the problems with manual
+policies below and present quantatative evaluations in
 \autoref{sec:runtime-adaptation}.
 
 First, this policy is not accurate.  Developers write such rules based on
@@ -144,6 +146,7 @@ accuracy drop in \hyperref[fig:app-specific]{Fig.~3b}).
     works well for stationary camera (a), but not well for mobile camera
     (e). (c, d, g, h) shows example frames.}
   \label{fig:app-specific}
+  \vspace{-1em}
 \end{figure*}
 
 Similar applications face different data distributions, as shown in

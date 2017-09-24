@@ -1,20 +1,20 @@
 \begin{figure*}[htb]
   \centering
-  \begin{subfigure}[t]{0.32\textwidth}
+  \begin{subfigure}[t]{0.28\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/profile-darknet.pdf}
     \caption{Augmented Reality (AR)}
     \label{fig:ar-profile}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.32\textwidth}
+  \begin{subfigure}[t]{0.28\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/profile-mot.pdf}
     \caption{Pedestrian Detection (PD)}
     \label{fig:pd-profile}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.32\textwidth}
+  \begin{subfigure}[t]{0.28\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/profile-topk.pdf}
     \caption{Top-K (TK)}
@@ -25,13 +25,14 @@
     boundary as well as the performance if only tuning one dimension. Note the
     x-axis is in log scale.}
   \label{fig:all-profiles}
+  \vspace{-1em}
 \end{figure*}
 
 \section{Evaluation}
 \label{sec:evaluation}
 
 In this section, we show the evaluations of \sysname{}, summarizing the results
-as follows:
+as follows.
 
 \begin{itemize}[itemsep=0pt, topsep=3pt]
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
@@ -42,7 +43,8 @@ as follows:
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
   achieve sub-second latency and nominal accuracy drop across different network
-  conditions (\autoref{fig:ar-runtime}, \autoref{fig:ar-rtt}).
+  conditions (\autoref{fig:ar-runtime}, \autoref{fig:pd-tk},
+  \autoref{fig:ar-rtt}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
   resource allocations: resource fairness and utility fairness
   (\autoref{fig:multitask}).
@@ -115,6 +117,7 @@ improve the profiling efficiency; we present their evaluations as follows.
   \caption{Parallelism speeds up both offline and online profiling.
   The y-axis shows the profiling time for 1-second video.}
   \label{fig:parallel}
+  \vspace{-1em}
 \end{figure}
 
 \para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
@@ -137,6 +140,34 @@ out of the window to detect objects on the street. Because of the scene change,
 the configuration fails to predict runtime bandwidth, as illustrated in
 \autoref{fig:offline}.
 
+To correct the profile, if we continuously run the profiling online and update
+the profile, the application will choose the right configuration to meet the
+bandwidth limit.  \autoref{fig:online} shows the bandwidth prediction when we
+continuously profile with the past 30 seconds of video. At time t=120s, the new
+prediction corrects the drifts. The downside of continuous profiling, as
+discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
+parallelism, \sysname{} uses two other techniques for online profiling
+(improvements in \autoref{tab:online}):
+
+(i) Partial data: Instead of using all the past data, we run profiling with only
+a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
+consumption if the profiling uses only 10 seconds of data out of the past 30
+seconds. In this way, although the profile may be less accurate (the
+mis-prediction at t=80--100s), and there is a delay in reacting to data change
+(the mis-prediction is corrected after t=125s), we save the online profiling by
+3$\times$ (from 52X to 17X).
+
+(ii) Partial configurations: If we use the past profile as a reference and only
+measure a subset of all Pareto-optimal configurations, the savings can be
+substantial. A full profiling is only triggered if there is a significant
+difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
+evaluate 5 configurations continuously and trigger a full profiling when the
+bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.  For our
+test data, this scheme is enough to correct model drifts by predicting an
+accurate bandwidth usage (compare \autoref{fig:online} and
+\autoref{fig:online-trigger}).  The overhead reduces to 6X because we run full
+profiling less often (only two times in this experiment).
+
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.48\columnwidth}
@@ -153,7 +184,7 @@ the configuration fails to predict runtime bandwidth, as illustrated in
     \label{fig:online}
   \end{subfigure}
   \\
-  \vspace{1.5em}
+  \vspace{0.5em}
   \begin{subfigure}[t]{0.49\columnwidth}
     \includegraphics[width=\textwidth]{figures/online3.pdf}
     \caption{Partial data}
@@ -195,35 +226,8 @@ the configuration fails to predict runtime bandwidth, as illustrated in
   \caption{Compared to the continuous profiling baseline (52X overhead), our
     sampling techniques speed up by 3$\times$ or 8.7$\times$.}
   \label{tab:online}
+  \vspace{-1em}
 \end{table}
-
-To correct the profile, if we continuously run the profiling online and update
-the profile, the application will choose the right configuration to meet the
-bandwidth limit.  \autoref{fig:online} shows the bandwidth prediction when we
-continuously profile with the past 30 seconds of video. At time t=120s, the new
-prediction corrects the drifts. The downside of continuous profiling, as
-discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
-parallelism, \sysname{} uses two other techniques for online profiling
-(improvements in \autoref{tab:online}):
-
-(i) Partial data: Instead of using all the past data, we run profiling with only
-a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
-consumption if the profiling uses only 10 seconds of data out of the past 30
-seconds. In this way, although the profile may be less accurate (the
-mis-prediction at t=80--100s), and there is a delay in reacting to data change
-(the mis-prediction is corrected after t=125s), we save the online profiling by
-3$\times$ (from 52X to 17X).
-
-(ii) Partial configurations: If we use the past profile as a reference and only
-measure a subset of all Pareto-optimal configurations, the savings can be
-substantial. A full profiling is only triggered if there is a significant
-difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
-evaluate 5 configurations continuously and trigger a full profiling when the
-bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.  For our
-test data, this scheme is enough to correct model drifts by predicting an
-accurate bandwidth usage (compare \autoref{fig:online} and
-\autoref{fig:online-trigger}).  The overhead reduces to 6X because we run full
-profiling less often (only two times in this experiment).
 
 Note that these techniques---parallelization, sampling data, and sampling
 configurations---can be combined together to further reduce the profiling
@@ -272,29 +276,6 @@ the loss probability according to the delivery rate. Because each pair-wise
 connection has a different capacity, we impose a \textit{background} bandwidth
 limit---25 mbps---to simplify comparisons.
 
-\begin{figure}[t]
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_darknet-timeseries.pdf}
-    \caption{Time-series plot of the runtime behaviors: throughput (top),
-      showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
-    \label{fig:ar-runtime-timeseries}
-  \end{subfigure}
-  \vspace{1em}
-  \\
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
-    \caption{Summary of latency and accuracy during the traffic shaping (between
-      t=200s and t=440s).}
-    \label{fig:ar-runtime-boxplot}
-  \end{subfigure}
-  \caption{For our AR application, \sysname{} simultaneously achieves low
-    latency and high accuracy (with smaller variation).}
-  \label{fig:ar-runtime}
-\end{figure}
-
 We compare \sysname{} with the following baselines:
 
 \begin{itemize}[noitemsep, nolistsep, leftmargin=*]
@@ -328,6 +309,30 @@ appropriate configuration to match the bandwidth while JetStream employs a
 latency-based measure of capacity ratio. $(ii)$ \sysname{} has an explicit probe
 phase while JetStream changes its policy immediately after capacity ratio
 changes.
+
+\begin{figure}[t]
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-timeseries.pdf}
+    \caption{Time-series plot of the runtime behaviors: throughput (top),
+      showing the effect of bandwidth shaping; latency (middle) in log scale;
+      and accuracy (bottom).}
+    \label{fig:ar-runtime-timeseries}
+  \end{subfigure}
+  \vspace{0.2em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
+    \caption{Summary of latency and accuracy during the traffic shaping (between
+      t=200s and t=440s).}
+    \label{fig:ar-runtime-boxplot}
+  \end{subfigure}
+  \caption{For our AR application, \sysname{} simultaneously achieves low
+    latency and high accuracy (with smaller variation).}
+  \label{fig:ar-runtime}
+  \vspace{-1em}
+\end{figure}
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
 of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
@@ -441,13 +446,16 @@ and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
   \begin{subfigure}[t]{\columnwidth}
     \centering
     \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot2.pdf}
-    \caption{TK's latency and accuracy during traffic shaping.}
+    \caption[]{TK's latency and accuracy during traffic shaping.\footnotemark}
     \label{fig:tk-runtime-boxplot}
   \end{subfigure}
   \caption{For PD and TK, \sysname{} achieves low latency and high accuracy in
     comparison to baselines (details in appendix).}
   \label{fig:pd-tk}
 \end{figure}
+
+\footnotetext{TK's baselines are only streaming over TCP/UDP because HLS and
+  JetStream are not directly comparable (see appendix).}
 
 \para{Runtime performance of PD and TK (\autoref{fig:pd-tk})}. For PD,
 \sysname{} achieves low latency (median 78ms), which is 20x improvement over
@@ -474,6 +482,7 @@ as high as 500ms.
   \caption{\sysname{} maintains low latency and high accuracy under different
     network delay conditions.}
   \label{fig:ar-rtt}
+  \vspace{-1em}
 \end{figure}
 
 \autoref{fig:ar-rtt} shows the runtime behavior with various added network
@@ -489,12 +498,12 @@ different network delays.
 \label{sec:multi-task-alloc}
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{0.8\columnwidth}
+  \begin{subfigure}[t]{0.7\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/multitask-legend.pdf}
   \end{subfigure}
   \\
-  \vspace{1em}
+  \vspace{0.4em}
   \begin{subfigure}[t]{0.45\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/multitask-left.pdf}
@@ -511,6 +520,7 @@ different network delays.
   \caption{\sysname{} supports a variety of resource allocation schemes:
     resource fairness (a) and utility fairness (b).}
   \label{fig:multitask}
+  \vspace{-1em}
 \end{figure}
 
 We evaluate resource allocations with two applications. In this way, the result

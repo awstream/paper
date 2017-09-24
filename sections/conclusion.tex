@@ -1,22 +1,23 @@
+\vspace{-1em}
 \section{Conclusion}
 \label{sec:conclusion}
 
-The emerging class of wide-area streaming analytics faces the challenge of
-scarce and variable bandwidth. Developers need to make a tradeoff between data
-freshness and fidelity. While it is easy to build applications for either high
-accuracy or low latency, achieving both simultaneously is challenging. Previous
-approaches using manual policies end up with sub-optimal
-performance. Application-specific optimizations do not generalize to cover the
-variety and scales of potential applications.
+% The emerging class of wide-area streaming analytics faces the challenge of
+% scarce and variable bandwidth. Developers need to make a tradeoff between data
+% freshness and fidelity. While it is easy to build applications for either high
+% accuracy or low latency, achieving both simultaneously is
+% challenging. Previous approaches using manual policies end up with sub-optimal
+% performance. Application-specific optimizations do not generalize to cover the
+% variety and scales of potential applications.
 
-In this paper, we present \sysname{}, a stream processing system for a wide
-variety of applications by enabling developers to customize degradation
-operations with \maybe{} API. Our automatic profiling tool generates an accurate
-profile that characterizes the tradeoff between bandwidth consumption and
-application accuracy. The profile allows the runtime to react with
-precision. Evaluations with three applications show that \sysname{} achieves
-sub-second latency with nominal accuracy drop. \sysname{} enables resilient
-execution of wide-area streaming analytics with minimal developer effort.
+This paper presents \sysname{}, a stream processing system for a wide variety of
+applications by enabling developers to customize degradation operations with
+\maybe{} operators. Our automatic profiling tool generates an accurate profile
+that characterizes the tradeoff between bandwidth consumption and application
+accuracy. The profile allows the runtime to react with precision. Evaluations
+with three applications show that \sysname{} achieves sub-second latency with
+nominal accuracy drop. \sysname{} enables resilient execution of wide-area
+streaming analytics with minimal developer effort.
 
 %%% Local Variables:
 %%% mode: latex
