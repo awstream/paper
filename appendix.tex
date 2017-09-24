@@ -7,6 +7,21 @@
 \date{}
 \maketitle
 
+\section{WAN Bandwidth Characteristics}
+
+\autoref{fig:aws-bandwidth} shows the available bandwidth between Amazon EC2
+servers in our day-long measurements. Most inter-continental links (from Ireland
+to all others, from Tokyo to N. Virginia) have limited bandwidth
+(\textasciitilde 50 mbps). Other pairs exhibit large variance from 10 mbps up to
+150 mbps.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\columnwidth]{figures/aws-bandwidth.pdf}
+  \caption{Pair-wise bandwidth in time series from our day-long measurements.}
+  \label{fig:aws-bandwidth}
+\end{figure}
+
 \section{Application Implementations}
 \label{appendix:appl-impl}
 
