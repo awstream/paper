@@ -244,8 +244,8 @@ In this section, we evaluate the runtime performance by controlling available
 bandwidth across geo-distributed sites and compare \sysname{} with baselines
 including streaming over TCP/UDP, JetStream, and video streaming. Our evaluation
 shows that \sysname{} achieves low latency and high accuracy simultaneously
-across all applications. Due to space constraints, we only present the result of
-AR. The results for PD/TK are in the appendix.
+across all applications. Due to space constraints, we discuss AR in full and
+only present the results of PD/TK (more in appendix).
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
 machines from Amazon EC2, spanning four different regions. Three (N. Virgnia,
@@ -290,8 +290,8 @@ limit---25 mbps---to simplify comparisons.
       t=200s and t=440s).}
     \label{fig:ar-runtime-boxplot}
   \end{subfigure}
-  \caption{Runtime performance. \sysname{} simultaneously achieves low latency
-    and high accuracy (with smaller variation).}
+  \caption{For our AR application, \sysname{} simultaneously achieves low
+    latency and high accuracy (with smaller variation).}
   \label{fig:ar-runtime}
 \end{figure}
 
@@ -360,21 +360,21 @@ conservative scheme; it does not recover from degradation until t=500s.
  % 3rd Qu.: 81514.5   3rd Qu.:34.90      3rd Qu.:156.22
  % Max.   :117780.4   Max.   :36.29      Max.   :648.08
 
-The latency figures (both time series and box plot) show that \sysname{} is able
-to maintain sub-second latency. During the traffic shaping, TCP queues items at
-the sender side for up to hundreds of seconds. In contrast, UDP always transmits
-as fast as possible, leading to a consistent low latency.\footnote{FFmpeg
-  discards packets that misses a deadline (33ms for 30FPS).} HLS's latency
-fluctuates around 4-5 seconds due to chunking, buffering, and network
-variations, on par with recent literature~\cite{wang2016anatomy}. Both JetStream
-and JetStream++ are able to adapt during traffic shaping. With a more precise
-and fine-grain policy, JetStream++ achieves a lower latency (median 539ms) in
-comparison to JetStream (median 1732ms). Because JetStream's runtime reacts
-instantaneously when the congestion condition changes, both baselines oscillate
-among polices during the experiment. \sysname{} effectively addresses the
-oscillation with probing and achieves a much lower latency (median 118ms,
-15$\times$ improvement over JetStream and 5$\times$ improvement over
-JetStream++).
+The latency figures (both \autoref{fig:ar-runtime-timeseries} and
+\autoref{fig:ar-runtime-boxplot}) show that \sysname{} is able to maintain
+sub-second latency. During the traffic shaping, TCP queues items at the sender
+side for up to hundreds of seconds. In contrast, UDP always transmits as fast as
+possible, leading to a consistent low latency.\footnote{FFmpeg discards packets
+  that misses a deadline (33ms for 30FPS).} HLS's latency fluctuates around 4-5
+seconds due to chunking, buffering, and network variations, on par with recent
+literature~\cite{wang2016anatomy}. Both JetStream and JetStream++ are able to
+adapt during traffic shaping. With a more precise and fine-grain policy,
+JetStream++ achieves a lower latency (median 539ms) in comparison to JetStream
+(median 1732ms). Because JetStream's runtime reacts instantaneously when the
+congestion condition changes, both baselines oscillate among polices during the
+experiment. \sysname{} effectively addresses the oscillation with probing and
+achieves a much lower latency (median 118ms, 15$\times$ improvement over
+JetStream and 5$\times$ improvement over JetStream++).
 
 % summary(accuracy)
 %       Time        JetStream++        JetStream           HLS
@@ -403,7 +403,9 @@ variation (14\% standard deviation). In contrast, \sysname{} chooses
 configurations carefully to stay in a steady state as much as possible.  It
 achieves a high accuracy of 89\% with a small variation (7.6\% standard
 deviation). HLS also achieves high accuracy (87\%) because its adaptation of
-tuning resolution and encoding quality is effective in AR.
+tuning resolution and encoding quality is effective in AR. However, HLS's
+adaptation works poorly for PD (median 6\% as in
+\autoref{fig:pd-runtime-boxplot}).
 
 % TK latency
 %       Time       Streaming over TCP Streaming over UDP    AWStream
@@ -427,6 +429,32 @@ and high accuracy simultaneously. We show the results during shaping in a
 different form in \autoref{fig:intro} to discuss the trade-off between fidelity
 and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
   feeding PD's profile to AR.}
+
+\begin{figure}[t]
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
+    \caption{PD's latency and accuracy during traffic shaping.}
+    \label{fig:pd-runtime-boxplot}
+  \end{subfigure}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot2.pdf}
+    \caption{TK's latency and accuracy during traffic shaping.}
+    \label{fig:tk-runtime-boxplot}
+  \end{subfigure}
+  \caption{For PD and TK, \sysname{} achieves low latency and high accuracy in
+    comparison to baselines (details in appendix).}
+  \label{fig:pd-tk}
+\end{figure}
+
+\para{Runtime performance of PD and TK (\autoref{fig:pd-tk})}. For PD,
+\sysname{} achieves low latency (median 78ms), which is 20x improvement over
+JetStream and 7.7x over JetStream++. PD achieves an accuracy of 86\%, which is
+6\% drop compared to TCP. For TK, \sysname{} also manages sub-second latency and
+nominal accuracy drop (only 2\% in comparison to TCP). More details are in the
+appendix.
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in

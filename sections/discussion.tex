@@ -33,14 +33,15 @@ explore this direction to improve our profiling.
 % three applications in this paper; and we are implement more application using
 % this framework to understand the expressiveness better.
 
-\para{Context detection.} \sysname{} is currently limited to one profile: the
-offline profiling generates the default profile and the online profiling updates
-the single profile continuously.  Real-world applications may produce data with
-a multi-modal distribution, where the model changes upon context changes, such
-as indoor versus outdoor. Therefore, one possible optimization to \sysname{} is
-to allow multiple profiles for one application, detect context changes, and use
-the profile that best matches the current data distribution.  Switching contexts
-could reduce, or even eliminate, the overhead of online profiling.
+% \para{Context detection.} \sysname{} is currently limited to one profile: the
+% offline profiling generates the default profile and the online profiling
+% updates the single profile continuously.  Real-world applications may produce
+% data with a multi-modal distribution, where the model changes upon context
+% changes, such as indoor versus outdoor. Therefore, one possible optimization
+% to \sysname{} is to allow multiple profiles for one application, detect
+% context changes, and use the profile that best matches the current data
+% distribution.  Switching contexts could reduce, or even eliminate, the
+% overhead of online profiling.
 
 \para{Predicting bandwidth changes.} Our runtime currently does not predict
 future bandwidth. While reacting to bandwidth changes is enough to achieve

@@ -159,6 +159,47 @@ into one second.
   \label{fig:hls-arch}
 \end{figure*}
 
+ % > summary(latency)
+ %      Time        JetStream++        JetStream            HLS
+ % Min.   :206.0   Min.   :  46.68   Min.   :   82.4   Min.   :1887
+ % 1st Qu.:264.2   1st Qu.: 380.70   1st Qu.: 1435.7   1st Qu.:2320
+ % Median :322.5   Median : 597.67   Median : 1534.9   Median :2623
+ % Mean   :322.5   Mean   : 624.21   Mean   : 2629.2   Mean   :2610
+ % 3rd Qu.:380.8   3rd Qu.: 831.75   3rd Qu.: 1688.1   3rd Qu.:2863
+ % Max.   :439.0   Max.   :1388.79   Max.   :11489.3   Max.   :4227
+ % NA's   :1       NA's   :1         NA's   :1         NA's   :1
+ %
+ % Streaming over TCP Streaming over UDP    AWStream
+ % Min.   :   878.8   Min.   :29.70      Min.   : 48.35
+ % 1st Qu.: 26176.3   1st Qu.:31.18      1st Qu.: 63.58
+ % Median : 50679.0   Median :32.68      Median : 77.98
+ % Mean   : 52130.4   Mean   :32.89      Mean   :105.56
+ % 3rd Qu.: 76010.8   3rd Qu.:34.60      3rd Qu.:124.71
+ % Max.   :111455.7   Max.   :36.30      Max.   :417.79
+ % NA's   :1          NA's   :1          NA's   :1
+ %%
+ %% 20x over JetStream, 7.7x over JetStream++
+
+ % > summary(accuracy)
+ %      Time        JetStream++       JetStream           HLS
+ % Min.   :206.0   Min.   :0.6735   Min.   :0.7822   Min.   :0.00000
+ % 1st Qu.:264.2   1st Qu.:0.7871   1st Qu.:0.8247   1st Qu.:0.04077
+ % Median :322.5   Median :0.8285   Median :0.8420   Median :0.06372
+ % Mean   :322.5   Mean   :0.8232   Mean   :0.8395   Mean   :0.09429
+ % 3rd Qu.:380.8   3rd Qu.:0.8667   3rd Qu.:0.8531   3rd Qu.:0.09346
+ % Max.   :439.0   Max.   :0.9148   Max.   :0.9130   Max.   :0.69602
+ % NA's   :1       NA's   :1        NA's   :1        NA's   :1
+ % Streaming over TCP Streaming over UDP      AWStream
+ % Min.   :0.8502     Min.   :-0.0000985   Min.   :0.7899
+ % 1st Qu.:0.9012     1st Qu.: 0.0021567   1st Qu.:0.8405
+ % Median :0.9150     Median : 0.0068409   Median :0.8552
+ % Mean   :0.9150     Mean   : 0.0314461   Mean   :0.8622
+ % 3rd Qu.:0.9295     3rd Qu.: 0.0312727   3rd Qu.:0.8805
+ % Max.   :0.9697     Max.   : 0.6220806   Max.   :0.9853
+ % NA's   :1          NA's   :1            NA's   :1
+ %%
+ %% 6% drop
+
 In the main paper, we presented the evaluation results for AR. Now we show the
 relevant details and results for the remaining two applications: PD and TK.
 
@@ -218,6 +259,8 @@ leads to one seconds latency. \sysname{} manages to avoid queues for most times.
 %  Mean   :292.5   Mean   :0.9928     Mean   :0.5236     Mean   :0.9786
 %  3rd Qu.:333.8   3rd Qu.:0.9977     3rd Qu.:0.6063     3rd Qu.:0.9883
 %  Max.   :375.0   Max.   :0.9991     Max.   :0.7981     Max.   :0.9991
+%
+% subsecond latency, 2% drop
 
 \section{JetStream++}
 \label{appendix:jetstream++}
