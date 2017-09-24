@@ -78,8 +78,8 @@ individual dimensions is evident. For PD, tuning resolution (the red line) leads
 to a quicker accuracy drop than tuning frame rate (the yellow line). Comparing
 AR and PD, the same dimension has different impact. Tuning resolution is less
 harmful in AR than PD; while tuning frame rate hurts AR more than PD\@. This
-echoes our initial observation in~\autoref{sec:making-case-sys-approach} that
-application- and context-specific optimizations don't generalize.
+echoes our initial observation in~\autoref{subsec:motivation} that application-
+and context-specific optimizations don't generalize.
 
 % \para{Quantification with precision}. The generated profiles are actionable
 % configurations that control the knobs with precision. For example, if PD
@@ -312,8 +312,7 @@ We compare \sysname{} with the following baselines:
   latency (1 second instead of typical 2-10 seconds).\footnote{The appendix
     includes details about our HLS setup.}
 
-\item JetStream with the manual policy described in
-  \autoref{sec:making-case-sys-approach}.
+\item JetStream with the manual policy described in \autoref{subsec:motivation}.
 
 \item JetStream++, a modified version of JetStream that uses the profile learned
   by \sysname{}.\footnote{The appendix includes details about how we modified
@@ -366,13 +365,16 @@ to maintain sub-second latency. During the traffic shaping, TCP queues items at
 the sender side for up to hundreds of seconds. In contrast, UDP always transmits
 as fast as possible, leading to a consistent low latency.\footnote{FFmpeg
   discards packets that misses a deadline (33ms for 30FPS).} HLS's latency
-fluctuates around 2-3 seconds due to chunking, buffering, and network
+fluctuates around 4-5 seconds due to chunking, buffering, and network
 variations, on par with recent literature~\cite{wang2016anatomy}. Both JetStream
-and JetStream++ are able to adapt during traffic shaping. But because
-JetStream's runtime reacts instantaneously when the congestion condition
-changes, they end up oscillating among polices. \sysname{} effectively addresses
-the oscillation with probing and achieves a much lower latency than all
-baselines except UDP.
+and JetStream++ are able to adapt during traffic shaping. With a more precise
+and fine-grain policy, JetStream++ achieves a lower latency (median 539ms) in
+comparison to JetStream (median 1732ms). Because JetStream's runtime reacts
+instantaneously when the congestion condition changes, both baselines oscillate
+among polices during the experiment. \sysname{} effectively addresses the
+oscillation with probing and achieves a much lower latency (median 118ms,
+15$\times$ improvement over JetStream and 5$\times$ improvement over
+JetStream++).
 
 % summary(accuracy)
 %       Time        JetStream++        JetStream           HLS
@@ -391,26 +393,40 @@ baselines except UDP.
 %  Max.   :1.0000     Max.   : 0.925875   Max.   :0.9712
 
 The two accuracy figures shows that other than UDP, most schemes are able to
-maintain high accuracy during the experiment. TCP without adaptation always
-sends data at high fidelity, achieving the highest accuracy of \textasciitilde
-92\%. But TCP's high accuracy comes with the cost of high latency. JetStream
-uses a manual policy that are sub-optimal in comparison to our learned profile,
-so its accuracy is low (\textasciitilde 84\%). Using Pareto-optimal
-configurations, JetStream++ is able to achieve a higher accuracy
-(\textasciitilde 89\%); but because JetStream runtime's policy oscillation, the
-accuracy has a large variation. In contrast, \sysname{} chooses configurations
-carefully so that it can stay in a steady state as much as possible.  It
-achieves a high accuracy of \textasciitilde 89\% with a small variation. HLS
-also achieves high accuracy because tuning resolution and encoding quality is
-effective in AR. In our PD application where image details matter, HLS's
-adaptation leads to a poor accuracy of \textasciitilde 10\% (the figure is in
-the appendix).
+maintain high accuracy. TCP without adaptation always sends data at high
+fidelity, achieving the highest accuracy (93\%), but at a cost of high
+latency. JetStream uses a manual policy that are sub-optimal in comparison to
+our learned profile, so its accuracy is low (84\%). Using Pareto-optimal
+configurations, JetStream++ is able to achieve a higher accuracy (89\%); but
+because JetStream runtime's policy oscillation, the accuracy has a large
+variation (14\% standard deviation). In contrast, \sysname{} chooses
+configurations carefully to stay in a steady state as much as possible.  It
+achieves a high accuracy of 89\% with a small variation (7.6\% standard
+deviation). HLS also achieves high accuracy (87\%) because it is effective to
+tune resolution and encoding quality in AR.
 
-In summary, \autoref{fig:ar-runtime} shows that \sysname{}'s adaptation achieves
-low latency and high accuracy simultaneously. The results during traffic
-shaping, in a different form, is shown in \autoref{fig:intro} for discussing the
-trade-off between fidelity and freshness.\footnote{We obtain
-  \autoref{fig:intro}'s app-specific data by feeding PD's profile to AR.}
+% TK latency
+%       Time       Streaming over TCP Streaming over UDP    AWStream
+%  Min.   :210.0   Min.   : 2036      Min.   :22.29      Min.   :  48.03
+%  1st Qu.:251.2   1st Qu.:11438      1st Qu.:22.42      1st Qu.: 485.08
+%  Median :292.5   Median :21014      Median :24.78      Median : 946.45
+%  Mean   :292.5   Mean   :20590      Mean   :23.85      Mean   :1145.05
+%  3rd Qu.:333.8   3rd Qu.:29662      3rd Qu.:24.87      3rd Qu.:1557.20
+%  Max.   :375.0   Max.   :39434      Max.   :24.98      Max.   :3509.99
+% > summary(accuracy)
+%       Time       Streaming over TCP Streaming over UDP    AWStream
+%  Min.   :210.0   Min.   :0.9808     Min.   :0.1097     Min.   :0.9284
+%  1st Qu.:251.2   1st Qu.:0.9892     1st Qu.:0.4467     1st Qu.:0.9694
+%  Median :292.5   Median :0.9967     Median :0.5329     Median :0.9800
+%  Mean   :292.5   Mean   :0.9928     Mean   :0.5236     Mean   :0.9786
+%  3rd Qu.:333.8   3rd Qu.:0.9977     3rd Qu.:0.6063     3rd Qu.:0.9883
+%  Max.   :375.0   Max.   :0.9991     Max.   :0.7981     Max.   :0.9991
+
+In summary, \autoref{fig:ar-runtime} shows that \sysname{} achieves low latency
+and high accuracy simultaneously. We show the results during shaping in a
+different form in \autoref{fig:intro} to discuss the trade-off between fidelity
+and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
+  feeding PD's profile to AR.}
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in
