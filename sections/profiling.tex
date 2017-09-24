@@ -61,13 +61,13 @@ follows:
 \end{table}
 
 Because \sysname{} allows arbitrary functions as the degradation functions, it
-does not assume a closed-form relation for $B(c)$ and $A(c)$. Instead,
+does not assume a closed-form relationship for $B(c)$ and $A(c)$. Instead,
 \sysname{} takes a data-driven approach: profiling applications with
 developer-supplied training data.  We measure $B(c)$ at the point of
-\textit{transmission}. The accuracy $A(c)$ is measured either against the \textit{ground-truth},
-or the reference results when \textit{all degradation operations are off}.  We show
-examples of concrete knobs, configurations, accuracy functions when we present
-applications in \autoref{tab:apps}.
+\textit{transmission}. The accuracy $A(c)$ is measured either against the
+\textit{ground-truth}, or the reference results when \textit{all degradation
+  operations are off}.  We show examples of concrete knobs, configurations,
+accuracy functions when we present applications in \autoref{tab:apps}.
 
 \para{Offline Profiling.} We first use an offline process to build a bootstrap
 profile (or default profile).  \sysname{} makes no assumptions on the
