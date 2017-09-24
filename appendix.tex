@@ -113,52 +113,34 @@ split into four groups, simulating four geo-distributed nodes monitoring web
 accesses. To match the load of popular web servers, we compress one hour's logs
 into one second.
 
+\section{JetStream++}
+\label{appendix:jetstream++}
+
+We modified the open source version of
+JetStream\footnote{\url{https://github.com/princeton-sns/jetstream/}, commit
+  bf0931b2d74d20fdf891669188feb84c96AF84.} in order to use our profile as its
+manual policy. Because JetStream doesn't support simultaneous degradation across
+multiple operators, we implemented a simple \texttt{VideoSource} operator that
+understands how to change image resolutions, frame rate, and video encoding
+quantization. At runtime, \texttt{VideoSource} queries congestion policy manager
+and adjusts three dimensions simultaneously. This operator is then exposed to
+the Python-implemented control plane. We call this modified version
+JetStream++.\footnote{URL to our patch is elided for anonymity.}
+
+%% https://github.com/nebgnahz/jetstream-clone/pull/2/files}
+
+JetStream's code base is modular and extensible: the modifications include 53
+lines for the header file, 171 lines for implementation, 75 lines for unit test,
+and 49 lines of python as the application. While extending JetStream with our
+profile is not challenging, JetStream++ performs degradation in a single
+operator and loses the composability. We could modify JetStream to support
+degradation across multiple operators, but that would require substantial
+changes to JetStream. Using JetStream++ with our profile, the comparison is
+enough to illustrate the difference between \sysname{}'s and JetStream's
+runtime.
+
 \section{Runtime Evaluation of PD and TK}
 \label{appendix:more-runtime}
-
-\begin{figure}[ht]
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_mot-timeseries.pdf}
-    \caption{PD's runtime behavior with a time-series plot: throughput (top),
-      showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
-    \label{fig:pd-runtime-timeseries}
-  \end{subfigure}
-  \vspace{1em}
-  \\
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
-    \caption{PD's performance summary of latency and accuracy during the traffic
-      shaping (between t=200s and t=440s).}
-    \label{fig:pd-runtime-boxplot}
-  \end{subfigure}
-  \caption{PD runtime evaluation.}
-  \label{fig:pd-runtime}
-\end{figure}
-
-\begin{figure}[t]
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-timeseries.pdf}
-    \caption{TK's runtime behavior with a time-series plot: throughput (top),
-      showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
-    \label{fig:tk-runtime-timeseries}
-  \end{subfigure}
-  \vspace{1em}
-  \\
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
-    \caption{TK's performance summary of latency and accuracy during the traffic
-      shaping (between t=200s and t=440s).}
-    \label{fig:tk-runtime-boxplot}
-  \end{subfigure}
-  \caption{TK runtime evaluation.}
-  \label{fig:tk-runtime}
-\end{figure}
 
  % > summary(latency)
  %      Time        JetStream++        JetStream            HLS
@@ -214,6 +196,51 @@ When running experiments, we use the same bandwidth shaping schedule as we used
 for AR. Baselines are also the same: Streaming over TCP, streaming over UDP,
 JetStream, JetStream++, and HLS.
 
+\begin{figure}[t]
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-timeseries.pdf}
+    \caption{PD's runtime behavior with a time-series plot: throughput (top),
+      showing the effect of bandwidth shaping; latency (middle) in log scale;
+      and accuracy (bottom).}
+    \label{fig:pd-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
+    \caption{PD's performance summary of latency and accuracy during the traffic
+      shaping (between t=200s and t=440s).}
+    \label{fig:pd-runtime-boxplot}
+  \end{subfigure}
+  \caption{PD runtime evaluation.}
+  \label{fig:pd-runtime}
+\end{figure}
+
+\begin{figure}[t]
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-timeseries.pdf}
+    \caption{TK's runtime behavior with a time-series plot: throughput (top),
+      showing the effect of bandwidth shaping; latency (middle) in log scale;
+      and accuracy (bottom).}
+    \label{fig:tk-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
+    \caption{TK's performance summary of latency and accuracy during the traffic
+      shaping (between t=200s and t=440s).}
+    \label{fig:tk-runtime-boxplot}
+  \end{subfigure}
+  \caption{TK runtime evaluation.}
+  \label{fig:tk-runtime}
+\end{figure}
+
+
 \autoref{fig:pd-runtime} shows the runtime behavior in both time series
 (throughout the experiment) and box plot (between t=200s and t=440s).  Most
 observations we made in the main paper are the same here: $(i)$~Streaming with
@@ -231,7 +258,7 @@ TCP). In comparison to the state-of-the-art system JetStream, \sysname{}
 improves the latency by 20$\times$ (from 1535ms to 78ms) and accuracy by 1\%
 (from 84\% to 85\%).
 
-\begin{figure*}[!htb]
+\begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/hls-arch.pdf}
   \caption{HLS setup. (Left) High-level overview: machine 1 generates a video
@@ -293,32 +320,6 @@ leads to one second latency. \sysname{} manages to avoid queues for most times.
 %  Max.   :375.0   Max.   :0.9991     Max.   :0.7981     Max.   :0.9991
 %
 % subsecond latency, 2% drop
-
-\section{JetStream++}
-\label{appendix:jetstream++}
-
-We modified the open source version of
-JetStream\footnote{\url{https://github.com/princeton-sns/jetstream/}, commit
-  bf0931b2d74d20fdf891669188feb84c96AF84.} in order to use our profile as its
-manual policy. Because JetStream doesn't support simultaneous degradation across
-multiple operators, we implemented a simple \texttt{VideoSource} operator that
-understands how to change image resolutions, frame rate, and video encoding
-quantization. At runtime, \texttt{VideoSource} queries congestion policy manager
-and adjusts three dimensions simultaneously. This operator is then exposed to
-the Python-implemented control plane. We call this modified version
-JetStream++.\footnote{Url to our patch is elided for anonymity.}
-
-%% https://github.com/nebgnahz/jetstream-clone/pull/2/files}
-
-JetStream's code base is modular and extensible: the modifications include 53
-lines for the header file, 171 lines for implementation, 75 lines for unit test,
-and 49 lines of python as the application. While extending JetStream with our
-profile is not challenging, JetStream++ performs degradation in a single
-operator and loses the composability. We could modify JetStream to support
-degradation across multiple operators, but that would require substantial
-changes to JetStream. Using JetStream++ with our profile, the comparison is
-enough to illustrate the difference between \sysname{}'s and JetStream's
-runtime.
 
 \section{HTTP Live Streaming}
 \label{appendix:hls}
