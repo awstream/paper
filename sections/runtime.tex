@@ -21,7 +21,7 @@ rate, the queue grows. In this case, the adaptation controller (AC) queries the
 estimated bandwidth from \texttt{Socket} and regulates the source stream by
 updating the configuration. After the data is sent through the network,
 \texttt{Receiver} delivers data to the application analytics. \texttt{Receiver}
-also performs congestion detection and extracts raw data, if it presents.  It
+also performs congestion detection and extracts raw data, if it is present.  It
 tracks minimal latency (similar to how BBR tracks
 \texttt{RTprop}~\cite{cardwell2017bbr} within a filter window) and reports
 sudden latency spikes to clients as congestion signalling. Raw data is only
@@ -110,10 +110,10 @@ costs while using the profile to maximize accuracy.
 
 For multiple applications, their profiles allow novel bandwidth allocation
 schemes such as utility fairness. Different from traditional resource fairness
-with which applications get equal share of bandwidth, utility fairness aims to
-maximize the \textit{minimal} application accuracy. With the profiles, bandwidth
-allocation is equivalent to finding proper configuration $c^t$ for application
-$t$. We formulate utility fairness as follows:
+with which applications get an equal share of bandwidth, utility fairness aims
+to maximize the \textit{minimal} application accuracy. With the profiles,
+bandwidth allocation is equivalent to finding proper configuration $c^t$ for
+application $t$. We formulate utility fairness as follows:
 
 %% Pick one based on the space
 
@@ -134,10 +134,10 @@ $t$. We formulate utility fairness as follows:
 %  \end{aligned}
 % \end{equation}
 
-Solving this optimization is computationally hard. \sysname{} uses a heuristics
-approach. It starts with $c^t_1$ and improves the application $t$ with the worst
-accuracy. This process repeats until all available bandwidth is
-allocated~\cite{zhang2017live}.
+Solving this optimization is computationally hard. \sysname{} uses heuristics
+similar to VideoStorm~\cite{zhang2017live}: it starts with $c^t_1$ and improves
+the application $t$ with the worst accuracy; this process iterates until all
+bandwidth is allocated.
 
 %%% Local Variables:
 %%% mode: latex

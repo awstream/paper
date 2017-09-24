@@ -105,9 +105,9 @@ GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
 for processing. For example, a \(10~\text{FPS}\) video has 1/3 of the frames to
 process in comparison to a \(30~\text{FPS}\) video.  In our experiment, to
 evaluate all 216 configurations, it takes 52 seconds for 1-second worth of
-data. We denote such overhead as 52X\@. \autoref{sec:automatic-profiling}
-discusses techniques to improve the profiling efficiency; we present their
-evaluations as follows.
+data. We denote such overhead as
+52X\@. \hyperref[sec:automatic-profiling]{Section 3.2} discusses techniques to
+improve the profiling efficiency; we present their evaluations as follows.
 
 \begin{figure}
   \centering
@@ -320,14 +320,14 @@ We compare \sysname{} with the following baselines:
 
 \end{itemize}
 
-During runtime, \sysname{} differs from JetStream in both policy and
-adaptation. JetStream++ improves JetStream by using our Pareto-optimal
-profile. The comparison between \sysname{} and JetStream++ demonstrates the
-improvements of our runtime: $(i)$~\sysname{} directly measures delivery rate to
-select an appropriate configuration to match the bandwidth while JetStream
-employs a latency-based measure of capacity ratio. $(ii)$ \sysname{} has an
-explicit probe phase while JetStream changes its policy immediately after
-capacity ratio changes.
+At runtime, \sysname{} differs from JetStream in both policy and
+adaptation. JetStream++ already improves over JetStream by using our
+Pareto-optimal profile. \sysname{} improves the performance further with two
+major changes: $(i)$~\sysname{} directly measures delivery rate to select an
+appropriate configuration to match the bandwidth while JetStream employs a
+latency-based measure of capacity ratio. $(ii)$ \sysname{} has an explicit probe
+phase while JetStream changes its policy immediately after capacity ratio
+changes.
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
 of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
@@ -392,18 +392,18 @@ JetStream++).
 %  3rd Qu.:0.9545     3rd Qu.: 0.009415   3rd Qu.:0.9213
 %  Max.   :1.0000     Max.   : 0.925875   Max.   :0.9712
 
-The two accuracy figures shows that other than UDP, most schemes are able to
+The two accuracy figures show that other than UDP, most schemes are able to
 maintain high accuracy. TCP without adaptation always sends data at high
 fidelity, achieving the highest accuracy (93\%), but at a cost of high
 latency. JetStream uses a manual policy that are sub-optimal in comparison to
 our learned profile, so its accuracy is low (84\%). Using Pareto-optimal
 configurations, JetStream++ is able to achieve a higher accuracy (89\%); but
-because JetStream runtime's policy oscillation, the accuracy has a large
+because JetStream's runtime oscillates the policy, the accuracy has a large
 variation (14\% standard deviation). In contrast, \sysname{} chooses
 configurations carefully to stay in a steady state as much as possible.  It
 achieves a high accuracy of 89\% with a small variation (7.6\% standard
-deviation). HLS also achieves high accuracy (87\%) because it is effective to
-tune resolution and encoding quality in AR.
+deviation). HLS also achieves high accuracy (87\%) because its adaptation of
+tuning resolution and encoding quality is effective in AR.
 
 % TK latency
 %       Time       Streaming over TCP Streaming over UDP    AWStream

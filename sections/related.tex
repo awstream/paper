@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\para{JetStream.} JetStream first proposes to use degradation to reduce latency
+\paraf{JetStream.} JetStream pioneered the use of degradation to reduce latency
 for wide-area streaming analytics. Compared to JetStream, \sysname{} makes the
 following major contributions: $(1)$ a novel API design to specify degradation
 operations in a simple and composable manner; $(2)$ automatic offline profiling
@@ -79,13 +79,13 @@ tasks are often executed once, without real time constrain. In contrast,
 %% wide-area analytics.
 
 \para{(Adaptive) video streaming.} Multimedia streaming protocols, such as
-RTP~\cite{schulzrinne2006rtp}, aims to be fast instead of reliable. While they
+RTP~\cite{schulzrinne2006rtp}, aim to be fast instead of reliable. While they
 can achieve low latency, their accuracy can be poor without adaptation.  Recent
-works on multimedia streaming have moved towards using TCP (primarily
-HTTP-based) and focused on designing good adaptation strategy to improve QoE, as
-in research projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and
-industrial efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
-  michalos2012dynamic}). These adaptation strategies work great for video on
+work on multimedia streaming has moved towards using TCP (primarily HTTP-based)
+and focused on designing good adaptation strategy to improve QoE, as in research
+projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and industrial
+efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
+  michalos2012dynamic}). These adaptation strategies work well for video on
 demand (VoD), but they are not for ultra low latency streaming: $(i)$ they use
 pulling: the client keeps refreshing index file and fetching new chunks; $(ii)$
 chunking introduces latency: each chunk has to be ready before the client
@@ -95,9 +95,9 @@ PD). In contrast, \sysname{} learns adaptation strategy for each application
 (also not limited to video analytics); and the runtime is optimized for ultra
 low latency.
 
-\para{QoS.} Most QoS works~\cite{ferrari1990scheme, shenker1994integrated,
-  shenker1995fundamental} in the 1990s focus on network-layer solutions that are
-not widely deployable. \sysname{} adopts an end-host and application-layer
+\para{QoS.} Most QoS work~\cite{ferrari1990scheme, shenker1994integrated,
+  shenker1995fundamental} in the 1990s focuses on network-layer solutions that
+are not widely deployable. \sysname{} adopts an end-host and application-layer
 approach ready today for WAN. For existing application-layer
 approaches~\cite{vandalore2001survey}, \sysname{}'s API can incorporate their
 techniques, such as encoding the number of layers as a knob to realize the

@@ -54,10 +54,10 @@ application accuracy.
 
 Manual policies, such as sampling, allow developers to trade data fidelity for
 freshness~\cite{rabkin2014aggregation}. However, it's difficult to write
-accurate policies without extensive expertise or without considerable
-efforts. In practice, developers write manual policies based on heuristics
-rather than quantitative measurements. These inaccurate policies lead to
-sub-optimal performance for both freshness and fidelity.
+accurate policies without extensive expertise or without considerable effort. In
+practice, developers write manual policies based on heuristics rather than
+quantitative measurements. These inaccurate policies lead to sub-optimal
+performance for both freshness and fidelity.
 
 Furthermore, application-specific optimizations do not generalize. A fine-tuned
 adaptation algorithm for one application works poorly for a different
@@ -88,7 +88,7 @@ a configuration that affects the adaptation jointly. Arbitrary functions and
 external libraries can be embedded with our operators.
 
 \sysname{} then uses a data-driven approach to automatically build application
-performance profiles with minimal developer efforts. The profiles accurately
+performance profiles with minimal developer effort. The profiles accurately
 capture the relationship between application accuracy and bandwidth consumption
 under different \textit{combinations} of data degradation operations. We use an
 \textit{offline} process to bootstrap our system with developer-supplied
@@ -99,12 +99,12 @@ adaptation strategy.
 
 At runtime, \sysname{} achieves low latency by matching data rate to available
 bandwidth, and high accuracy by using Pareto-optimal configurations from the
-profile. Upon network congestion, our rate adaptation algorithm increases the
-degradation level to reduce data rate, such that no persistent queue builds
-up. To recover, it progressively decreases the degradation level after probing
-for more available bandwidth. The runtime also provides additional options to
-control application behaviors, such as limiting the maximum allowed WAN
-bandwidth. For multiple applications, the profiles can be used to allocate
+profile. Upon encountering network congestion, our rate adaptation algorithm
+increases the degradation level to reduce data rate, such that no persistent
+queue builds up. To recover, it progressively decreases the degradation level
+after probing for more available bandwidth. The runtime also provides additional
+options to control application behaviors, such as limiting the maximum allowed
+WAN bandwidth. For multiple applications, the profiles can be used to allocate
 bandwidth among competing tasks for \textit{utility fairness}.
 
 To evaluate \sysname{}, we have built three streaming applications: augmented
