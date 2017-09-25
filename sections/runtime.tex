@@ -23,25 +23,26 @@ estimated bandwidth from \texttt{Socket} and regulates the source stream by
 updating the configuration. After the data is sent through the network,
 \texttt{Receiver} delivers data to the application analytics. \texttt{Receiver}
 also performs congestion detection and extracts raw data, if it is present.  It
-tracks minimal latency (similar to how BBR tracks
+tracks the minimal latency (similar to how BBR tracks
 \texttt{RTprop}~\cite{cardwell2017bbr} within a filter window) and reports
-sudden latency spikes to clients as congestion signalling. Raw data is only
-transmitted when the queue is empty and online profiling is enabled. After a new
+sudden latency spikes to clients as congestion signals. Raw data is only
+transmitted when the queue is empty and online profiling is enabled. If a new
 profile is learned by the online profiler, it is fed back to AC for subsequent
 adaptation.
 
 \autoref{fig:cc-sm} shows the adaptation algorithm with a state machine model
-and \autoref{fig:cc-ex} shows the state transitions with an example. AC loads
-the profile and sorts all configurations with an ascending order of bandwidth
-demand, resulting in a list $[c_1, \dots, c_{\max}]$.  These configurations
-follow a total order: $c_i < c_j$ if $B(c_i) < B(c_j)$.  We denote the current
-configuration as $c_i$ and the next $c_{i+1}$.  AC receives messages from the
-\texttt{Queue}: message \qe{} when the queue is empty and $\text{Q}_\text{C}$
-when queued items exceed a threshold. AC can query \texttt{Socket} for delivery
-rate $R$ (arrow not shown) or request the source to probe
+and \autoref{fig:cc-ex} shows the state transitions with an example. We first
+describe all symbols. AC loads the profile and sorts all configurations with an
+ascending order of bandwidth demand, resulting in a list
+$[c_1, \dots, c_{\max}]$.  These configurations follow a total order:
+$c_i < c_j$ if $B(c_i) < B(c_j)$.  We denote the current configuration as $c_i$
+and the next $c_{i+1}$.  AC receives messages from other modules: \qe{} when
+\texttt{Queue} is empty; $\text{Q}_\text{C}$ when queued items exceed a
+threshold; and \rc{} when \texttt{Receiver} detects congestion. AC can query
+\texttt{Socket} for delivery rate $R$ (arrow not shown) or request it to probe
 ($\text{AC}_{\text{Probe}}$) for a target bandwidth, often $B(c_{i+1})$. If
-there is no queue built up during the probing and $R > B(c_{i+1})$,
-\texttt{Socket} sends back \spd{}. The reactions in each state are as follows:
+there is no congestion during the probing and $R > B(c_{i+1})$, \texttt{Socket}
+sends back \spd{}. Below, we describe states and transitions.
 
 \begin{figure}
   \begin{subfigure}[t]{\columnwidth}
@@ -107,8 +108,8 @@ tasks.
 For individual applications, developers can pin-point a configuration for a
 given bandwidth or accuracy goal. They can also specify a criterion to limit
 effective configurations. For example, \sysname{} can enforce an upper bound on
-the bandwidth consumption. In this way, applications can control their bandwidth
-costs while using the profile to maximize accuracy.
+the bandwidth consumption. In this way, developers can control applications'
+bandwidth costs while using the profile to maximize accuracy.
 
 For multiple applications, their profiles allow novel bandwidth allocation
 schemes such as utility fairness. Different from traditional resource fairness
@@ -147,3 +148,6 @@ bandwidth is allocated.
 %%% mode: latex
 %%% TeX-master: "../awstream"
 %%% End:
+
+%% LocalWords: runtime analytics enqueued dequeued TCP JetStream
+%% LocalWords: RTprop BBR profiler sm VideoStorm

@@ -1,5 +1,5 @@
 \subsection{API for Structured Adaptation}
-\label{sec:struct-adapt}
+\label{sec:structure-adapt}
 
 %% Introduce graphs of operators model
 Most stream processing systems construct applications as a directed graph of
@@ -8,12 +8,12 @@ transforms input streams into new streams. \sysname{} borrows the same
 computation model. We list some example operators, such as \texttt{map} and
 \texttt{skip}, in \autoref{tab:operators}.
 
-To integrate adaptation as a first-class abstraction, \sysname{} introduces \maybe{} operators
-that degrade data quality, yielding potential bandwidth savings.
-Our API design has three considerations.
-$(i)$~To free developers from specifying exact rules, the API should tolerate
-approximate specifications. $(ii)$~To allow combining multiple dimensions, the API
-should be modular: each operator is a unit and the developer can chain multiple
+To integrate adaptation as a first-class abstraction, \sysname{} introduces
+\maybe{} operators that degrade data quality, yielding potential bandwidth
+savings.  Our API design has three considerations.  $(i)$~To free developers
+from specifying exact rules, the API should tolerate approximate
+specifications. $(ii)$~To allow combining multiple dimensions, the API should be
+modular: each operator is a unit and the developer can chain multiple
 operators. $(iii)$~To support flexible integration with arbitrary degradation
 functions, the API should take user-defined functions (UDFs). Therefore, our API
 is,
@@ -49,7 +49,7 @@ quantizes a stream of integers in Rust:
     & \textit{maybe\_skip} (knobs: Vec<Integer>) & Stream<I> $\Rightarrow$ Stream<I> \\
     & \textit{maybe\_head} (knobs: Vec<Integer>) & Stream<Vec<I>{}> $\Rightarrow$
                                                    Stream<Vec<I>{}> \\
-    & \textit{maybe\_downsample} (knobs: Vec<(Integer, Interger)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
+    & \textit{maybe\_downsample} (knobs: Vec<(Integer, Integer)>) & Stream<Image> $\Rightarrow$ Stream<Image> \\
     & ... & ... \\
     \bottomrule
   \end{tabular}
@@ -96,13 +96,16 @@ implemented as follows:
 
 This snippet first instantiates a \texttt{Camera} source, which produces
 \texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS\@. Two degradation
-operations follow the source: one that downsamples the image to either 1600x900 or
-1280x720 resolution, and the other that skips frames with a parameter of 2 or 5, resulting
-in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows degraded images
-on the display. In practice, operators for further processing, such as encoding and
-transmission, can be chained.
+operations follow the source: one that downsamples the image to either 1600x900
+or 1280x720 resolution, and the other that skips frames with a parameter of 2 or
+5, resulting in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows
+degraded images on the display. In practice, operators for further processing,
+such as encoding and transmission, can be chained.
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../awstream"
 %%% End:
+
+%% LocalWords: UDFs Vec quantization quantized quantizes
+%% LocalWords: downsample downsamples subsec
