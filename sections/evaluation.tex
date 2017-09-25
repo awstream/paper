@@ -66,7 +66,7 @@ observations:
 requirements of all three applications have two to three orders of magnitude of
 difference (note the x-axis is in log scale). For AR and PD, the most expensive
 configuration transmits videos at 1920x1080, 30 FPS and 0 quantization; it
-consumes \SI{230}{Mbps}. In constrast to the large bandwidth variation, there is
+consumes \SI{230}{Mbps}. In contrast to the large bandwidth variation, there is
 a smaller variation in accuracy. In PD, for example, even after the bandwidth
 reduces to \SI{1}{Mbps} (less than 1\% of the maximum), the accuracy is still
 above 75\%. The large variation allows \sysname{} to operate at a high accuracy
@@ -154,7 +154,7 @@ parallelism, \sysname{} uses sampling techniques for online profiling
 a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
 consumption if the profiling uses only 10 seconds of data out of the past 30
 seconds. In this way, although the profile may be less accurate (the
-mis-prediction at t=80--100s), and there is a delay in reacting to data change
+mis-prediction at t=80-100s), and there is a delay in reacting to data change
 (the mis-prediction is corrected after t=125s), we save the online profiling by
 3$\times$ (from 52X to 17X).
 
@@ -254,7 +254,7 @@ only present the results of PD/TK (more in appendix).
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
 machines from Amazon EC2, spanning four different regions. Three (at
-N.\,Virgnia, Ohio, Oregan) act as worker nodes and one (at N.\,California) acts
+N.\,Virginia, Ohio, Oregon) act as worker nodes and one (at N.\,California) acts
 as the analytics server. The average RTTs from the workers to the server are
 \SI{65.2}{\ms}, \SI{22.2}{\ms}, and \SI{50.3}{ms}.
 
@@ -346,7 +346,7 @@ JetStream, JetStream++, and HLS are conservative because of adaptation (see
 their throughput drops). When we stop the shaping at t=440s, TCP has a
 ``catch-up'' phase when it is sending all queued items as fast as
 possible. JetStream also has queued items because the policy in use (with only
-three rules) cannot sustain 5 mpbs bandwidth. \sysname{} increases the
+three rules) cannot sustain \SI{5}{Mpbs} bandwidth. \sysname{} increases the
 throughput gradually due to the explicit probing phase. HLS is the most
 conservative scheme; it does not recover from degradation until t=500s.
 
@@ -436,7 +436,7 @@ In summary, \autoref{fig:ar-runtime} shows that \sysname{} achieves low latency
 and high accuracy simultaneously. We show the results during shaping in a
 different form in \autoref{fig:intro} to discuss the trade-off between fidelity
 and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
-  feeding PD's profile to AR. We refer to JetStream as manual poclies in
+  feeding PD's profile to AR. We refer to JetStream as manual policies in
   \autoref{fig:intro}.}
 
 \begin{figure}[t]
@@ -546,3 +546,9 @@ receives \SI{4}{Mbps}; and both achieve 80\% accuracy (\autoref{fig:eq-acc}).
 %%% mode: latex
 %%% TeX-master: "../awstream"
 %%% End:
+
+%% LocalWords: TK PD runtime JetStream AR alloc YOLO dataset outliers
+%% LocalWords: makespan subsec mins tcp boxplot geo HLS ffmpeg geforce
+%% LocalWords: HLS PD's mis bw quantization RTSP RTP GPUs parallelization
+%% LocalWords: eq netem resizes RTTs parallelize LFS UDP GTX analytics
+%% LocalWords: FFmpeg GeForce HLS's JetStream's TK's
