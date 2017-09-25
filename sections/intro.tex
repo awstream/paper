@@ -30,7 +30,7 @@ geo-distributed sites~\cite{pu2015low, viswanathan2016clarinet}; $(ii)$ the edge
 can benefit substantially from central computing resources such as GPUs and
 TPUs~\cite{abadi2016tensorflow} in the cloud; and $(iii)$ end devices, such as
 cameras and mobile phones, still suffer from limited bandwidth in last-hop
-wireless links when running processing on nearby edge
+wireless links even when the processing runs on nearby edge
 infrastructure~\cite{abari2017enabling, zhang2015design}.
 
 When facing insufficient bandwidth, application developers need to make a
@@ -49,7 +49,7 @@ illustrated in \autoref{fig:intro}.
 Applications using existing protocols without adaptation result in extreme
 design points. Streaming over TCP ensures a reliable delivery but backlogged
 data increases latency. On the other hand, streaming over UDP minimizes latency
-by sending packets as fast as possible, but uncontrolled loss devastates
+by sending packets as fast as possible, but uncontrolled packet loss devastates
 application accuracy.
 
 Manual policies, such as sampling, allow developers to trade data fidelity for
@@ -66,8 +66,8 @@ video streaming focuses on quality of experience
 (QoE)~\cite{michalos2012dynamic, pantos2016http, yin2015control}. Because humans
 favor smoothness over image quality, these systems maintain a high frame rate,
 e.g.\,\(25~\text{FPS}\), and reduce the resolution under bandwidth limitation.
-Low resolution images lead to poor accuracy for analytic jobs that rely on image
-details.
+Low resolution images lead to poor accuracy for video analytics that rely on
+image details~\cite{lowe2004distinctive, viola2001rapid}.
 
 In this paper, we design and implement \sysname{}, a stream processing system
 for the wide area that achieves low latency and high accuracy simultaneously
@@ -93,7 +93,7 @@ capture the relationship between application accuracy and bandwidth consumption
 under different \textit{combinations} of data degradation operations. We use an
 \textit{offline} process to bootstrap our system with developer-supplied
 training data, and continuously refine the profile \textit{online} to handle
-\textit{model drifts}. We exploit parallelism and sampling-based profiling to
+\textit{model drift}. We exploit parallelism and sampling-based techniques to
 efficiently explore the configuration space and learn a \textit{Pareto-optimal}
 adaptation strategy.
 
@@ -135,4 +135,5 @@ results are as follows.
 %%% TeX-master: "../awstream"
 %%% End:
 
-%% LocalWords: VideoStorm, analytics, CDN, IoT
+%% LocalWords: VideoStorm analytics CDN CDNs geo IoT TCP UDP QoE runtime
+%% LocalWords: GPUs TPUs downsample composable TK JetStream
