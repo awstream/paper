@@ -3,12 +3,12 @@
 
 \paraf{JetStream.} JetStream pioneered the use of degradation to reduce latency
 for wide-area streaming analytics. Compared to JetStream, \sysname{} makes the
-following major contributions: $(1)$ a novel API design to specify degradation
-operations in a simple and composable manner; $(2)$ automatic offline profiling
-to search for Pareto-optimal configurations; $(3)$ online profiling to address
-model drift; $(4)$ an improved runtime implementation that utilizes the learned
+following major contributions: $(1)$~a novel API design to specify degradation
+operations in a simple and composable manner; $(2)$~automatic offline profiling
+to search for Pareto-optimal configurations; $(3)$~online profiling to address
+model drift; $(4)$~an improved runtime implementation that utilizes the learned
 profile and achieves sub-second latency (comparison made in
-\autoref{sec:runtime-adaptation}). $(5)$ support for different resource
+\autoref{sec:runtime-adaptation}); $(5)$~support for different resource
 allocation policies for multiple applications.
 
 \para{Stream processing systems.} Streaming databases, such as
@@ -32,7 +32,7 @@ aggregation~\cite{hellerstein1997online}, BlinkDB~\cite{agarwal2013blinkdb} and
 GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
 on a statistical model of SQL operators. For real-time processing,
 MEANTIME~\cite{farrell2016meantime} uses approximation to guarantee satisfying
-real-time deadlines. For video processing, VideoStorm~\cite{zhang2017live}
+real-time deadlines. For video analytics, VideoStorm~\cite{zhang2017live}
 optimizes video stream \textit{processing} within lager clusters by exploiting
 approximation and delay-tolerance for resource management and allocation. The
 trade-off between available resource and application accuracy is a common theme
@@ -84,16 +84,16 @@ can achieve low latency, their accuracy can be poor without adaptation.  Recent
 work on multimedia streaming has moved towards using TCP (primarily HTTP-based)
 and focused on designing good adaptation strategy to improve QoE, as in research
 projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and industrial
-efforts (HLS~\cite{pantos2016http}, DASH~\cite{sodagar2011mpeg,
-  michalos2012dynamic}). These adaptation strategies work well for video on
-demand (VoD), but they are not for ultra low latency streaming: $(i)$ they use
-pulling: the client keeps refreshing index file and fetching new chunks; $(ii)$
-chunking introduces latency: each chunk has to be ready before the client
-fetches.  In addition, because they optimize QoE for humans, the adaptation can
-be a mismatch for analytics that rely on image details (e.g.\,10\% accuracy for
-PD). In contrast, \sysname{} learns adaptation strategy for each application
-(also not limited to video analytics); and the runtime is optimized for ultra
-low latency.
+efforts (HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic,
+  sodagar2011mpeg}). These adaptation strategies work well for video on demand
+(VoD), but they are not for ultra low latency streaming: $(i)$ they use pulling:
+the client keeps refreshing index file and fetching new chunks; $(ii)$ chunking
+introduces latency: each chunk has to be ready before the client fetches.  In
+addition, because they optimize QoE for humans, the adaptation can be a mismatch
+for analytics that rely on image details (e.g.\,6\% accuracy for PD). In
+contrast, \sysname{} learns an adaptation strategy for each application (also
+not limited to video analytics); and the runtime is optimized for ultra low
+latency.
 
 \para{QoS.} Most QoS work~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focuses on network-layer solutions that

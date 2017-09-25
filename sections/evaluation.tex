@@ -134,12 +134,12 @@ makespan and reduces the overhead to 1.75X with 30 GPUs (29$\times$ gain).
   (\autoref{fig:online-tricks}).}
 Before we evaluate the speed up, we validate \textit{model drift} with
 real-world data. We use the profile trained in an office environment.  According
-to the profile, the application should operate at a configuration of 1280x720
-resolution, 30 FPS and a quantization of 20 to meet \SI{11}{Mbps} available
-bandwidth.  We test it against a home environment, and at about t=100s, the
-camera points out of the window to detect objects on the street. Because of the
-scene change, the configuration fails to predict runtime bandwidth, as
-illustrated in \autoref{fig:offline}.
+to the profile, the application should operate at a configuration of 1280x720,
+\SI{30}{FPS} and 20 quantization to meet an \SI{11}{Mbps} goal.  We test it
+against a home environment, and at about t=100s, the camera points out of the
+window to detect objects on the street. Because of the scene change, the
+configuration fails to predict runtime bandwidth, as illustrated in
+\autoref{fig:offline}.
 
 To correct the profile, if we continuously run the profiling online and update
 the profile, the application will choose the right configuration to meet the
@@ -150,7 +150,7 @@ discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
 parallelism, \sysname{} uses sampling techniques for online profiling
 (improvements in \autoref{tab:online}):
 
-(i) Partial data: Instead of using all the past data, we run profiling with only
+(i) Partial data. Instead of using all the past data, we run profiling with only
 a fraction of the raw data.  \autoref{fig:online-partial} shows the bandwidth
 consumption if the profiling uses only 10 seconds of data out of the past 30
 seconds. In this way, although the profile may be less accurate (the
@@ -158,7 +158,7 @@ mis-prediction at t=80--100s), and there is a delay in reacting to data change
 (the mis-prediction is corrected after t=125s), we save the online profiling by
 3$\times$ (from 52X to 17X).
 
-(ii) Partial configurations: If we use the past profile as a reference and only
+(ii) Partial configurations. If we use the past profile as a reference and only
 measure a subset of all Pareto-optimal configurations, the savings can be
 substantial. A full profiling is only triggered if there is a significant
 difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
@@ -171,14 +171,14 @@ profiling less often (only two full profiling). It is an 8.7$\times$ gain.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{0.48\columnwidth}
+  \begin{subfigure}[t]{0.45\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/online1.pdf}
     \caption{Offline only}
     \label{fig:offline}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.48\columnwidth}
+  \begin{subfigure}[t]{0.45\columnwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/online2.pdf}
     \caption{Online (continuous)}
@@ -186,13 +186,13 @@ profiling less often (only two full profiling). It is an 8.7$\times$ gain.
   \end{subfigure}
   \\
   \vspace{0.5em}
-  \begin{subfigure}[t]{0.49\columnwidth}
+  \begin{subfigure}[t]{0.45\columnwidth}
     \includegraphics[width=\textwidth]{figures/online3.pdf}
     \caption{Partial data}
     \label{fig:online-partial}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[t]{0.49\columnwidth}
+  \begin{subfigure}[t]{0.45\columnwidth}
     \includegraphics[width=\textwidth]{figures/online4.pdf}
     \caption{Partial configurations}
     \label{fig:online-trigger}
