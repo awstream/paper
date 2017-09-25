@@ -1,8 +1,8 @@
 \section{Motivation}
 \label{sec:motivation}
 
-In this section, we examine the gap between high application demands and limited
-wide-area bandwidth. We then show that neither manual policies nor
+In this section, we first examine the gap between high application demands and
+limited WAN bandwidth. We then show that neither manual policies nor
 application-specific optimizations solve the problem.
 
 \subsection{Wide-area Streaming Applications}
@@ -10,8 +10,8 @@ application-specific optimizations solve the problem.
 
 \paraf{Video Surveillance.} We envisage a city-wide monitoring system that
 aggregates camera feeds, from stationary ground cameras and moving aerial
-vehicles, and analyzes video streams in real-time for surveillance, anomaly
-detection or business intelligence~\cite{oh2011large}. Recent advances in
+vehicles, and analyzes video streams in real time for surveillance, anomaly
+detection, or business intelligence~\cite{oh2011large}. Recent advances in
 computer vision have dramatically increased the accuracy for automatic visual
 scene analysis, such as pedestrian detection~\cite{dollar2012pedestrian},
 vehicle tracking~\cite{coifman1998real}, and facial recognition to locate people
@@ -37,9 +37,9 @@ monitoring logs, and performance counters~\cite{alspaugh2014analyzing,
 mode on a daily basis, there is a trend towards analyzing logs in real time for
 rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve
 the overall efficiency by optimizing data placement if the access logs can be
-processed in real time. Real-time sensor monitoring is becoming pervasive in
-industrial IoT to detect anomalies, direct controls, and predict maintenance
-~\cite{balani2016enterprise, ge}.
+processed in real time. In Industrial IoT, large-scale real-time sensor
+monitoring is becoming pervasive to detect anomalies, direct controls, and
+predict maintenance ~\cite{balani2016enterprise, ge}.
 
 %% ~\cite{xu2009detecting} We generated the HDFS logs by setting up a Hadoop
 %% cluster on 203 EC2 nodes and running sample Hadoop map-reduce jobs for 48
@@ -103,7 +103,7 @@ JetStream requires developers to write manual policies, e.g. \textit{``if
   50\% if there still isn't enough bandwidth. Beyond that point, reduce the
   frame rate, but keep the image fidelity.''}\footnote{Excerpt from JetStream \S
   4.3~\cite{rabkin2014aggregation}.} We discuss the problems with manual
-policies below and present quantatative evaluations in
+policies below and present quantitative evaluations in
 \autoref{sec:runtime-adaptation}.
 
 First, this policy is not accurate.  Developers write such rules based on
@@ -132,32 +132,36 @@ applications have different performance metrics and rely on different features,
 a fine-tuned policy for one application will often work poorly for others. For
 example, DASH~\cite{sodagar2011mpeg} optimizes QoE for video streaming; it keeps
 a high frame rate and reduces resolutions for adaptation. Its policy that lowers
-the resolution is a poor match for video analytics that relies on image details,
-such as object detection~\cite{lowe2004distinctive, viola2001rapid} (see
-accuracy drop in \hyperref[fig:app-specific]{Fig.~3b}).
+the resolution is a poor match for video analytics that relies on image
+details~\cite{lowe2004distinctive, viola2001rapid}. For example,
+\hyperref[fig:app-specific]{Fig.~3b} shows that pedestrian detection accuracy
+drops fast when reducing resolutions as targets are small.
 
 \begin{figure*}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
   \caption{The measured bandwidth and application accuracy for two video
     analytics applications. (1) Manual policies lack precision without
-    measurements and need to handle multiple dimensions (in a, b, e, f). (2)
+    measurements and need to handle multiple dimensions (as in a-d). (2)
     Application-specific optimizes does not generalize: degrading frame rates
-    works well for stationary camera (a), but not well for mobile camera
-    (e). (c, d, g, h) shows example frames.}
+    works well for stationary camera (a), but not for mobile camera (c). (e-h)
+    shows example frames.}
   \label{fig:app-specific}
   \vspace{-1em}
 \end{figure*}
 
 Similar applications face different data distributions, as shown in
-\autoref{fig:app-specific} between stationary cameras detecting pedestrians and
-mobile cameras recognizing objects. For stationary cameras, when we consider the
-slow walking speed of pedestrians, a high frame rate is not necessary. But
-high-resolution images are crucial because these surveillance cameras are far
-away from the targets. In the mobile camera case, because the cameras move,
-reducing the frame rate introduces significant errors.
+\autoref{fig:app-specific} between stationary cameras detecting pedestrians (up)
+and mobile cameras recognizing objects (bottom). For stationary cameras, when we
+consider the slow walking speed of pedestrians, a high frame rate is not
+necessary. But high-resolution images are crucial because these surveillance
+cameras are far away from the targets. In the mobile camera case, because the
+cameras move, reducing the frame rate introduces significant errors.
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../awstream"
 %%% End:
+
+%% LocalWords: Dropcam IoT DCs geo CDNs iPerf JetStream scalable
+%% LocalWords: bw runtime QoE analytics
