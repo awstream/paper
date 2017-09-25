@@ -463,10 +463,10 @@ and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
 
 \para{Runtime performance of PD and TK (\autoref{fig:pd-tk})}. For PD,
 \sysname{} achieves low latency (median \SI{78}{ms}), which is 20$\times$
-improvement over JetStream and 7.7$\times$ over JetStream++. PD achieves an
-accuracy of 86\%, which is 6\% drop compared to TCP. For TK, \sysname{} also
-manages sub-second latency (median \SI{946}{\ms}) and nominal accuracy drop
-(only 2\% in comparison to TCP).
+improvement over JetStream and 7.7$\times$ over JetStream++. \sysname{} achieves
+an accuracy of 86\%, which is 6\% drop compared to TCP and 1\% improvement over
+JetStream. For TK, \sysname{} also manages sub-second latency (median
+\SI{946}{\ms}) and nominal accuracy drop (only 2\% in comparison to TCP).
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in
@@ -482,7 +482,8 @@ as high as \SI{500}{ms}.
 
 \begin{figure}
   \centering
-  \includegraphics[width=.9\columnwidth]{figures/runtime_darknet-bench.pdf}
+  \includegraphics[width=.88\columnwidth]{figures/runtime_darknet-bench.pdf}
+  \vspace{-0.5em}
   \caption{\sysname{} maintains low latency and high accuracy under different
     network delay conditions.}
   \label{fig:ar-rtt}
@@ -500,6 +501,7 @@ for different network delays.
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
+
 \begin{figure}
   \centering
   \begin{subfigure}[t]{0.7\columnwidth}
