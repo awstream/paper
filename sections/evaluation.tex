@@ -38,8 +38,8 @@ as follows.
 \item[\autoref{sec:application-profiles}] \sysname{} generates Pareto-optimal
   profiles across multiple dimensions with precision
   (\autoref{fig:all-profiles}).
-\item[\autoref{sec:online-profiling}] Our parallel and sampling profiling speeds
-  up offline and online profiling (\autoref{fig:parallel},
+\item[\autoref{sec:online-profiling}] Our parallel and sampling techniques
+  speeds up offline and online profiling (\autoref{fig:parallel},
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
   achieve sub-second latency and nominal accuracy drop across different network
@@ -66,10 +66,10 @@ observations:
 requirements of all three applications have two to three orders of magnitude of
 difference (note the x-axis is in log scale). For AR and PD, the most expensive
 configuration transmits videos at 1920x1080, 30 FPS and 0 quantization; it
-consumes 230 mbps. In constrast to the large bandwidth variation, there is a
-smaller variation in accuracy. In PD, for example, even after the bandwidth
-reduces to 1 mbps (less than 1\% of the maximum), the accuracy is still above
-75\%. The large variation allows \sysname{} to operate at a high accuracy
+consumes \SI{230}{Mbps}. In constrast to the large bandwidth variation, there is
+a smaller variation in accuracy. In PD, for example, even after the bandwidth
+reduces to \SI{1}{Mbps} (less than 1\% of the maximum), the accuracy is still
+above 75\%. The large variation allows \sysname{} to operate at a high accuracy
 configuration even under severe network deterioration.
 
 \para{Distinct effects by each dimension.} Comparing dashed lines in each
@@ -80,8 +80,8 @@ individual dimensions is evident. For PD, tuning resolution (the red line) leads
 to a quicker accuracy drop than tuning frame rate (the yellow line). Comparing
 AR and PD, the same dimension has different impact. Tuning resolution is less
 harmful in AR than PD; while tuning frame rate hurts AR more than PD\@. This
-echoes our initial observation in~\autoref{subsec:motivation} that application-
-and context-specific optimizations don't generalize.
+echoes our initial observation in~\autoref{subsec:motivation} that
+application-specific optimizations do not generalize.
 
 % \para{Quantification with precision}. The generated profiles are actionable
 % configurations that control the knobs with precision. For example, if PD
@@ -99,17 +99,18 @@ application; therefore, the evaluation results can be generalized to other
 applications.
 
 In AR, there are 216 different configurations: 6 resolutions, 6 frame rates and
-6 quantization levels. Processing a frame with YOLO~\cite{redmon2016yolo9000} on
-GeForce\textregistered\space GTX 970 takes roughly 30 ms.\footnote{YOLO resizes
-  an input image to a fixed resolution (416x416) as required by the neural
-  network. It takes a similar amount of time to Evaluating each image (with
-  different resolutions).} But different configurations require different times
-for processing. For example, a \(10~\text{FPS}\) video has 1/3 of the frames to
-process in comparison to a \(30~\text{FPS}\) video.  In our experiment, to
-evaluate all 216 configurations, it takes 52 seconds for 1-second worth of
-data. We denote such overhead as
-52X\@. \hyperref[sec:automatic-profiling]{Section 3.2} discusses techniques to
-improve the profiling efficiency; we present their evaluations as follows.
+6 quantization levels. AR uses YOLO~\cite{redmon2016yolo9000}, a neural network
+model for object detection. It takes roughly \SI{30}{\ms} to process one frame
+on GeForce\textregistered\space GTX 970.\footnote{YOLO resizes an input image to
+  a fixed resolution (416x416) as required by the neural network. It takes a
+  similar amount of time to Evaluating each image (with different resolutions).}
+But different configurations require different times for processing. For
+example, a \(10~\text{FPS}\) video has 1/3 of the frames to process in
+comparison to a \(30~\text{FPS}\) video.  In our experiment, to evaluate all 216
+configurations, it takes 52 seconds for 1 second worth of data. We denote such
+overhead as 52X\@. \hyperref[sec:automatic-profiling]{Section 3.2} have
+discussed parallel and sampling techniques to improve the profiling efficiency;
+we present their evaluations as follows.
 
 \begin{figure}
   \centering
@@ -131,22 +132,22 @@ makespan and reduces the overhead to 1.75X with 30 GPUs (29$\times$ gain).
 
 \para{Sampling techniques speed up online profiling
   (\autoref{fig:online-tricks}).}
-Before we evaluate the speed up, we validate \textit{model drifts} with
+Before we evaluate the speed up, we validate \textit{model drift} with
 real-world data. We use the profile trained in an office environment.  According
 to the profile, the application should operate at a configuration of 1280x720
-resolution, 30 FPS and a quantization of 20 to meet 11 mbps available bandwidth.
-We test it against a home environment, and at about t=100s, the camera points
-out of the window to detect objects on the street. Because of the scene change,
-the configuration fails to predict runtime bandwidth, as illustrated in
-\autoref{fig:offline}.
+resolution, 30 FPS and a quantization of 20 to meet \SI{11}{Mbps} available
+bandwidth.  We test it against a home environment, and at about t=100s, the
+camera points out of the window to detect objects on the street. Because of the
+scene change, the configuration fails to predict runtime bandwidth, as
+illustrated in \autoref{fig:offline}.
 
 To correct the profile, if we continuously run the profiling online and update
 the profile, the application will choose the right configuration to meet the
 bandwidth limit.  \autoref{fig:online} shows the bandwidth prediction when we
 continuously profile with the past 30 seconds of video. At time t=120s, the new
-prediction corrects the drifts. The downside of continuous profiling, as
+prediction corrects the drift. The downside of continuous profiling, as
 discussed earlier, is the cost: 52X overhead with 1 GPU\@. In addition to
-parallelism, \sysname{} uses two other techniques for online profiling
+parallelism, \sysname{} uses sampling techniques for online profiling
 (improvements in \autoref{tab:online}):
 
 (i) Partial data: Instead of using all the past data, we run profiling with only
@@ -162,11 +163,11 @@ measure a subset of all Pareto-optimal configurations, the savings can be
 substantial. A full profiling is only triggered if there is a significant
 difference. \autoref{fig:online-trigger} shows the bandwidth prediction if we
 evaluate 5 configurations continuously and trigger a full profiling when the
-bandwidth estimation is off by 1 mbps or the accuracy is off by 10\%.  For our
-test data, this scheme is enough to correct model drifts by predicting an
+bandwidth estimation is off by \SI{1}{Mbps} or the accuracy is off by 10\%.  For
+our test data, this scheme is enough to correct model drifts by predicting an
 accurate bandwidth usage (compare \autoref{fig:online} and
 \autoref{fig:online-trigger}).  The overhead reduces to 6X because we run full
-profiling less often (only two times in this experiment).
+profiling less often (only two full profiling). It is an 8.7$\times$ gain.
 
 \begin{figure}
   \centering
@@ -196,11 +197,11 @@ profiling less often (only two times in this experiment).
     \caption{Partial configurations}
     \label{fig:online-trigger}
   \end{subfigure}
-  \caption{The horizontal reference line is the target bandwidth (11 mbps). (1)
-    Online profiling is necessary to handle model drifts ((a) vs.\,(b-d)). (2)
-    Sampling techniques---partial data (c) and partial configurations (d)---can
-    correct model drifts with less profiling overhead (see
-    \autoref{tab:online}), compared to continuous (b).  We omit accuracy
+  \caption{The horizontal reference line is the target bandwidth
+    (\SI{11}{Mbps}). (1) Online profiling is necessary to handle model drift
+    ((a) vs.\,(b-d)). (2) Sampling techniques---partial data (c) and partial
+    configurations (d)---can correct model drift with less profiling overhead
+    (see \autoref{tab:online}), compared to continuous (b).  We omit accuracy
     predictions since in all schemes \sysname{} finds configurations that
     achieve similarly high accuracy (\textasciitilde 90\%).  }
   \label{fig:online-tricks}
@@ -232,7 +233,7 @@ profiling less often (only two times in this experiment).
 Note that these techniques---parallelization, sampling data, and sampling
 configurations---can be combined together to further reduce the profiling
 overhead. For example, scheduling five GPUs running 5 configurations
-continuously to check for model drifts will reduce the overhead to 1X\@. In
+continuously to check for model drift will reduce the overhead to 1X\@. In
 practice, the amount of resources to use depends on the budget and the
 importance of the job. \sysname{} currently requires developers to configure the
 application with proper online profiling techniques.
@@ -252,29 +253,29 @@ across all applications. Due to space constraints, we discuss AR in full and
 only present the results of PD/TK (more in appendix).
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
-machines from Amazon EC2, spanning four different regions. Three (N. Virgnia,
-Ohio, Oregan) act as worker nodes and one (N. California) acts as the
-aggregation server. The average RTTs from the workers to the server are 65.2 ms,
-22.2 ms, and 50.3 ms.
+machines from Amazon EC2, spanning four different regions. Three (at
+N.\,Virgnia, Ohio, Oregan) act as worker nodes and one (at N.\,California) acts
+as the analytics server. The average RTTs from the workers to the server are
+\SI{65.2}{\ms}, \SI{22.2}{\ms}, and \SI{50.3}{ms}.
 
 During the experiment, each worker transmits test data (\autoref{tab:apps}) for
 about 10 mins. If the duration of the test data is less than 10 mins, it
-loops. Because $B(c_{\max})$ is prohibitively large (raw videos consumes 230
-mbps), we use a reasonable configuration to limit the maximum rate. In our AR
-experiment, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\) and a
-quantization of 20; it consumes about 14 mbps.
+loops. Because $B(c_{\max})$ is prohibitively large (raw videos consumes
+\SI{230}{Mbps} ), we use a reasonable configuration to limit the maximum
+rate. In our AR experiment, $c_{\max}$ is 1600x900 resolution, \(30~\text{FPS}\)
+and a quantization of 20; it consumes about \SI{14}{Mbps}.
 
 Our bandwidth control scheme follows
 JetStream~\cite{rabkin2014aggregation}. During the experiment, we use the Linux
 \texttt{tc} utility with HTB~\cite{htb, lartc} to control the clients' outgoing
 bandwidth. Each experiment involves four phases: $(i)$~before t=200s, there is
-no shaping; $(ii)$~at t=200s, we limit the bandwidth to 7.5 mbps for 3 minutes;
-$(iii)$~at t=380s, we further decrease the available bandwidth to 5 mbps;
-$(iv)$~ at t=440s, we remove all traffic shaping. For UDP, HTB doesn't emulate
-the packet loss or out-of-order delivery; so we use \texttt{netem} and configure
-the loss probability according to the delivery rate. Because each pair-wise
-connection has a different capacity, we impose a \textit{background} bandwidth
-limit---25 mbps---to simplify comparisons.
+no shaping; $(ii)$~at t=200s, we limit the bandwidth to \SI{7.5}{Mbps} for 3
+minutes; $(iii)$~at t=380s, we further decrease the available bandwidth to
+\SI{5}{Mbps}; $(iv)$~ at t=440s, we remove all traffic shaping. For UDP, HTB
+doesn't emulate the packet loss or out-of-order delivery; so we use
+\texttt{netem} and configure the loss probability according to the delivery
+rate. Because each pair-wise connection has a different capacity, we impose a
+\textit{background} bandwidth limit---\SI{25}{Mbps}---to simplify comparisons.
 
 We compare \sysname{} with the following baselines:
 
@@ -304,8 +305,8 @@ We compare \sysname{} with the following baselines:
 At runtime, \sysname{} differs from JetStream in both policy and
 adaptation. JetStream++ already improves over JetStream by using our
 Pareto-optimal profile. \sysname{} improves the performance further with two
-major changes: $(i)$~\sysname{} directly measures delivery rate to select an
-appropriate configuration to match the bandwidth while JetStream employs a
+major changes: $(i)$~\sysname{} directly measures the delivery rate to select an
+appropriate configuration to match available bandwidth while JetStream employs a
 latency-based measure of capacity ratio. $(ii)$ \sysname{} has an explicit probe
 phase while JetStream changes its policy immediately after capacity ratio
 changes.
@@ -343,7 +344,7 @@ The throughput figure shows the effect of traffic shaping. During the shaping,
 TCP and UDP make full use of the available bandwidth; in comparison, \sysname{},
 JetStream, JetStream++, and HLS are conservative because of adaptation (see
 their throughput drops). When we stop the shaping at t=440s, TCP has a
-``catch-up'' phase when it's sending all queued items as fast as
+``catch-up'' phase when it is sending all queued items as fast as
 possible. JetStream also has queued items because the policy in use (with only
 three rules) cannot sustain 5 mpbs bandwidth. \sysname{} increases the
 throughput gradually due to the explicit probing phase. HLS is the most
@@ -370,15 +371,16 @@ The latency figures (both \autoref{fig:ar-runtime-timeseries} and
 sub-second latency. During the traffic shaping, TCP queues items at the sender
 side for up to hundreds of seconds. In contrast, UDP always transmits as fast as
 possible, leading to a consistent low latency.\footnote{FFmpeg discards packets
-  that misses a deadline (33ms for 30FPS).} HLS's latency fluctuates around 4-5
-seconds due to chunking, buffering, and network variations, on par with recent
-literature~\cite{wang2016anatomy}. Both JetStream and JetStream++ are able to
-adapt during traffic shaping. With a more precise and fine-grain policy,
-JetStream++ achieves a lower latency (median 539ms) in comparison to JetStream
-(median 1732ms). Because JetStream's runtime reacts instantaneously when the
-congestion condition changes, both baselines oscillate among polices during the
+  that miss a deadline (\SI{33}{\ms} for \SI{30}{FPS}).} HLS's latency
+fluctuates around 4-5 seconds due to chunking, buffering, and network
+variations, on par with recent literature~\cite{wang2016anatomy}. Both JetStream
+and JetStream++ are able to adapt during traffic shaping. With a more precise
+and fine-grain policy, JetStream++ achieves a lower latency (median
+\SI{539}{\ms}) in comparison to JetStream (median \SI{1732}{\ms}). Because
+JetStream's runtime reacts instantaneously when the congestion condition
+changes, both baselines oscillate among polices during the
 experiment. \sysname{} effectively addresses the oscillation with probing and
-achieves a much lower latency (median 118ms, 15$\times$ improvement over
+achieves a much lower latency (median \SI{118}{\ms}, 15$\times$ improvement over
 JetStream and 5$\times$ improvement over JetStream++).
 
 % summary(accuracy)
@@ -397,19 +399,20 @@ JetStream and 5$\times$ improvement over JetStream++).
 %  3rd Qu.:0.9545     3rd Qu.: 0.009415   3rd Qu.:0.9213
 %  Max.   :1.0000     Max.   : 0.925875   Max.   :0.9712
 
-The two accuracy figures show that other than UDP, most schemes are able to
-maintain high accuracy. TCP without adaptation always sends data at high
-fidelity, achieving the highest accuracy (93\%), but at a cost of high
+The accuracy figures (both \autoref{fig:ar-runtime-timeseries} and
+\autoref{fig:ar-runtime-boxplot}) show that other than UDP, most schemes are
+able to maintain high accuracy. TCP without adaptation always sends data at high
+fidelity, achieving the highest accuracy (median 93\%), but at a cost of high
 latency. JetStream uses a manual policy that are sub-optimal in comparison to
-our learned profile, so its accuracy is low (84\%). Using Pareto-optimal
-configurations, JetStream++ is able to achieve a higher accuracy (89\%); but
-because JetStream's runtime oscillates the policy, the accuracy has a large
-variation (14\% standard deviation). In contrast, \sysname{} chooses
+our learned profile, so its accuracy is low (median 84\%). Using Pareto-optimal
+configurations, JetStream++ is able to achieve a higher accuracy (median 89\%);
+but because JetStream's runtime oscillates the policy, the accuracy has a large
+variation (standard deviation 14\%). In contrast, \sysname{} chooses
 configurations carefully to stay in a steady state as much as possible.  It
-achieves a high accuracy of 89\% with a small variation (7.6\% standard
-deviation). HLS also achieves high accuracy (87\%) because its adaptation of
-tuning resolution and encoding quality is effective in AR. However, HLS's
-adaptation works poorly for PD (median 6\% as in
+achieves a high accuracy of 89\% with a small variation (standard deviation
+7.6\%). HLS also achieves reasonable accuracy (median 87\%) because its
+adaptation of tuning resolution and encoding quality is effective in
+AR. However, HLS's adaptation works poorly for PD (median 6\% as in
 \autoref{fig:pd-runtime-boxplot}).
 
 % TK latency
@@ -433,7 +436,8 @@ In summary, \autoref{fig:ar-runtime} shows that \sysname{} achieves low latency
 and high accuracy simultaneously. We show the results during shaping in a
 different form in \autoref{fig:intro} to discuss the trade-off between fidelity
 and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
-  feeding PD's profile to AR.}
+  feeding PD's profile to AR. We refer to JetStream as manual poclies in
+  \autoref{fig:intro}.}
 
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
@@ -458,11 +462,11 @@ and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
   JetStream are not directly comparable (see appendix).}
 
 \para{Runtime performance of PD and TK (\autoref{fig:pd-tk})}. For PD,
-\sysname{} achieves low latency (median 78ms), which is 20x improvement over
-JetStream and 7.7x over JetStream++. PD achieves an accuracy of 86\%, which is
-6\% drop compared to TCP. For TK, \sysname{} also manages sub-second latency and
-nominal accuracy drop (only 2\% in comparison to TCP). More details are in the
-appendix.
+\sysname{} achieves low latency (median \SI{78}{ms}), which is 20$\times$
+improvement over JetStream and 7.7$\times$ over JetStream++. PD achieves an
+accuracy of 86\%, which is 6\% drop compared to TCP. For TK, \sysname{} also
+manages sub-second latency (median \SI{946}{\ms}) and nominal accuracy drop
+(only 2\% in comparison to TCP).
 
 \para{Performance with various network delays.} \sysname{} targets at wide area
 whose key characteristic is the large variation in
@@ -471,10 +475,10 @@ real-world setup on Amazon EC2, the latency between EC2 sites is relatively low.
 To evaluate how \sysname{} performs with increased network delays, we conducted
 another experiment with one pair of client and server under different network
 conditions. We use \texttt{netem} to add delays in addition to our bandwidth
-shaping. The additional one-way delays ranges from 0ms to 250ms, following a
-normal distribution where the variation is 10\% of the added delay, e.g.
+shaping. The additional one-way delays ranges from 0 to \SI{250}{ms}, following
+a normal distribution where the variation is 10\% of the added delay, e.g.
 $250\pm 25\text{ms}$. We add delays in both direction, so the added RTT can be
-as high as 500ms.
+as high as \SI{500}{ms}.
 
 \begin{figure}
   \centering
@@ -489,10 +493,10 @@ as high as 500ms.
 delays. While the latency increases with the added delay, \sysname{} mostly
 manages to achieve sub-second latency for all conditions. We see a higher
 variation in latency and more outliers as network delay increases. This is
-caused by a slow congestion detection when RTT is high. In terms of accuracy,
-because \sysname{} mostly stays in \texttt{Steady} state and accuracy only
-depends on the level of degradation, \sysname{} achieves similar accuracy for
-different network delays.
+caused by a slow congestion detection when the RTT is high. In terms of
+accuracy, because \sysname{} mostly stays in \texttt{Steady} state and accuracy
+only depends on the level of degradation, \sysname{} achieves similar accuracy
+for different network delays.
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
@@ -530,14 +534,13 @@ applications.
 We choose AR and PD as the example applications.  The clients and servers of
 both applications are co-located so that they share the same bottleneck
 link. The experiment starts with sufficient bandwidth. At t=60s, we start
-traffic shaping to limit the total bandwidth to 6 mbps. When we allocate
+traffic shaping to limit the total bandwidth to \SI{6}{Mbps}. When we allocate
 resource equally between two applications (\autoref{fig:eq-bw}), each
-application gets 3 mbps. Under this condition, PD runs with a higher accuracy of
-\textasciitilde 85\% while AR only achieves \textasciitilde 77\%. In addition to
-resource fairness, \sysname{} supports utility fairness: it chooses
-configurations that maximize the minimal accuracy. In this experiment, PD
-receives 2 mbps and AR receives 4 mbps; and both achieve \textasciitilde 80\%
-accuracy (\autoref{fig:eq-acc}).
+application gets \SI{3}{Mbps}. Under this condition, PD runs with a higher
+accuracy of 85\% while AR only achieves 77\%. In addition to resource fairness,
+\sysname{} supports utility fairness: it chooses configurations that maximize
+the minimal accuracy. In this experiment, PD receives \SI{2}{Mbps} and AR
+receives \SI{4}{Mbps}; and both achieve 80\% accuracy (\autoref{fig:eq-acc}).
 
 %%% Local Variables:
 %%% mode: latex
