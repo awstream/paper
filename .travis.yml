@@ -7,6 +7,8 @@ before_install:
   - sudo apt-get install -y texlive-pictures
   - sudo apt-get install -y texlive-latex-extra
   - sudo apt-get install -y texlive-fonts-recommended
+  - sudo apt-get install -y texlive-fonts-extra
+  - sudo apt-get install -y texlive-generic-extra
   - sudo apt-get install -y make
 
 script:
