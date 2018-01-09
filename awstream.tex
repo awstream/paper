@@ -1,14 +1,17 @@
-\documentclass[twocolumn]{article}
+\documentclass[sigplan, anonymous, screen]{acmart}
+
+\settopmatter{printacmref=false, printfolios=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
 
 \input{meta}
 
-\begin{document}
 \title{\sysname{}: Adaptive Wide-Area Streaming Analytics}
-\author{Paper \#8}
-\date{}
-\maketitle
+\gdef\addresses{Paper \textbf{\#}, 14 pages}
 
-\subsection*{Abstract}
+\begin{document}
+
+\begin{abstract}
 
 The emerging class of wide-area streaming analytics faces the challenge of
 scarce and variable WAN bandwidth. Non-adaptive applications built with TCP or
@@ -29,6 +32,10 @@ reality, pedestrian detection, and monitoring log analysis. Our experiments show
 that \sysname{} achieves sub-second latency with only nominal accuracy drop
 (2-6\%).
 
+\end{abstract}
+
+\maketitle
+
 \input{sections/intro}
 \input{sections/motivation}
 \input{sections/system}
@@ -37,18 +44,15 @@ that \sysname{} achieves sub-second latency with only nominal accuracy drop
 \input{sections/discussion}
 \input{sections/related}
 \input{sections/conclusion}
+\input{sections/appendix.tex}
 
 % \input{acknowledgement}
 
+\bibliographystyle{ACM-Reference-Format}
+\def \bibfont {\normalsize}
+\bibliography{awstream}
+
 \balance
-
-{\footnotesize \bibliographystyle{acm}
-\bibliography{awstream}}
-
-% \newpage
-% \begin{appendices}
-% \input{appendix.tex}
-% \end{appendices}
 
 \end{document}
 

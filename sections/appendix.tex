@@ -1,11 +1,4 @@
-\documentclass[twocolumn]{article}
-
-\input{meta}
-\begin{document}
-\title{\sysname{}: Adaptive Wide-Area Streaming Analytics \\ Appendix}
-\author{ \textit{Paper \#8} }
-\date{}
-\maketitle
+\appendix
 
 \section{WAN Bandwidth Characteristics}
 
@@ -22,97 +15,6 @@ between Tokyo and N. Virginia) have limited bandwidth (\textasciitilde
   \caption{Pair-wise bandwidth in time series from our day-long measurements.}
   \label{fig:aws-bandwidth}
 \end{figure}
-
-\section{Application Implementations}
-\label{appendix:appl-impl}
-
-Below we provide details about how we implement our three applications
-(\autoref{fig:three-apps}), including the libraries we use and how we integrate
-them into \sysname{}.
-
-\para{Augmented Reality.} We target at mobile augmented reality applications
-that recognize objects by offloading the heavy computation to resources
-elsewhere, e.g.\,the cloud.  Image-related operations use OpenCV
-3.1~\cite{opencvlibrary} and object recognition uses YOLO~\cite{darknet13,
-  redmon2016yolo9000}, a GPU-enabled pre-trained neural network. Videos are
-encoded with H.264~\cite{richardson2011h} because of its prevalence in existing
-systems. Our implementation uses GStreamer~\cite{gstreamer} with
-\texttt{x264enc} plugin. To integrate with \sysname{}, we first create a
-pipeline that exposes \texttt{appsrc} (to feed raw image data) and
-\texttt{appsink} (to get encoded bytes). The GStreamer main loop executes in a
-separate thread and \sysname{} communicates with it via Rust's channel. The
-\texttt{x264enc} uses the \texttt{zerolatency} preset and four threads. We use
-constant quality encoding and expose the quantization factor as a knob (in
-addition to image resolutions and frame rates).
-
-Object recognition returns a list of bounding boxes with the type of the object,
-and each bounding box is a rectangle with normalized coordinates on the
-image. We compare the detection against the reference result from raw data, and
-declare it success if the intersection over union (IOU) is greater than
-50\%~\cite{everingham2010pascal} and the object type matches. We use F1
-score~\cite{Rijsbergen:1979:IR:539927} as the accuracy function. In terms of
-dataset, we collected our own video clips: the training data is a 24-second long
-video of an office environment; the test data is a 246-second long video of a
-home environment.
-
-\para{Pedestrian Detection.} This application analyzes streams of videos from
-installed CCTV cameras and detects pedestrians inside. We use a similar setup
-(OpenCV and GStreamer) as our augmented reality application except for the
-analytical function. To detect pedestrians, we use histogram of oriented
-gradients (HOG)~\cite{dalal2005histograms} with the default linear SVM
-classifier from OpenCV. To ensure real-time processing of frames,
-GPU-accelerated implementation is used. Because we do not recognize individual
-pedestrians, a successful detection in this case only requires matching the
-bounding box. Our evaluation uses MOT16 dataset~\cite{milan2016mot16} for both
-profiling and runtime.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/apps.pdf}
-  \caption{Three applications: augmented reality, pedestrian detection, and
-    distributed Top-K.}
-  \label{fig:three-apps}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/topk.pdf}
-  \caption{A distributed Top-K application with two degradation operations:
-    \texttt{head} and \texttt{threshold}. Discarding data with these two
-    operations will affect final results. In this example, \texttt{f2}, which is
-    not in Top-1 for either client, becomes the global Top-1 after the merge. It
-    would have been purged if the clients use threshold T=3.}
-  \label{fig:topk}
-\end{figure}
-
-\para{Distributed Top-K.} Many monitoring applications need to answer the
-\textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
-popular URLs, or the Top-K most access files. A distributed Top-K application
-aggregates information from geo-distributed servers to computer a final Top-K.
-
-\autoref{fig:topk} shows the Top-K processing pipeline with example data. Source
-nodes first performs a \texttt{Window} operation to generate data summary, which
-is key-value pairs \texttt{(item: count)} for each item. After the summary, the
-data size can still be too large because most real-world access patterns follow
-a long tail distribution: there is a large-but-irrelevant tail that contributes
-little to Top-K. The source nodes perform two degradation operations: (1) a
-head(\texttt{N}) operation that only takes the top \texttt{N} entries; (2) a
-threshold(\texttt{T}) that filters small entries whose count is smaller than
-\texttt{T}. These two operations are not orthogonal. Their impact on data size
-reduction and quality degradation depends on the data distribution.
-
-For accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation
-measure of the concordance between two ranked list. The output ranges from
-\(-1\) to 1, representing no agreement to complete agreement. To integrate with
-\sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1] with a linear
-transformation.
-
-Our Top-K application aims to find the Top-50 most accessed files from web
-server logs. We use Apache log files that record and store user access
-statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs are
-split into four groups, simulating four geo-distributed nodes monitoring web
-accesses. To match the load of popular web servers, we compress one hour's logs
-into one second.
 
 \section{JetStream++}
 \label{appendix:jetstream++}
@@ -259,20 +161,6 @@ drop in comparison to TCP). In comparison to the state-of-the-art system
 JetStream, \sysname{} improves the latency by 20$\times$ (from \SI{1535}{ms} to
 \SI{78}{ms}) and accuracy by 1\% (from 84\% to 85\%).
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/hls-arch.pdf}
-  \caption{HLS setup. (Left) High-level overview: machine 1 generates a video
-    and stores it in the server; machine 2 fetches the data and performs
-    analytics. (Right) Detailed view: (1)~FFmpeg encodes video with multiple
-    bitrates and groups them into MPEG-TS programs; (2)~\texttt{nginx-ts-module}
-    then generates HLS chunks on the fly and stores them for nginx serving;
-    (3)~the client (using \texttt{hls.js}) periodically fetches the latest index
-    file (\texttt{index.m3u8}) and then downloads the right chunk according to
-    network conditions.}
-  \label{fig:hls-arch}
-\end{figure*}
-
 \para{Top-K.} For TK, our logs are split into four groups. We then use four
 Amazon EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
 $N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}; it consumes about
@@ -322,78 +210,11 @@ leads to one second latency. \sysname{} manages to avoid queues for most times.
 %
 % subsecond latency, 2% drop
 
-\section{HTTP Live Streaming}
-\label{appendix:hls}
-
-HTTP Live Streaming (HLS)~\cite{pantos2016http} represents a class of HTTP-based
-media streaming protocols. Other protocols include Adobe HTTP Dynamic
-Streaming~\cite{adobestreaming}, Microsoft Smooth
-Streaming~\cite{zambelli2009iis}, and a newer vendor-independent standard
-DASH~\cite{michalos2012dynamic, sodagar2011mpeg}. These adaptive streaming
-protocols are widely adopted for both video-on-demand (VoD) and live streaming
-(such as Periscope).
-
-Our setup (\autoref{fig:hls-arch}) resembles the setup of popular live streaming
-services~\cite{wang2016anatomy}. We first describe each component of our
-setup. We then discuss why these protocols are a poor match for wide-area
-streaming analytics, despite their adaptation capability.
-
-\para{Video.} We use \texttt{FFmpeg} to encode the video with multiple bitrates:
-all levels use 30FPS, but different resolutions and H.264 encoding quality. Our
-experiment uses six different bitrates---900p, 720p, 540p, 360p, all with normal
-encoding quality; and 720p, 540p, with low encoding quality. To simulate live
-video streaming, we then use \texttt{FFmpeg} to re-publish the stream to an
-Nginx web server that accepts MPEG-TS (MPEG transport stream).
-
-\para{Server.} Our web server is a nginx server compiled with plugin
-\texttt{nginx-ts-module}~\cite{nginx-ts-module} that receives MPEG-TS over HTTP,
-produces live HLS and DASH chunks. It creates an index file \texttt{index.m3u8}
-that describes the media stream. During live streaming, the file is updated
-whenever new chunks arrive. And the client needs to fetch the newest version of
-\texttt{index.m3u8} to find out about new chunks. Typical streaming servers set
-each chunk to be 2-10 seconds~\cite{mao2017neural, sun2016cs2p,
-  wang2016anatomy}. For our low latency streaming, we configured the chunk
-segment to be 1 second.
-
-\para{Analytics.} The HTTP client reads the index file and then fetches each
-chunk based on available bandwidth. Our client uses \texttt{hls.js}
-\cite{hls.js}, a JavaScript library that implements an HLS client. It directly
-plays the video inside an HTML5 video element. To avoid invoking the graphical
-front-end of a browser, we use Puppeteer~\cite{puppeteer}, a NodeJS library that
-provides a high-level API to control headless Chrome. During the runtime
-experiment, instead of playing the video, we record the metadata with each
-received chunk: its size, timestamp, and the quality level. We perform an
-offline analysis of the log files to calculate the throughput, latency, and
-accuracy.
-
-Notice that the client-server relationship is reversed in HLS and \sysname{}. In
-HLS, the server hosts video source files; the client fetches videos and
-plays/computes. In \sysname{}, the client generates videos and pushes frames to
-the server; the server performs video analytics.
-
-\vspace{0.5em}
-\para{Why HLS/DASH is a poor match for video analytics?} It's hard to achieve
-ultra low latency using HLS/DASH: (1) HLS/DASH is pull-based: the client keeps
-requesting for new chunks; (2) HLS/DASH uses chunking: shorter chunks enable a
-lower latency, but induce a larger number of requests, and the chunk has to be
-made ready before the client can start fetching. There are proposals to reduce
-the latency, such as server push~\cite{wei2014low}, but they are still work in
-progress. For some applications, the accuracy can also be poor if these videos
-are limited to tuning resolution and encoding quality only, as demonstrated by
-in our PD evaluation.
-
-%% References
-
-\balance
-
-{\footnotesize \bibliographystyle{acm}
-  \bibliography{awstream}}
-
-\end{document}
+% \include{hls.tex}
 
 %%% Local Variables:
 %%% mode: latex
-%%% TeX-master: t
+%%% TeX-master: "../awstream"
 %%% End:
 
 %% LocalWords: Mbps analytics runtime JetStream OpenCV YOLO pre GStreamer appsrc

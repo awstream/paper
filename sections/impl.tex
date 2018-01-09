@@ -44,7 +44,93 @@ recognizes nearby objects on mobile phones, pedestrian detection (PD) for
 surveillance cameras, and a distributed log analysis to extract the Top-K mostly
 accessed files (TK). \autoref{tab:apps} summarizes the application-specific
 part: knobs, accuracy function, and the dataset we used for training and
-testing. To conserve space, we leave application details in the appendix.
+testing. Below we provide details about how we implement our three applications
+(\autoref{fig:three-apps}), including the libraries we use and how we integrate
+them into \sysname{}.
+
+\para{Augmented Reality.} We target at mobile augmented reality applications
+that recognize objects by offloading the heavy computation to resources
+elsewhere, e.g.\,the cloud.  Image-related operations use OpenCV
+3.1~\cite{opencvlibrary} and object recognition uses YOLO~\cite{darknet13,
+  redmon2016yolo9000}, a GPU-enabled pre-trained neural network. Videos are
+encoded with H.264~\cite{richardson2011h} because of its prevalence in existing
+systems. Our implementation uses GStreamer~\cite{gstreamer} with
+\texttt{x264enc} plugin. To integrate with \sysname{}, we first create a
+pipeline that exposes \texttt{appsrc} (to feed raw image data) and
+\texttt{appsink} (to get encoded bytes). The GStreamer main loop executes in a
+separate thread and \sysname{} communicates with it via Rust's channel. The
+\texttt{x264enc} uses the \texttt{zerolatency} preset and four threads. We use
+constant quality encoding and expose the quantization factor as a knob (in
+addition to image resolutions and frame rates).
+
+Object recognition returns a list of bounding boxes with the type of the object,
+and each bounding box is a rectangle with normalized coordinates on the
+image. We compare the detection against the reference result from raw data, and
+declare it success if the intersection over union (IOU) is greater than
+50\%~\cite{everingham2010pascal} and the object type matches. We use F1
+score~\cite{Rijsbergen:1979:IR:539927} as the accuracy function. In terms of
+dataset, we collected our own video clips: the training data is a 24-second long
+video of an office environment; the test data is a 246-second long video of a
+home environment.
+
+\para{Pedestrian Detection.} This application analyzes streams of videos from
+installed CCTV cameras and detects pedestrians inside. We use a similar setup
+(OpenCV and GStreamer) as our augmented reality application except for the
+analytical function. To detect pedestrians, we use histogram of oriented
+gradients (HOG)~\cite{dalal2005histograms} with the default linear SVM
+classifier from OpenCV. To ensure real-time processing of frames,
+GPU-accelerated implementation is used. Because we do not recognize individual
+pedestrians, a successful detection in this case only requires matching the
+bounding box. Our evaluation uses MOT16 dataset~\cite{milan2016mot16} for both
+profiling and runtime.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/apps.pdf}
+  \caption{Three applications: augmented reality, pedestrian detection, and
+    distributed Top-K.}
+  \label{fig:three-apps}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/topk.pdf}
+  \caption{A distributed Top-K application with two degradation operations:
+    \texttt{head} and \texttt{threshold}. Discarding data with these two
+    operations will affect final results. In this example, \texttt{f2}, which is
+    not in Top-1 for either client, becomes the global Top-1 after the merge. It
+    would have been purged if the clients use threshold T=3.}
+  \label{fig:topk}
+\end{figure}
+
+\para{Distributed Top-K.} Many monitoring applications need to answer the
+\textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
+popular URLs, or the Top-K most access files. A distributed Top-K application
+aggregates information from geo-distributed servers to computer a final Top-K.
+
+\autoref{fig:topk} shows the Top-K processing pipeline with example data. Source
+nodes first performs a \texttt{Window} operation to generate data summary, which
+is key-value pairs \texttt{(item: count)} for each item. After the summary, the
+data size can still be too large because most real-world access patterns follow
+a long tail distribution: there is a large-but-irrelevant tail that contributes
+little to Top-K. The source nodes perform two degradation operations: (1) a
+head(\texttt{N}) operation that only takes the top \texttt{N} entries; (2) a
+threshold(\texttt{T}) that filters small entries whose count is smaller than
+\texttt{T}. These two operations are not orthogonal. Their impact on data size
+reduction and quality degradation depends on the data distribution.
+
+For accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation
+measure of the concordance between two ranked list. The output ranges from
+\(-1\) to 1, representing no agreement to complete agreement. To integrate with
+\sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1] with a linear
+transformation.
+
+Our Top-K application aims to find the Top-50 most accessed files from web
+server logs. We use Apache log files that record and store user access
+statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs are
+split into four groups, simulating four geo-distributed nodes monitoring web
+accesses. To match the load of popular web servers, we compress one hour's logs
+into one second.
 
 %%% Local Variables:
 %%% mode: latex
