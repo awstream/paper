@@ -1,19 +1,58 @@
 \appendix
 
-\section{WAN Bandwidth Characteristics}
+% \section{WAN Bandwidth Characteristics}
 
-\autoref{fig:aws-bandwidth} shows the available bandwidth between Amazon EC2
-servers (Tokyo, Ireland, N. Virginia, N. California) in our day-long
-measurements. Most inter-continental links (between Ireland and all others,
-between Tokyo and N. Virginia) have limited bandwidth (\textasciitilde
-\SI{50}{Mbps}). Other pairs exhibit large variations from \SI{10}{Mbps} up to
-\SI{150}{Mbps}.
+% \autoref{fig:aws-bandwidth} shows the available bandwidth between Amazon EC2
+% servers (Tokyo, Ireland, N. Virginia, N. California) in our day-long
+% measurements. Most inter-continental links (between Ireland and all others,
+% between Tokyo and N. Virginia) have limited bandwidth (\textasciitilde
+% \SI{50}{Mbps}). Other pairs exhibit large variations from \SI{10}{Mbps} up to
+% \SI{150}{Mbps}.
 
-\begin{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=\columnwidth]{figures/aws-bandwidth.pdf}
+%   \caption{Pair-wise bandwidth in time series from our day-long measurements.}
+%   \label{fig:aws-bandwidth}
+% \end{figure}
+
+\section{HLS Setup}
+\label{appendix:hls-setup}
+
+HTTP Live Streaming (HLS)~\cite{pantos2016http} represents a class of HTTP-based
+media streaming protocols. Other protocols include Adobe HTTP Dynamic
+Streaming~\cite{adobestreaming}, Microsoft Smooth
+Streaming~\cite{zambelli2009iis}, and a newer vendor-independent standard
+DASH~\cite{michalos2012dynamic, sodagar2011mpeg}. These adaptive streaming
+protocols are widely adopted for both video-on-demand (VoD) and live streaming
+(such as Periscope).
+
+Our setup (\autoref{fig:hls}) resembles the setup of popular live streaming
+services~\cite{wang2016anatomy}. Typical streaming servers set each chunk to be
+2-10 seconds~\cite{mao2017neural, sun2016cs2p, wang2016anatomy}. For our low
+latency streaming, we configured the chunk segment to be 1 second.
+
+\para{Why HLS/DASH is a poor match for video analytics?} It's hard to achieve
+ultra low latency using HLS/DASH: (1) HLS/DASH is pull-based: the client keeps
+requesting for new chunks; (2) HLS/DASH uses chunking: shorter chunks enable a
+lower latency, but induce a larger number of requests, and the chunk has to be
+made ready before the client can start fetching. There are proposals to reduce
+the latency, such as server push~\cite{wei2014low}, but they are still work in
+progress. For some applications, the accuracy can also be poor if these videos
+are limited to tuning resolution and encoding quality only, as demonstrated by
+in our PD evaluation.
+
+\begin{figure}[t]
   \centering
-  \includegraphics[width=\columnwidth]{figures/aws-bandwidth.pdf}
-  \caption{Pair-wise bandwidth in time series from our day-long measurements.}
-  \label{fig:aws-bandwidth}
+  \includegraphics[width=\columnwidth]{figures/hls.pdf}
+  \caption{HLS setup: (1)~FFmpeg encodes video with multiple bitrates and groups
+    them into MPEG-TS programs;
+    (2)~\texttt{nginx-ts-module}~\cite{nginx-ts-module} generates HLS chunks on
+    the fly and stores them for nginx serving; (3)~the client (using
+    \texttt{hls.js}~\cite{hls.js}) periodically fetches the latest index file
+    (\texttt{index.m3u8}) and then downloads the right chunk according to
+    network conditions.}
+  \label{fig:hls}
 \end{figure}
 
 \section{JetStream++}
@@ -41,9 +80,6 @@ degradation across multiple operators, but that would require substantial
 changes to JetStream. Using JetStream++ with our profile, the comparison is
 enough to illustrate the difference between \sysname{}'s and JetStream's
 runtime.
-
-\section{Runtime Evaluation of PD and TK}
-\label{appendix:more-runtime}
 
  % > summary(latency)
  %      Time        JetStream++        JetStream            HLS
@@ -85,111 +121,6 @@ runtime.
  % NA's   :1          NA's   :1            NA's   :1
  %%
  %% 6% drop, 1% increase over JetStream
-
-In the main paper, we presented the evaluation results for AR. Now we show the
-relevant details and results for the remaining two applications: PD and TK.
-
-\paraf{Pedestrian Detection.} The setup for PD is the same with AR: three Amazon
-EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
-1920x1080 resolution, \(10~\text{FPS}\) and a quantization of 20; it consumes
-about \SI{12}{Mbps}. For PD, \sysname{} learns that frame rate is less important
-than resolution. It favors 10FPS with 1080p instead of 30FPS with 900p as in AR.
-
-When running experiments, we use the same bandwidth shaping schedule as we used
-for AR. Baselines are also the same: Streaming over TCP, streaming over UDP,
-JetStream, JetStream++, and HLS.
-
-\begin{figure}[t]
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_mot-timeseries.pdf}
-    \caption{PD's runtime behavior with a time-series plot: throughput (top),
-      showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
-    \label{fig:pd-runtime-timeseries}
-  \end{subfigure}
-  \vspace{1em}
-  \\
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
-    \caption{PD's performance summary of latency and accuracy during the traffic
-      shaping (between t=200s and t=440s).}
-    \label{fig:pd-runtime-boxplot}
-  \end{subfigure}
-  \caption{PD runtime evaluation.}
-  \label{fig:pd-runtime}
-\end{figure}
-
-\begin{figure}[t]
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-timeseries.pdf}
-    \caption{TK's runtime behavior with a time-series plot: throughput (top),
-      showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
-    \label{fig:tk-runtime-timeseries}
-  \end{subfigure}
-  \vspace{1em}
-  \\
-  \begin{subfigure}[t]{\columnwidth}
-    \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
-    \caption{TK's performance summary of latency and accuracy during the traffic
-      shaping (between t=200s and t=440s).}
-    \label{fig:tk-runtime-boxplot}
-  \end{subfigure}
-  \caption{TK runtime evaluation.}
-  \label{fig:tk-runtime}
-\end{figure}
-
-
-\autoref{fig:pd-runtime} shows the runtime behavior in both time series
-(throughout the experiment) and box plot (between t=200s and t=440s).  Most
-observations we made in the main paper are the same here: $(i)$~Streaming with
-TCP has the highest accuracy (median 92\%) at a cost of high
-latency. $(ii)$~Streaming with UDP has the lowest bounded latency but the
-accuracy is too low. $(iii)$~HLS incurs a latency of 2-3 seconds due to
-chunking, buffering, and client fetching; its accuracy in PD is quite poor
-because HLS reduces latency and encoding quality. $(iv)$~JetStream and
-JetStream++ can balance latency and accuracy; but JetStream's manual policy is
-unable to sustain \SI{5}{Mps} bandwidth, so its median latency is high
-(\SI{1535}{\ms}); JetStream++'s latency is lower (\SI{598}{\ms}) than JetStream,
-but its accuracy (82\%) suffers from policy oscillation. \sysname{} is able to
-achieve the lowest latency (\SI{78}{ms}) with small accuracy drop (86\%, 6\%
-drop in comparison to TCP). In comparison to the state-of-the-art system
-JetStream, \sysname{} improves the latency by 20$\times$ (from \SI{1535}{ms} to
-\SI{78}{ms}) and accuracy by 1\% (from 84\% to 85\%).
-
-\para{Top-K.} For TK, our logs are split into four groups. We then use four
-Amazon EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
-$N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}; it consumes about
-\SI{1.2}{Mbps}. Because the overall bandwidth consumption is much smaller than
-video analytics, we change the bandwidth parameter for runtime evaluation:
-during t=200-380s, we limit the bandwidth to \SI{750}{Kbps}; during t=380-440s,
-the bandwidth is \SI{500}{Kbps}; the background limit is \SI{2.5}{Mpbs}.
-
-We've only compared \sysname{} with two baselines: streaming over TCP and
-streaming over UDP. For TCP baseline, we use \sysname{} but disable the
-adaptation. For UDP baseline, we implemented a simple application
-protocol---packetization and a custom header---so that the receiver can still
-aggregate data in the presence of UDP packet loss. While JetStream provides a
-Top-K implementation, it is based on Three-Phase Uniform Threshold (TPUT) and
-not suitable for low-latency Top-K monitoring. We quote from the original paper
-of TPUT~\cite{cao2004efficient}, \textit{``in our target environments the query
-  is asked hourly or daily. The intervals between the queries are typically long
-  enough that the top-k objects have changed completely.''} In addition, we did
-not implement our Top-K pipeline (\autoref{fig:topk}) with JetStream because
-video analytical applications suffice the purpose of comparison.
-
-\autoref{fig:tk-runtime} shows the evaluation results for the Top-K
-application. Streaming over TCP has the highest accuracy (\textasciitilde
-99.7\%) but the worst latency (up to 40 seconds). Streaming over UDP has the
-lowest latency but its accuracy is the worst (\textasciitilde 52\%). \sysname{}
-achieves low latency (\textasciitilde 1.1 second) and high accuracy
-(\textasciitilde 98\%) simultaneously. Notice that because TK's source generates
-data every second after the \texttt{Window} operation, one object in the queue
-leads to one second latency. \sysname{} manages to avoid queues for most times.
 
 % > summary(latency)
 %       Time       Streaming over TCP Streaming over UDP    AWStream

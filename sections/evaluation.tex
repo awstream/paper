@@ -25,7 +25,7 @@
     boundary as well as the performance if only tuning one dimension. Note the
     x-axis is in log scale.}
   \label{fig:all-profiles}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{figure*}
 
 \section{Evaluation}
@@ -41,10 +41,12 @@ as follows.
 \item[\autoref{sec:online-profiling}] Our parallel and sampling techniques
   speeds up offline and online profiling (\autoref{fig:parallel},
   \autoref{fig:online-tricks}).
-\item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} applications
-  achieve sub-second latency and nominal accuracy drop across different network
-  conditions (\autoref{fig:ar-runtime}, \autoref{fig:pd-tk},
-  \autoref{fig:ar-rtt}).
+\item[\autoref{sec:runtime-adaptation}] At runtime, all \sysname{} applications
+  achieve sub-second latency and nominal accuracy drop
+  (\autoref{fig:ar-runtime}, \autoref{fig:pd-runtime},
+  \autoref{fig:tk-runtime}).
+\item[\autoref{sec:various-rtt}] \sysname{} maintains low latency performance
+  across different network conditions (\autoref{fig:ar-rtt}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
   resource allocations: resource fairness and utility fairness
   (\autoref{fig:multitask}).
@@ -118,7 +120,7 @@ we present their evaluations as follows.
   \caption{Parallelism speeds up both offline and online profiling.
   The y-axis shows the profiling time for 1-second video.}
   \label{fig:parallel}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{figure}
 
 \para{Parallelism reduces the profiling time (\autoref{fig:parallel})}. Because
@@ -131,15 +133,14 @@ during offline.  \sysname{} uses LFS~\cite{karger2010scheduling} to minimize the
 makespan and reduces the overhead to 1.75X with 30 GPUs (29$\times$ gain).
 
 \para{Sampling techniques speed up online profiling
-  (\autoref{fig:online-tricks}).}
-Before we evaluate the speed up, we validate \textit{model drift} with
-real-world data. We use the profile trained in an office environment.  According
-to the profile, the application should operate at a configuration of 1280x720,
-\SI{30}{FPS} and 20 quantization to meet an \SI{11}{Mbps} goal.  We test it
-against a home environment, and at about t=100s, the camera points out of the
-window to detect objects on the street. Because of the scene change, the
-configuration fails to predict runtime bandwidth, as illustrated in
-\autoref{fig:offline}.
+  (\autoref{fig:online-tricks}).}  Before we evaluate the speed up, we validate
+\textit{model drift} with real-world data. We use the profile trained in an
+office environment.  According to the profile, the application should operate at
+a configuration of 1280x720, \SI{30}{FPS} and 20 quantization to meet an
+\SI{11}{Mbps} goal.  We test it against a home environment, and at about t=100s,
+the camera points out of the window to detect objects on the street. Because of
+the scene change, the configuration fails to predict runtime bandwidth, as
+illustrated in \autoref{fig:offline}.
 
 To correct the profile, if we continuously run the profiling online and update
 the profile, the application will choose the right configuration to meet the
@@ -205,6 +206,7 @@ profiling less often (only two full profiling). It is an 8.7$\times$ gain.
     predictions since in all schemes \sysname{} finds configurations that
     achieve similarly high accuracy (\textasciitilde 90\%).  }
   \label{fig:online-tricks}
+  \vspace{-0.5em}
 \end{figure}
 
 %% Offline: 0
@@ -213,7 +215,7 @@ profiling less often (only two full profiling). It is an 8.7$\times$ gain.
 %% Trigger         ( GPU * seconds)
 
 \begin{table}[t]
-  \footnotesize
+  \small
   \centering
   \begin{tabular}{c c c}
     \toprule
@@ -249,8 +251,8 @@ In this section, we evaluate the runtime performance by controlling available
 bandwidth across geo-distributed sites and compare \sysname{} with baselines
 including streaming over TCP/UDP, JetStream, and video streaming. Our evaluation
 shows that \sysname{} achieves low latency and high accuracy simultaneously
-across all applications. Due to space constraints, we discuss AR in full and
-only present the results of PD/TK (more in appendix).
+across all applications. We first discuss AR in depth and then present the
+results of PD/TK.
 
 \para{Experiment setup.} We conduct our experiments on four geo-distributed
 machines from Amazon EC2, spanning four different regions. Three (at
@@ -332,7 +334,7 @@ changes.
   \caption{For our AR application, \sysname{} simultaneously achieves low
     latency and high accuracy (with smaller variation).}
   \label{fig:ar-runtime}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{figure}
 
 \para{Results.} \autoref{fig:ar-runtime-timeseries} shows the runtime behavior
@@ -442,35 +444,111 @@ and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific data by
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
     \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
-    \caption{PD's latency and accuracy during traffic shaping.}
-    \label{fig:pd-runtime-boxplot}
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-timeseries.pdf}
+    \caption{PD's runtime behavior with a time-series plot: throughput (top),
+      showing the effect of bandwidth shaping; latency (middle) in log scale;
+      and accuracy (bottom).}
+    \label{fig:pd-runtime-timeseries}
   \end{subfigure}
+  \vspace{1em}
   \\
   \begin{subfigure}[t]{\columnwidth}
     \centering
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot2.pdf}
-    \caption[]{TK's latency and accuracy during traffic shaping.\footnotemark}
-    \label{fig:tk-runtime-boxplot}
+    \includegraphics[width=\columnwidth]{figures/runtime_mot-boxplot.pdf}
+    \caption{PD's performance summary of latency and accuracy during the traffic
+      shaping (between t=200s and t=440s).}
+    \label{fig:pd-runtime-boxplot}
   \end{subfigure}
-  \caption{For PD and TK, \sysname{} achieves low latency and high accuracy in
-    comparison to baselines (details in appendix).}
-  \label{fig:pd-tk}
+  \caption{PD runtime evaluation.}
+  \label{fig:pd-runtime}
+  \vspace{-0.5em}
 \end{figure}
 
-\footnotetext{TK's baselines are only streaming over TCP/UDP because HLS and
-  JetStream are not directly comparable (see appendix).}
+\begin{figure}[t]
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-timeseries.pdf}
+    \caption{TK's runtime behavior with a time-series plot: throughput (top),
+      showing the effect of bandwidth shaping; latency (middle) in log scale;
+      and accuracy (bottom).}
+    \label{fig:tk-runtime-timeseries}
+  \end{subfigure}
+  \vspace{1em}
+  \\
+  \begin{subfigure}[t]{\columnwidth}
+    \centering
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
+    \caption{TK's performance summary of latency and accuracy during the traffic
+      shaping (between t=200s and t=440s).}
+    \label{fig:tk-runtime-boxplot}
+  \end{subfigure}
+  \caption{TK runtime evaluation.}
+  \label{fig:tk-runtime}
+  \vspace{-0.5em}
+\end{figure}
 
-\para{Runtime performance of PD and TK (\autoref{fig:pd-tk})}. For PD,
-\sysname{} achieves low latency (median \SI{78}{ms}), which is 20$\times$
-improvement over JetStream and 7.7$\times$ over JetStream++. \sysname{} achieves
-an accuracy of 86\%, which is 6\% drop compared to TCP and 1\% improvement over
-JetStream. For TK, \sysname{} also manages sub-second latency (median
-\SI{946}{\ms}) and nominal accuracy drop (only 2\% in comparison to TCP).
+\paraf{Pedestrian Detection.} The setup for PD is the same with AR: three Amazon
+EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
+1920x1080 resolution, \(10~\text{FPS}\) and a quantization of 20; it consumes
+about \SI{12}{Mbps}. For PD, \sysname{} learns that frame rate is less important
+than resolution. It favors 10FPS with 1080p instead of 30FPS with 900p as in AR.
 
-\para{Performance with various network delays.} \sysname{} targets at wide area
-whose key characteristic is the large variation in
-latency~\cite{li2010cloudcmp}. While we've conducted experiments using
+When running experiments, we use the same bandwidth shaping schedule as we used
+for AR. Baselines are also the same: Streaming over TCP, streaming over UDP,
+JetStream, JetStream++, and HLS.
+
+\autoref{fig:pd-runtime} shows the runtime behavior in both time series
+(throughout the experiment) and box plot (between t=200s and t=440s).  Most
+observations we made in the main paper are the same here: $(i)$~Streaming with
+TCP has the highest accuracy (median 92\%) at a cost of high
+latency. $(ii)$~Streaming with UDP has the lowest bounded latency but the
+accuracy is too low. $(iii)$~HLS incurs a latency of 2-3 seconds due to
+chunking, buffering, and client fetching; its accuracy in PD is quite poor
+because HLS reduces latency and encoding quality. $(iv)$~JetStream and
+JetStream++ can balance latency and accuracy; but JetStream's manual policy is
+unable to sustain \SI{5}{Mps} bandwidth, so its median latency is high
+(\SI{1535}{\ms}); JetStream++'s latency is lower (\SI{598}{\ms}) than JetStream,
+but its accuracy (82\%) suffers from policy oscillation. \sysname{} is able to
+achieve the lowest latency (\SI{78}{ms}) with small accuracy drop (86\%, 6\%
+drop in comparison to TCP). In comparison to the state-of-the-art system
+JetStream, \sysname{} improves the latency by 20$\times$ (from \SI{1535}{ms} to
+\SI{78}{ms}) and accuracy by 1\% (from 84\% to 85\%).
+
+\para{Top-K.} For TK, our logs are split into four groups. We then use four
+Amazon EC2 as clients and one as server. The maximal configuration $c_{\max}$ is
+$N=9750$ for \texttt{head} and $T=0$ for \texttt{threshold}; it consumes about
+\SI{1.2}{Mbps}. Because the overall bandwidth consumption is much smaller than
+video analytics, we change the bandwidth parameter for runtime evaluation:
+during t=200-380s, we limit the bandwidth to \SI{750}{Kbps}; during t=380-440s,
+the bandwidth is \SI{500}{Kbps}; the background limit is \SI{2.5}{Mpbs}.
+
+We've only compared \sysname{} with two baselines: streaming over TCP and
+streaming over UDP. For TCP baseline, we use \sysname{} but disable the
+adaptation. For UDP baseline, we implemented a simple application
+protocol---packetization and a custom header---so that the receiver can still
+aggregate data in the presence of UDP packet loss. While JetStream provides a
+Top-K implementation, it is based on Three-Phase Uniform Threshold (TPUT) and
+not suitable for low-latency Top-K monitoring. We quote from the original paper
+of TPUT~\cite{cao2004efficient}, \textit{``in our target environments the query
+  is asked hourly or daily. The intervals between the queries are typically long
+  enough that the top-k objects have changed completely.''} In addition, we did
+not implement our Top-K pipeline (\autoref{fig:topk}) with JetStream because
+video analytical applications suffice the purpose of comparison.
+
+\autoref{fig:tk-runtime} shows the evaluation results for the Top-K
+application. Streaming over TCP has the highest accuracy (\textasciitilde
+99.7\%) but the worst latency (up to 40 seconds). Streaming over UDP has the
+lowest latency but its accuracy is the worst (\textasciitilde 52\%). \sysname{}
+achieves low latency (\textasciitilde 1.1 second) and high accuracy
+(\textasciitilde 98\%) simultaneously. Notice that because TK's source generates
+data every second after the \texttt{Window} operation, one object in the queue
+leads to one second latency. \sysname{} manages to avoid queues for most times.
+
+\subsection{Performance with Various Network Delays}
+\label{sec:various-rtt}
+
+\sysname{} targets at wide area whose key characteristic is the large variation
+in latency~\cite{li2010cloudcmp}. While we've conducted experiments using
 real-world setup on Amazon EC2, the latency between EC2 sites is relatively low.
 To evaluate how \sysname{} performs with increased network delays, we conducted
 another experiment with one pair of client and server under different network
@@ -487,7 +565,7 @@ as high as \SI{500}{ms}.
   \caption{\sysname{} maintains low latency and high accuracy under different
     network delay conditions.}
   \label{fig:ar-rtt}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{figure}
 
 \autoref{fig:ar-rtt} shows the runtime behavior with various added network
@@ -526,7 +604,7 @@ for different network delays.
   \caption{\sysname{} supports a variety of resource allocation schemes:
     resource fairness (a) and utility fairness (b).}
   \label{fig:multitask}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{figure}
 
 We evaluate resource allocations with two applications. In this way, the result
