@@ -11,8 +11,8 @@ computation model. We list some example operators, such as \texttt{map} and
 To integrate adaptation as a first-class abstraction, \sysname{} introduces
 \maybe{} operators that degrade data quality, yielding potential bandwidth
 savings.  Our API design has three considerations.  $(i)$~To free developers
-from specifying exact rules, the API should tolerate approximate
-specifications. $(ii)$~To allow combining multiple dimensions, the API should be
+from specifying exact rules, the API should allow specifications with
+options. $(ii)$~To allow combining multiple dimensions, the API should be
 modular: each operator is a unit and the developer can chain multiple
 operators. $(iii)$~To support flexible integration with arbitrary degradation
 functions, the API should take user-defined functions (UDFs). Therefore, our API

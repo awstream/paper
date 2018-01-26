@@ -95,26 +95,26 @@ To address bandwidth limits, existing solutions use manual policies or
 application-specific solutions. We discuss their drawbacks to motivate
 \sysname{} (design in \autoref{sec:system}).
 
-\para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
-the first wide-area analysis system that uses data degradation to address
-bandwidth limits. While effective in comparison to non-adaptive systems,
-JetStream requires developers to write manual policies, e.g. \textit{``if
-  bandwidth is insufficient, switch to sending images at 75\% fidelity, then
-  50\% if there still isn't enough bandwidth. Beyond that point, reduce the
-  frame rate, but keep the image fidelity.''}\footnote{Excerpt from JetStream \S
+\para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation}
+pioneered the use of degradation to address bandwidth limits in wide area. While
+effective in comparison to non-adaptive systems, JetStream requires developers
+to write manual policies, e.g. \textit{``if bandwidth is insufficient, switch to
+  sending images at 75\% fidelity, then 50\% if there still isn't enough
+  bandwidth. Beyond that point, reduce the frame rate, but keep the image
+  fidelity.''}\footnote{Excerpt from JetStream \S
   4.3~\cite{rabkin2014aggregation}.} We discuss the problems with manual
 policies below and present quantitative evaluations in
 \autoref{sec:runtime-adaptation}.
 
 First, this policy is not accurate.  Developers write such rules based on
-heuristics and don't back them up with measurements. Images with 75\% fidelity
+heuristics and do not back them up with measurements. Images with 75\% fidelity
 do not necessarily lead to 75\% application accuracy. In terms of bandwidth,
 naively one would think that reducing the frame rate by half will also half the
 data rate. But if video encoding such as H.264~\cite{richardson2011h} is used, a
 reduction in frame rate increases the inter-frame difference and creates
 P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3e} shows that when
 reducing the frame rate to 33\% (from \(30~\text{FPS}\) to \(10~\text{FPS}\)),
-the bandwidth demand can still be more than 50\%.
+the bandwidth use can still be more than 50\%.
 
 Second, it is not scalable to specify rules one by one. A fine-grain control
 requires many rules in the policy. Applications can degrade in multiple

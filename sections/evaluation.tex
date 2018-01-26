@@ -305,11 +305,11 @@ We compare \sysname{} with the following baselines:
 \end{itemize}
 
 At runtime, \sysname{} differs from JetStream in both policy and
-adaptation. JetStream++ already improves over JetStream by using our
-Pareto-optimal profile. \sysname{} improves the performance further with two
-major changes: $(i)$~\sysname{} directly measures the delivery rate to select an
-appropriate configuration to match available bandwidth while JetStream employs a
-latency-based measure of capacity ratio. $(ii)$ \sysname{} has an explicit probe
+adaptation. JetStream++ improves over JetStream by using our Pareto-optimal
+profile. \sysname{} improves the performance further with two major changes:
+$(i)$~\sysname{} directly measures the delivery rate to select an appropriate
+configuration to match available bandwidth while JetStream employs a
+latency-based measure of capacity ratio; $(ii)$ \sysname{} has an explicit probe
 phase while JetStream changes its policy immediately after capacity ratio
 changes.
 
@@ -319,7 +319,8 @@ changes.
     \includegraphics[width=\columnwidth]{figures/runtime_darknet-timeseries.pdf}
     \caption{Time-series plot of the runtime behaviors: throughput (top),
       showing the effect of bandwidth shaping; latency (middle) in log scale;
-      and accuracy (bottom).}
+      and accuracy (bottom). Overlapped lines may be hard to read; we present
+      the same results in \autoref{fig:ar-runtime-boxplot} for clarity.}
     \label{fig:ar-runtime-timeseries}
   \end{subfigure}
   \vspace{0.2em}
