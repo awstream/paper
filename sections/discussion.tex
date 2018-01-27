@@ -5,7 +5,7 @@ We have presented \sysname{}, a stream processing system achieving low latency
 and high accuracy for the wide area. This section discusses limitations and
 future work.
 
-\para{Reducing developer effort.} While \sysname{} focuses on reducing developer
+\para{Reducing Developer Effort.} While \sysname{} focuses on reducing developer
 effort from tedious manual policy construction, there are still
 application-specific aspects for developers: writing appropriate \maybe{} calls,
 providing training data, and specifying the accuracy function. Because
@@ -13,13 +13,13 @@ providing training data, and specifying the accuracy function. Because
 degradation operators and accuracy functions, similar to machine learning
 libraries.
 
-\para{Fault-tolerance and failure recovery.} \sysname{} tolerates bandwidth
-variation but not network partition or host failure. Although servers within
-data centers can handle faults in existing systems, such as Spark
+\para{Fault-tolerance and Recovery.} \sysname{} tolerates bandwidth variation
+but not network partition or host failure. Although servers within data centers
+can handle faults in existing systems, such as Spark
 Streaming~\cite{zaharia2013discretized}, it is difficult to make edge clients
 failure-oblivious.  We leave failure detection and recovery as a future work.
 
-\para{Profile modeling.} \sysname{} currently does not model $B(c)$/$A(c)$. It
+\para{Profile Modeling.} \sysname{} currently does not model $B(c)$/$A(c)$. It
 performs an exhaustive search when profiling. While parallelism and sampling
 techniques can speed this up, \sysname{} can benefit further from statistical
 techniques. Bayesian Optimization~\cite{snoek2012practical}, as demonstrated by
@@ -43,7 +43,7 @@ explore this direction to improve our profiling.
 % distribution.  Switching contexts could reduce, or even eliminate, the
 % overhead of online profiling.
 
-\para{Predicting bandwidth changes.} Our runtime currently does not predict
+\para{Predicting Bandwidth Changes.} Our runtime currently does not predict
 future bandwidth. While reacting to bandwidth changes is enough to achieve
 sub-second latency, if \sysname{} can accurately predict bandwidth changes, we
 expect further improvements such as no latency spikes or a simplified runtime

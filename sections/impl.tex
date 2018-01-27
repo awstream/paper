@@ -10,7 +10,7 @@ the deployment manager that can start, stop, and update clients/servers as shell
 scripts.
 
 \begin{table}
-  \small
+  \footnotesize
   \centering
   \begin{tabular}{c c c c}
     \toprule
@@ -43,8 +43,8 @@ Using \sysname{}, we have built three applications: augmented reality (AR) that
 recognizes nearby objects on mobile phones, pedestrian detection (PD) for
 surveillance cameras, and a distributed log analysis to extract the Top-K mostly
 accessed files (TK). \autoref{tab:apps} summarizes the application-specific
-part: knobs, accuracy function, and the dataset we used for training and
-testing. Below we provide details about how we implement our three applications
+part: knobs, accuracy functions, and datasets for training/testing. Below we
+provide details about how we implement our three applications
 (\autoref{fig:three-apps}), including the libraries we use and how we integrate
 them into \sysname{}.
 
@@ -103,21 +103,20 @@ profiling and runtime.
   \label{fig:topk}
 \end{figure}
 
-\para{Distributed Top-K.} Many monitoring applications need to answer the
-\textit{Top-K} question~\cite{babcock2003distributed}, such as the Top-K most
-popular URLs, or the Top-K most access files. A distributed Top-K application
-aggregates information from geo-distributed servers to computer a final Top-K.
-
-\autoref{fig:topk} shows the Top-K processing pipeline with example data. Source
-nodes first performs a \texttt{Window} operation to generate data summary, which
-is key-value pairs \texttt{(item: count)} for each item. After the summary, the
-data size can still be too large because most real-world access patterns follow
-a long tail distribution: there is a large-but-irrelevant tail that contributes
-little to Top-K. The source nodes perform two degradation operations: (1) a
-head(\texttt{N}) operation that only takes the top \texttt{N} entries; (2) a
-threshold(\texttt{T}) that filters small entries whose count is smaller than
-\texttt{T}. These two operations are not orthogonal. Their impact on data size
-reduction and quality degradation depends on the data distribution.
+\para{Distributed Top-K.} Many monitoring applications aggregate information
+from geo-distributed servers to answer the \textit{Top-K}
+question~\cite{babcock2003distributed}, such as the Top-K most popular URLs, or
+the Top-K most access files. \autoref{fig:topk} shows our Top-K processing
+pipeline with example data. Source nodes first performs a \texttt{Window}
+operation to generate data summary, which is key-value pairs \texttt{(item:
+  count)} for each item. After the summary, the data size can still be too large
+because most real-world access patterns follow a long tail distribution: there
+is a large-but-irrelevant tail that contributes little to Top-K. The source
+nodes perform two degradation operations: (1) a head(\texttt{N}) operation that
+only takes the top \texttt{N} entries; (2) a threshold(\texttt{T}) that filters
+small entries whose count is smaller than \texttt{T}. These two operations are
+not orthogonal. Their impact on data size reduction and quality degradation
+depends on the data distribution.
 
 For accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation
 measure of the concordance between two ranked list. The output ranges from

@@ -20,12 +20,12 @@
     \caption{Top-K (TK)}
     \label{fig:tk-profile}
   \end{subfigure}
+  \vspace{-0.5em}
   \caption{Application profiles of three applications. Each cross point is one
     configuration $c$'s performance $(B(c), A(c))$. All figures show the Pareto
     boundary as well as the performance if only tuning one dimension. Note the
     x-axis is in log scale.}
   \label{fig:all-profiles}
-  \vspace{-0.5em}
 \end{figure*}
 
 \section{Evaluation}
@@ -110,13 +110,14 @@ But different configurations require different times for processing. For
 example, a \(10~\text{FPS}\) video has 1/3 of the frames to process in
 comparison to a \(30~\text{FPS}\) video.  In our experiment, to evaluate all 216
 configurations, it takes 52 seconds for 1 second worth of data. We denote such
-overhead as 52X\@. \hyperref[sec:automatic-profiling]{Section 3.2} have
-discussed parallel and sampling techniques to improve the profiling efficiency;
-we present their evaluations as follows.
+overhead as 52X\@. \hyperref[sec:automatic-profiling]{Section 3.2} discusses
+parallel and sampling techniques to improve the profiling efficiency; we present
+their evaluations as follows.
 
 \begin{figure}
   \centering
   \includegraphics[width=1.0\columnwidth]{figures/parallel.pdf}
+  \vspace{-1em}
   \caption{Parallelism speeds up both offline and online profiling.
   The y-axis shows the profiling time for 1-second video.}
   \label{fig:parallel}
@@ -226,6 +227,7 @@ profiling less often (only two full profiling). It is an 8.7$\times$ gain.
     Partial configurations & 6X & 8.7$\times$ \\
     \bottomrule
   \end{tabular}
+  \vspace{0.5em}
   \caption{Compared to the continuous profiling baseline (52X overhead), our
     sampling techniques speed up by 3$\times$ or 8.7$\times$.}
   \label{tab:online}
@@ -277,7 +279,7 @@ minutes; $(iii)$~at t=380s, we further decrease the available bandwidth to
 doesn't emulate the packet loss or out-of-order delivery; so we use
 \texttt{netem} and configure the loss probability according to the delivery
 rate. Because each pair-wise connection has a different capacity, we impose a
-\textit{background} bandwidth limit---\SI{25}{Mbps}---to simplify comparisons.
+\textit{background} bandwidth limit---\SI{25}{Mbps}---to normalize the capacity.
 
 We compare \sysname{} with the following baselines:
 
@@ -545,7 +547,7 @@ achieves low latency (\textasciitilde 1.1 second) and high accuracy
 data every second after the \texttt{Window} operation, one object in the queue
 leads to one second latency. \sysname{} manages to avoid queues for most times.
 
-\subsection{Performance with Various Network Delays}
+\subsection{Performance with Varying Network Delays}
 \label{sec:various-rtt}
 
 \sysname{} targets at wide area whose key characteristic is the large variation
@@ -572,8 +574,8 @@ as high as \SI{500}{ms}.
 \autoref{fig:ar-rtt} shows the runtime behavior with various added network
 delays. While the latency increases with the added delay, \sysname{} mostly
 manages to achieve sub-second latency for all conditions. We see a higher
-variation in latency and more outliers as network delay increases. This is
-caused by a slow congestion detection when the RTT is high. In terms of
+variation in latency and more outliers as network delay increases. High
+variation is due to slow congestion detection when the RTT is high. In terms of
 accuracy, because \sysname{} mostly stays in \texttt{Steady} state and accuracy
 only depends on the level of degradation, \sysname{} achieves similar accuracy
 for different network delays.

@@ -3,10 +3,10 @@
 
 %% Introduce graphs of operators model
 Most stream processing systems construct applications as a directed graph of
-operators~\cite{toshniwal2014storm, zaharia2013discretized}, where each operator
+operators~\cite{toshniwal2014storm, zaharia2013discretized}. Each operator
 transforms input streams into new streams. \sysname{} borrows the same
-computation model. We list some example operators, such as \texttt{map} and
-\texttt{skip}, in \autoref{tab:operators}.
+computation model.  \autoref{tab:operators} lists some example operators, such
+as \texttt{map} and \texttt{skip}.
 
 To integrate adaptation as a first-class abstraction, \sysname{} introduces
 \maybe{} operators that degrade data quality, yielding potential bandwidth

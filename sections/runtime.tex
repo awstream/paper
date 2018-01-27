@@ -93,9 +93,10 @@ sends back \spd{}. Below, we describe states and transitions.
   $B(c_{i+1}) \gg B(c_i)$. To allow a smooth increase, AC requests
   \texttt{Socket} to probe by sending additional traffic controlled by
   \texttt{probe\_gain} (in \texttt{inc\_pace()}, similar to
-  BBR~\cite{cardwell2017bbr}). \sysname{} stops probing under two conditions:
-  (1) upon \spd{}, it advances $c_i$; (2) upon \qc{} or \rc{}, it returns to
-  \texttt{Steady}.
+  BBR~\cite{cardwell2017bbr}). Raw data is used for probing if available,
+  otherwise we inject dummy traffic. \sysname{} stops probing under two
+  conditions: (1) upon \spd{}, it advances $c_i$; (2) upon \qc{} or \rc{}, it
+  returns to \texttt{Steady}.
 
 \end{itemize}
 

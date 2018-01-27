@@ -68,9 +68,8 @@ In addition to the scarcity and cost, the large variability of WAN bandwidth
 also affects streaming workloads. We conducted a day-long measurement with
 iPerf~\cite{iperf3} to study the pair-wise bandwidth between four Amazon EC2
 sites (N. California, N. Virginia, Tokyo, Ireland).  The results show large
-variance in almost all pairs---\autoref{fig:bw} is one such pair.\footnote{The
-  measurements of other pairs are in the appendix.} There are occasions when the
-available bandwidth is below 25\% of the maximum bandwidth.
+variance in almost all pairs---\autoref{fig:bw} is one such pair. There are
+occasions when the available bandwidth is below 25\% of the maximum bandwidth.
 
 \begin{figure}
   \centering
@@ -91,12 +90,25 @@ cellular networks~\cite{nikravesh2014mobile}.
 \subsection{Motivation for \sysname{}}
 \label{subsec:motivation}
 
+\begin{figure*}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
+  \vspace{-0.8em}
+  \caption{The measured bandwidth and application accuracy for two video
+    analytics applications. (1) Manual policies lack precision without
+    measurements and need to handle multiple dimensions (as in a-d). (2)
+    Application-specific optimizations do not generalize: degrading frame rates
+    works well for stationary camera (a), but not for mobile camera (c). (e-h)
+    shows example frames.}
+  \label{fig:app-specific}
+\end{figure*}
+
 To address bandwidth limits, existing solutions use manual policies or
 application-specific solutions. We discuss their drawbacks to motivate
 \sysname{} (design in \autoref{sec:system}).
 
-\para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation}
-pioneered the use of degradation to address bandwidth limits in wide area. While
+\para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
+the first to use degradation to address bandwidth limits in wide area. While
 effective in comparison to non-adaptive systems, JetStream requires developers
 to write manual policies, e.g. \textit{``if bandwidth is insufficient, switch to
   sending images at 75\% fidelity, then 50\% if there still isn't enough
@@ -136,18 +148,6 @@ the resolution is a poor match for video analytics that relies on image
 details~\cite{lowe2004distinctive, viola2001rapid}. For example,
 \hyperref[fig:app-specific]{Fig.~3b} shows that pedestrian detection accuracy
 drops fast when reducing resolutions as targets are small.
-
-\begin{figure*}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
-  \caption{The measured bandwidth and application accuracy for two video
-    analytics applications. (1) Manual policies lack precision without
-    measurements and need to handle multiple dimensions (as in a-d). (2)
-    Application-specific optimizes does not generalize: degrading frame rates
-    works well for stationary camera (a), but not for mobile camera (c). (e-h)
-    shows example frames.}
-  \label{fig:app-specific}
-\end{figure*}
 
 Similar applications face different data distributions, as shown in
 \autoref{fig:app-specific} between stationary cameras detecting pedestrians (up)

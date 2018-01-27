@@ -57,17 +57,17 @@ follows:
   \end{tabular}
   \caption{Notations used in this paper.}
   \label{tab:notations}
-  \vspace{-1em}
+  \vspace{-3em}
 \end{table}
 
 Because \sysname{} allows arbitrary functions as the degradation functions, it
 does not assume a closed-form relationship for $B(c)$ and $A(c)$. Instead,
 \sysname{} takes a data-driven approach: profiling applications with
 developer-supplied training data.  We measure $B(c)$ at the point of
-\textit{transmission}. The accuracy $A(c)$ is measured either against the
-\textit{ground-truth}, or the reference results when \textit{all degradation
-  operations are off}.  We show examples of concrete knobs, configurations,
-accuracy functions when we present applications in \autoref{tab:apps}.
+transmission. The accuracy $A(c)$ is measured either against the groundtruth, or
+the reference results when all degradation operations are off.  We show examples
+of knobs, configurations, and accuracy functions when we present applications in
+\autoref{sec:implementation}.
 
 \para{Offline Profiling.} We first use an offline process to build a bootstrap
 profile (or default profile).  \sysname{} makes no assumptions on the
@@ -103,7 +103,7 @@ is expensive. If the profiling takes too much time, the newly-learned profile
 may already be stale. \sysname{} uses a combination of parallelization and
 sampling to speed up profiling, as below:
 
-\begin{itemize}[leftmargin=*, topsep=0pt, itemsep=0pt]
+\begin{itemize}[leftmargin=*, topsep=3pt]
 
 \item Parallelization with degradation-aware scheduling. Evaluating each
   configuration takes a different amount of time. Typically, an increase in the
