@@ -23,7 +23,7 @@ primarily focus on fault-tolerant streaming in the context of a single
 cluster. When facing back pressure, Storm~\cite{toshniwal2014storm}, Spark
 Streaming~\cite{zaharia2013discretized} and Heron~\cite{sanjeev2015twitter} only
 throttle data ingestion; Apache Flink~\cite{carbone2015apache} uses edge-by-edge
-backpressure techniques similar to TCP flow control;
+back-pressure techniques similar to TCP flow control;
 Faucet~\cite{lattuada2016faucet} leaves the flow control logic up to developers.
 While our work has a large debt to the prior streaming works, \sysname{} targets
 at the wide area and explicitly explores the trade-off between data fidelity and
@@ -56,8 +56,8 @@ Clarinet~\cite{viswanathan2016clarinet}, etc. They minimize data movement by
 incorporating heterogeneous wide-area bandwidth information into query
 optimization and data/task placement. While effective in speeding up analytics,
 these systems focus on batch tasks such as MapReduce jobs or SQL queries. Such
-tasks are often executed once, without real time constrain. In contrast,
-\sysname{} processes streams continuously in real time.
+tasks are often executed infrequently and without real time constrain. In
+contrast, \sysname{} processes streams continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.

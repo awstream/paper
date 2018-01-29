@@ -9,6 +9,14 @@ client, or runtime as server---with command line arguments.  We have implemented
 the deployment manager that can start, stop, and update clients/servers as shell
 scripts.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/apps.pdf}
+  \caption{Three \sysname{} applications: augmented reality, pedestrian
+    detection, and distributed Top-K.}
+  \label{fig:three-apps}
+\end{figure}
+
 \begin{table}
   \footnotesize
   \centering
@@ -34,7 +42,7 @@ scripts.
     testing: 16 days} \\
     \bottomrule
   \end{tabular}
-  \caption{\sysname{} Applications}
+  \caption{Application details.}
   \label{tab:apps}
   \vspace{-1em}
 \end{table}
@@ -83,14 +91,6 @@ GPU-accelerated implementation is used. Because we do not recognize individual
 pedestrians, a successful detection in this case only requires matching the
 bounding box. Our evaluation uses MOT16 dataset~\cite{milan2016mot16} for both
 profiling and runtime.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/apps.pdf}
-  \caption{Three applications: augmented reality, pedestrian detection, and
-    distributed Top-K.}
-  \label{fig:three-apps}
-\end{figure}
 
 \begin{figure}
   \centering
