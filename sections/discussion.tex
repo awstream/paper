@@ -19,13 +19,13 @@ can handle faults in existing systems, such as Spark
 Streaming~\cite{zaharia2013discretized}, it is difficult to make edge clients
 failure-oblivious.  We leave failure detection and recovery as a future work.
 
-\para{Profile Modeling.} \sysname{} currently does not model $B(c)$/$A(c)$. It
-performs an exhaustive search when profiling. While parallelism and sampling
-techniques can speed this up, \sysname{} can benefit further from statistical
-techniques. Bayesian Optimization~\cite{snoek2012practical}, as demonstrated by
-CherryPick~\cite{alipourfard2017cherrypick}, models black-box functions and
-speeds up profiling by searching for near-optimal configurations. We plan to
-explore this direction to improve our profiling.
+\para{Profile Modeling.} \sysname{} currently does not model $B(c)$ or
+$A(c)$. It performs an exhaustive search when profiling. While parallelism and
+sampling techniques can speed this up, \sysname{} can benefit further from
+statistical techniques. Bayesian Optimization~\cite{snoek2012practical}, as
+demonstrated by CherryPick~\cite{alipourfard2017cherrypick}, models black-box
+functions and speeds up profiling by searching for near-optimal
+configurations. We plan to explore this direction to improve our profiling.
 
 % \para{Expressiveness}: Our \maybe{} APIs allow an easy integration with
 % existing stream processing systems. While it follows the operator model,

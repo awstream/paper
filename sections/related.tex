@@ -16,18 +16,16 @@ Borealis~\cite{abadi2005design},
 TelegraphCQ~\cite{chandrasekaran2003telegraphcq}, are the early academic
 explorations that pioneered the use of dataflow models with specialized
 operators for stream processing. Recent research projects and open-source
-systems, such as MillWheel~\cite{akidau2013millwheel},
-Storm~\cite{toshniwal2014storm}, Heron~\cite{sanjeev2015twitter}, Spark
-Streaming~\cite{zaharia2013discretized}, Apache Flink~\cite{carbone2015apache},
-primarily focus on fault-tolerant streaming in the context of a single
-cluster. When facing back pressure, Storm~\cite{toshniwal2014storm}, Spark
-Streaming~\cite{zaharia2013discretized} and Heron~\cite{sanjeev2015twitter} only
-throttle data ingestion; Apache Flink~\cite{carbone2015apache} uses edge-by-edge
-back-pressure techniques similar to TCP flow control;
-Faucet~\cite{lattuada2016faucet} leaves the flow control logic up to developers.
-While our work has a large debt to the prior streaming works, \sysname{} targets
-at the wide area and explicitly explores the trade-off between data fidelity and
-freshness.
+systems~\cite{akidau2013millwheel, toshniwal2014storm, sanjeev2015twitter,
+  zaharia2013discretized, carbone2015apache} primarily focus on fault-tolerance
+in the context of a single cluster. When facing back pressure,
+Storm~\cite{toshniwal2014storm}, Spark Streaming~\cite{zaharia2013discretized}
+and Heron~\cite{sanjeev2015twitter} throttle data ingestion; Apache
+Flink~\cite{carbone2015apache} uses edge-by-edge back-pressure techniques
+similar to TCP flow control; Faucet~\cite{lattuada2016faucet} leaves the flow
+control logic up to developers.  While our work has a large debt to prior
+streaming work, \sysname{} targets at the wide area and explicitly explores the
+trade-off between data fidelity and freshness.
 
 \para{Approximate Analytics.} The idea of degrading computation fidelity for
 responsiveness is also explored elsewhere. For SQL queries, online
@@ -36,14 +34,14 @@ GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
 on a statistical model of SQL operators. For real-time processing,
 MEANTIME~\cite{farrell2016meantime} uses approximation to guarantee satisfying
 real-time deadlines. For video analytics, VideoStorm~\cite{zhang2017live}
-optimizes video stream \textit{processing} within lager clusters by exploiting
-approximation and delay-tolerance for resource management and allocation. The
-trade-off between available resource and application accuracy is a common theme
-among all these works. \sysname{} targets at wide-area streaming analytics, an
-emerging application domain especially with the advent of IoT\@.
+optimizes video \textit{processing} within lager clusters by exploiting
+approximation and delay-tolerance for resource management. The trade-off between
+available resource and application accuracy is a common theme among all these
+systems. \sysname{} targets at wide-area streaming analytics, an emerging
+application domain especially with the advent of IoT\@.
 
 \para{WAN-Aware Systems.} Geo-distributed systems need to cope with high latency
-and limited bandwidth. While some research projects, such as
+and limited bandwidth. While some systems, such as
 Vivace~\cite{cho2012surviving}, assume the network can prioritize a small amount
 of critical data to avoid delays under congestion, most systems reduce data
 transfer in the first place to avoid congestion. For example,
@@ -52,12 +50,12 @@ versions of the same file. Over the past two years, we have seen a plethora of
 geo-distributed analytical frameworks:
 WANalytics~\cite{vulimiri2015wananlytics}, Geode~\cite{vulimiri2015global},
 Iridium~\cite{pu2015low}, Pixida~\cite{kloudas2015pixida},
-Clarinet~\cite{viswanathan2016clarinet}, etc. They minimize data movement by
-incorporating heterogeneous wide-area bandwidth information into query
-optimization and data/task placement. While effective in speeding up analytics,
-these systems focus on batch tasks such as MapReduce jobs or SQL queries. Such
-tasks are often executed infrequently and without real time constrain. In
-contrast, \sysname{} processes streams continuously in real time.
+Clarinet~\cite{viswanathan2016clarinet}, etc. They incorporate heterogeneous
+wide-area bandwidth into query optimization to minimize data movement. While
+effective in speeding up analytics, these systems focus on batch tasks such as
+MapReduce jobs or SQL queries. Such tasks are often executed infrequently and
+without real time constrain. In contrast, \sysname{} processes streams
+continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.
@@ -100,15 +98,15 @@ latency.
 
 \para{QoS.} Most QoS work~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focuses on network-layer solutions that
-are not widely deployable. \sysname{} adopts an end-host and application-layer
-approach ready today for WAN. For existing application-layer
+are not widely deployable. \sysname{} adopts an end-host application-layer
+approach ready today for WAN. For other application-layer
 approaches~\cite{vandalore2001survey}, \sysname{}'s API can incorporate their
 techniques, such as encoding the number of layers as a knob to realize the
 layered approach in Rejaie et al~\cite{rejaie2000layered}. Fundamentally,
 \sysname{} does not provide hard QoS guarantees; instead \sysname{} maximizes
-achievable accuracy (application performance) with respect to bandwidth
-constraints, such that latency is minimized (system performance): a
-multidimensional optimization.
+achievable accuracy (application performance) and minimizes latency (system
+performance) with respect to bandwidth constraints: a multidimensional
+optimization.
 
 %% TCP, for example, adapts to available bandwidth by controlling the congestion
 %% window with AIMD~\cite{jacobson1988congestion}.  Previous work has proposed

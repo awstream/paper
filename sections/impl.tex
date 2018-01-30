@@ -9,13 +9,13 @@ client, or runtime as server---with command line arguments.  We have implemented
 the deployment manager that can start, stop, and update clients/servers as shell
 scripts.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/apps.pdf}
-  \caption{Three \sysname{} applications: augmented reality, pedestrian
-    detection, and distributed Top-K.}
-  \label{fig:three-apps}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=\columnwidth]{figures/apps.pdf}
+%   \caption{Three \sysname{} applications: augmented reality, pedestrian
+%     detection, and distributed Top-K.}
+%   \label{fig:three-apps}
+% \end{figure}
 
 \begin{table}
   \footnotesize
@@ -51,25 +51,17 @@ Using \sysname{}, we have built three applications: augmented reality (AR) that
 recognizes nearby objects on mobile phones, pedestrian detection (PD) for
 surveillance cameras, and a distributed log analysis to extract the Top-K mostly
 accessed files (TK). \autoref{tab:apps} summarizes the application-specific
-part: knobs, accuracy functions, and datasets for training/testing. Below we
-provide details about how we implement our three applications
-(\autoref{fig:three-apps}), including the libraries we use and how we integrate
-them into \sysname{}.
+part: knobs, accuracy functions, and datasets.
 
 \para{Augmented Reality.} We target at mobile augmented reality applications
-that recognize objects by offloading the heavy computation to resources
-elsewhere, e.g.\,the cloud.  Image-related operations use OpenCV
-3.1~\cite{opencvlibrary} and object recognition uses YOLO~\cite{darknet13,
-  redmon2016yolo9000}, a GPU-enabled pre-trained neural network. Videos are
-encoded with H.264~\cite{richardson2011h} because of its prevalence in existing
-systems. Our implementation uses GStreamer~\cite{gstreamer} with
-\texttt{x264enc} plugin. To integrate with \sysname{}, we first create a
-pipeline that exposes \texttt{appsrc} (to feed raw image data) and
-\texttt{appsink} (to get encoded bytes). The GStreamer main loop executes in a
-separate thread and \sysname{} communicates with it via Rust's channel. The
-\texttt{x264enc} uses the \texttt{zerolatency} preset and four threads. We use
-constant quality encoding and expose the quantization factor as a knob (in
-addition to image resolutions and frame rates).
+that recognize objects by offloading the heavy computation elsewhere, e.g.\,the
+cloud. We use OpenCV 3.1~\cite{opencvlibrary} for image-related operations and
+YOLO~\cite{darknet13, redmon2016yolo9000}, a GPU-enabled pre-trained neural
+network, for object recognition. Videos are encoded with
+H.264~\cite{richardson2011h} because of its prevalence in existing systems. Our
+implementation uses GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin
+(\texttt{zerolatency} and constant quality). The quantization factor is exposed
+as a knob (in addition to image resolutions and frame rates).
 
 Object recognition returns a list of bounding boxes with the type of the object,
 and each bounding box is a rectangle with normalized coordinates on the
@@ -84,13 +76,12 @@ home environment.
 \para{Pedestrian Detection.} This application analyzes streams of videos from
 installed CCTV cameras and detects pedestrians inside. We use a similar setup
 (OpenCV and GStreamer) as our augmented reality application except for the
-analytical function. To detect pedestrians, we use histogram of oriented
-gradients (HOG)~\cite{dalal2005histograms} with the default linear SVM
-classifier from OpenCV. To ensure real-time processing of frames,
-GPU-accelerated implementation is used. Because we do not recognize individual
-pedestrians, a successful detection in this case only requires matching the
-bounding box. Our evaluation uses MOT16 dataset~\cite{milan2016mot16} for both
-profiling and runtime.
+analytical function. To detect pedestrians, we use GPU-accelerated histogram of
+oriented gradients (HOG)~\cite{dalal2005histograms} with the default linear SVM
+classifier from OpenCV. Because we do not recognize individual pedestrians, a
+successful detection in this case only requires matching the bounding box. Our
+evaluation uses MOT16 dataset~\cite{milan2016mot16} for both profiling and
+runtime.
 
 \begin{figure}
   \centering
@@ -107,27 +98,24 @@ profiling and runtime.
 from geo-distributed servers to answer the \textit{Top-K}
 question~\cite{babcock2003distributed}, such as the Top-K most popular URLs, or
 the Top-K most access files. \autoref{fig:topk} shows our Top-K processing
-pipeline with example data. Source nodes first performs a \texttt{Window}
-operation to generate data summary, which is key-value pairs \texttt{(item:
-  count)} for each item. After the summary, the data size can still be too large
-because most real-world access patterns follow a long tail distribution: there
-is a large-but-irrelevant tail that contributes little to Top-K. The source
-nodes perform two degradation operations: (1) a head(\texttt{N}) operation that
-only takes the top \texttt{N} entries; (2) a threshold(\texttt{T}) that filters
-small entries whose count is smaller than \texttt{T}. These two operations are
-not orthogonal. Their impact on data size reduction and quality degradation
-depends on the data distribution.
+pipeline with example data. Source nodes first summarizes the data with
+\texttt{Window}. After the summary, the data size can still be too large because
+most real-world access patterns follow a long tail distribution: there is a
+large-but-irrelevant tail that contributes little to Top-K. The source nodes
+perform two degradation operations: (1) a head(\texttt{N}) operation that only
+takes the top \texttt{N} entries; (2) a threshold(\texttt{T}) that filters small
+entries whose count is smaller than \texttt{T}. These two operations are not
+orthogonal. Their impact on data size reduction and quality degradation depends
+on the data distribution.
 
 For accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation
 measure of the concordance between two ranked list. The output ranges from
 \(-1\) to 1, representing no agreement to complete agreement. To integrate with
 \sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1] with a linear
-transformation.
-
-Our Top-K application aims to find the Top-50 most accessed files from web
-server logs. We use Apache log files that record and store user access
-statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs are
-split into four groups, simulating four geo-distributed nodes monitoring web
+transformation. Our Top-K application aims to find the Top-50 most accessed
+files from web server logs. We use Apache log files that record and store user
+access statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs
+are split into four groups, simulating four geo-distributed nodes monitoring web
 accesses. To match the load of popular web servers, we compress one hour's logs
 into one second.
 
