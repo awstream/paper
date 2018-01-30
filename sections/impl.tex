@@ -57,11 +57,11 @@ mobile phones that recognize nearby objects by offloading the heavy computation
 elsewhere, e.g.\,the cloud. Our implementation uses OpenCV
 3.1~\cite{opencvlibrary} for image-related operations and YOLO~\cite{darknet13,
   redmon2016yolo9000}, a GPU-enabled pre-trained neural network, for object
-recognition. Videos are encoded with H.264~\cite{richardson2011h} because of its
-prevalence in existing systems. Our implementation uses
-GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin (\texttt{zerolatency}
-and constant quality). The quantization factor is exposed as a knob in addition
-to image resolutions and frame rates.
+recognition. Videos are encoded with H.264~\cite{richardson2011h}. Our
+implementation uses GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin
+(\texttt{zerolatency} and constant quality). The quantization factor affecting
+encoding quality becomes a knob in addition to image resolutions and frame
+rates.
 
 Object recognition returns a list of bounding boxes with the type of the
 object. Each bounding box is a rectangle with normalized coordinates on the
@@ -87,37 +87,37 @@ runtime.
   \centering
   \includegraphics[width=\columnwidth]{figures/topk.pdf}
   \caption{A distributed Top-K application with two degradation operations:
-    \texttt{head} and \texttt{threshold}. Discarding data with these two
-    operations will affect final results. In this example, \texttt{f2}, which is
+    \texttt{head} and \texttt{threshold}. In this example, \texttt{f2}, which is
     not in Top-1 for either client, becomes the global Top-1 after the merge. It
-    would have been purged if the clients use threshold T=3.}
+    would have been purged if the clients use threshold T=3, demonstrating
+    degradation that reduces data sizes affects fidelity.}
   \label{fig:topk}
+  \vspace{-0.5em}
 \end{figure}
 
-\para{Distributed Top-K.} This application aggregates server logs from
+\para{Distributed Top-K.} This application aggregates machine logs from
 geo-distributed servers to find out the Top-K most accessed files, similar to
-many Top-K queries~\cite{babcock2003distributed}. Before each source node sends
-the potentially-large raw log, it may first preprocess the data (such as using
-\texttt{Window}) to reduce the data size. After the preprocessing, the data size
-can still be too large because many real-world access patterns follow a long
-tail distribution: there is a large-but-irrelevant tail that contributes little
-to the final Top-K. Each source node then performs two degradation operations:
-(1) a head(\texttt{N}) operation that only takes the top \texttt{N} entries; (2)
-a threshold(\texttt{T}) that filters small entries whose count is smaller than
-\texttt{T}. These two operations are not orthogonal. Their impact on data size
-reduction and quality degradation depends on the data
-distribution. \autoref{fig:topk} illustrates our processing pipeline with
-example data.
+many Top-K queries~\cite{babcock2003distributed}. \autoref{fig:topk} illustrates
+our processing pipeline with two degradation operations. First each source node
+summarizes the log using \texttt{Window} operator to reduce the data size, a
+pre-processing step. As many real-world access patterns follow a long tail
+distribution, there is a large-but-irrelevant tail that contributes little to
+the final Top-K. Each source node then filters the tail: (1) head(\texttt{N})
+takes the top \texttt{N} entries; (2) threshold(\texttt{T}) filters small
+entries whose count is smaller than \texttt{T}. These two operations affect the
+final result and the exact impact depends on data distribution. We implement
+these two operators by using \sysname{}'s \maybe{} abstraction.
 
-To measure the accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a
-correlation measure of the concordance between two ranked list. The output
-ranges from \(-1\) to 1, representing no agreement to complete agreement. To
-integrate with \sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1]
-with a linear transformation. For our evaluation, we set K as 50 and use Apache
-log files that record and store user access statistics for the
-\href{https://www.sec.gov}{SEC.gov} website. The logs are split into four
-groups, simulating four geo-distributed nodes monitoring web accesses. To match
-the load of popular web servers, we compress one hour's logs into one second.
+To measure the accuracy, we need to compare the correlation between two ranked
+list. Kendall's~$\tau$~\cite{abdi2007kendall} is a correlation measure of the
+concordance between two ranked list. The output ranges from \(-1\) to 1,
+representing no agreement to complete agreement. To integrate with \sysname{},
+we convert Kendall's~$\tau$ to [0, 1] with a linear transformation. For our
+evaluation, we set K as 50 and use Apache log files that record and store user
+access statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs
+are split into four groups, simulating four geo-distributed nodes monitoring web
+accesses. To match the load of popular web servers, we compress one hour's logs
+into one second.
 
 %%% Local Variables:
 %%% mode: latex

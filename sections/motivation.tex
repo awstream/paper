@@ -31,15 +31,15 @@ management.
 % streams of 120 Hz high-precision values accurate to 100 ns. This amounts to
 % 1.4 million points per second~\cite{andersen2016btrdb}.
 
-\para{Infrastructure Monitoring.} Large organizations today are managing
-10--100s of data centers (DCs) and edge clusters
-worldwide~\cite{calder2013mapping}. This geo-distributed infrastructure
-continuously produces large volumes of data such as data access logs, server
-monitoring logs, and performance counters~\cite{alspaugh2014analyzing,
-  pu2015low, vulimiri2015global}. While most log analysis today runs in a batch
-mode on a daily basis, there is a trend towards analyzing logs in real time for
-rapid optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve
-the overall efficiency by optimizing data placement if the access logs can be
+\para{Infrastructure Monitoring.} Large organizations today are managing tens of
+datacenters and edge clusters worldwide~\cite{calder2013mapping}. This
+geo-distributed infrastructure continuously produces large volumes of data such
+as data access logs, server monitoring logs, and performance
+counters~\cite{alspaugh2014analyzing, pu2015low, vulimiri2015global}. While most
+log analysis today runs in a batch mode on a daily basis, there is a trend
+towards analyzing logs in real time for rapid
+optimization~\cite{rabkin2014aggregation}. For example, CDNs can improve the
+overall efficiency by optimizing data placement if the access logs can be
 processed in real time. In Industrial IoT, large-scale real-time sensor
 monitoring is becoming pervasive to detect anomalies, direct controls, and
 predict maintenance ~\cite{balani2016enterprise, ge}.
@@ -59,12 +59,11 @@ predict maintenance ~\cite{balani2016enterprise, ge}.
 \subsection{Wide-area Bandwidth Characteristics}
 \label{sec:wide-area-bandwidth}
 
-WAN bandwidth is insufficient and costly, as demonstrated by recent WAN-aware
-systems~\cite{hsieh17gaia, pu2015low, vulimiri2015wananlytics,
-  vulimiri2015global}. Using Amazon EC2 as a case study, the WAN bandwidth
-capacity is 15x smaller than their LAN bandwidth on average, and up to 60x
-smaller in the worst case~\cite{hsieh17gaia}. In terms of pricing, the average
-WAN bandwidth cost is up to 38x of the cost of renting two
+WAN bandwidth is insufficient and costly~\cite{hsieh17gaia, pu2015low,
+  vulimiri2015wananlytics, vulimiri2015global}. Using Amazon EC2 as a case
+study, the WAN bandwidth capacity is 15x smaller than their LAN bandwidth on
+average, and up to 60x smaller in the worst case~\cite{hsieh17gaia}. In terms of
+pricing, the average WAN bandwidth cost is up to 38x of the cost of renting two
 machines~\cite{amazon2017pricing, hsieh17gaia}.
 
 In addition to the scarcity and cost, the large variability of WAN bandwidth
@@ -77,7 +76,6 @@ occasions when the available bandwidth is below 25\% of the maximum bandwidth.
 \begin{figure}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/aws-variation.pdf}
-  \vspace{-0.8em}
   \caption{Bandwidth variations throughout the day between Amazon EC2 sites
     (from Ireland to California).}
   \label{fig:bw}
@@ -86,9 +84,9 @@ occasions when the available bandwidth is below 25\% of the maximum bandwidth.
 
 The back-haul links between EC2 sites are better---if not at least
 representative---in comparison to general WAN links. Similar scarcity and
-variations have been reported in wireless networks~\cite{biswas2015large},
-broadband access networks~\cite{grover2013peeking, sundaresan2014bismark} and
-cellular networks~\cite{nikravesh2014mobile}.
+variations exist in wireless networks~\cite{biswas2015large}, broadband access
+networks~\cite{grover2013peeking, sundaresan2014bismark} and cellular
+networks~\cite{nikravesh2014mobile}.
 
 \subsection{Motivation for \sysname{}}
 \label{subsec:motivation}
@@ -96,7 +94,6 @@ cellular networks~\cite{nikravesh2014mobile}.
 \begin{figure*}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
-  \vspace{-0.8em}
   \caption{The measured bandwidth and application accuracy for two video
     analytics applications. (1) Manual policies lack precision without
     measurements and need to handle multiple dimensions (as in a-d). (2)

@@ -9,7 +9,6 @@ latency and uses Pareto-optimal configurations to maximize accuracy.
   \includegraphics[width=\linewidth]{figures/runtime-adaptation.pdf}
   \caption{Runtime adaptation system architecture.}
   \label{fig:runtime}
-  \vspace{-1em}
 \end{figure}
 
 \autoref{fig:runtime} shows our runtime system architecture. \sysname{}
@@ -24,11 +23,11 @@ updating the configuration. After the data is sent through the network,
 \texttt{Receiver} delivers data to the application analytics. \texttt{Receiver}
 also performs congestion detection and extracts raw data, if it is present.  It
 tracks the minimal latency (similar to how BBR tracks
-\texttt{RTprop}~\cite{cardwell2017bbr} within a filter window) and reports
-sudden application-level latency spikes to clients as congestion signals
-(\rc{}). Raw data is only transmitted when the queue is empty and online
-profiling is enabled. If a new profile is learned by the online profiler, it is
-fed back to AC for subsequent adaptation.
+\texttt{RTprop}~\cite{cardwell2017bbr}) and reports sudden application-level
+latency spikes to clients as congestion signals (\rc{}). Raw data is only
+transmitted when the queue is empty and online profiling is enabled. If a new
+profile is learned by the online profiler, it is fed back to AC for subsequent
+adaptation.
 
 \autoref{fig:cc-sm} shows the adaptation algorithm with a state machine model
 and \autoref{fig:cc-ex} shows the state transitions with an example. We first
@@ -42,16 +41,16 @@ threshold; and \rc{} when \texttt{Receiver} detects congestion. AC can query
 \texttt{Socket} for delivery rate $R$ (arrow not shown) or request it to probe
 ($\text{AC}_{\text{Probe}}$) for a target bandwidth, often $B(c_{i+1})$. If
 there is no congestion during the probing and $R > B(c_{i+1})$, \texttt{Socket}
-sends back \spd{}. Below, we describe states and transitions.
+sends back \spd{}. Below, we describe each state and transitions.
 
 \begin{figure}
   \begin{subfigure}[t]{\columnwidth}
     \centering
     \includegraphics[width=\columnwidth]{figures/cc.pdf}
     \caption{Rate adaptation as a state machine.}
-    \vspace{1em}
     \label{fig:cc-sm}
   \end{subfigure}
+  \vspace{0.5em}
   \\
   \centering
   \begin{subfigure}[t]{\columnwidth}
@@ -62,7 +61,6 @@ sends back \spd{}. Below, we describe states and transitions.
   \end{subfigure}
   \caption{Runtime adaptation algorithm.}
   \label{fig:cc}
-  \vspace{-1em}
 \end{figure}
 
 \begin{itemize}[leftmargin=*, topsep=3pt, itemsep=0pt]

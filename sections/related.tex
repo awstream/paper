@@ -4,18 +4,17 @@
 \paraf{JetStream.} JetStream pioneered the use of aggregation and degradation to
 reduce latency for wide-area streaming analytics. Compared to JetStream,
 \sysname{} makes the following major contributions: $(1)$~a novel API design to
-specify degradation operations in a simple and composable way; $(2)$~automatic
-offline profiling to search for Pareto-optimal configurations; $(3)$~online
-profiling to address model drift; $(4)$~an improved runtime implementation that
-utilizes the learned profile and achieves sub-second latency (comparison made in
+specify degradation in a simple and composable way; $(2)$~automatic offline
+profiling to search for Pareto-optimal configurations; $(3)$~online profiling to
+address model drift; $(4)$~an improved runtime that utilizes the learned profile
+and achieves sub-second latency (comparison in
 \autoref{sec:runtime-adaptation}); $(5)$~support for different resource
 allocation policies for multiple applications.
 
-\para{Stream Processing Systems.} Streaming databases, such as
-Borealis~\cite{abadi2005design},
-TelegraphCQ~\cite{chandrasekaran2003telegraphcq}, are the early academic
-explorations that pioneered the use of dataflow models with specialized
-operators for stream processing. Recent research projects and open-source
+\para{Stream Processing Systems.} Early streaming
+databases~\cite{abadi2005design, chandrasekaran2003telegraphcq} have explored
+the use of dataflow models with specialized operators for stream
+processing. Recent research projects and open-source
 systems~\cite{akidau2013millwheel, toshniwal2014storm, sanjeev2015twitter,
   zaharia2013discretized, carbone2015apache} primarily focus on fault-tolerance
 in the context of a single cluster. When facing back pressure,
@@ -28,34 +27,26 @@ streaming work, \sysname{} targets at the wide area and explicitly explores the
 trade-off between data fidelity and freshness.
 
 \para{Approximate Analytics.} The idea of degrading computation fidelity for
-responsiveness is also explored elsewhere. For SQL queries, online
-aggregation~\cite{hellerstein1997online}, BlinkDB~\cite{agarwal2013blinkdb} and
-GRASS~\cite{ananthanarayanan2014grass} speed up queries with partial data based
-on a statistical model of SQL operators. For real-time processing,
-MEANTIME~\cite{farrell2016meantime} uses approximation to guarantee satisfying
-real-time deadlines. For video analytics, VideoStorm~\cite{zhang2017live}
-optimizes video \textit{processing} within lager clusters by exploiting
-approximation and delay-tolerance for resource management. The trade-off between
-available resource and application accuracy is a common theme among all these
-systems. \sysname{} targets at wide-area streaming analytics, an emerging
+responsiveness is also explored elsewhere: such as SQL
+queries~\cite{hellerstein1997online, agarwal2013blinkdb,
+  ananthanarayanan2014grass}, real-time processing~\cite{farrell2016meantime} ,
+and video processing within large clusters~\cite{zhang2017live}. The trade-off
+between available resource and application accuracy is a common theme among all
+these systems. \sysname{} targets at wide-area streaming analytics, an emerging
 application domain especially with the advent of IoT\@.
 
 \para{WAN-Aware Systems.} Geo-distributed systems need to cope with high latency
-and limited bandwidth. While some systems, such as
-Vivace~\cite{cho2012surviving}, assume the network can prioritize a small amount
-of critical data to avoid delays under congestion, most systems reduce data
-transfer in the first place to avoid congestion. For example,
-LBFS~\cite{muthitacharoen2001low} exploits similarities between files or
-versions of the same file. Over the past two years, we have seen a plethora of
-geo-distributed analytical frameworks:
-WANalytics~\cite{vulimiri2015wananlytics}, Geode~\cite{vulimiri2015global},
-Iridium~\cite{pu2015low}, Pixida~\cite{kloudas2015pixida},
-Clarinet~\cite{viswanathan2016clarinet}, etc. They incorporate heterogeneous
-wide-area bandwidth into query optimization to minimize data movement. While
-effective in speeding up analytics, these systems focus on batch tasks such as
-MapReduce jobs or SQL queries. Such tasks are often executed infrequently and
-without real time constrain. In contrast, \sysname{} processes streams
-continuously in real time.
+and limited bandwidth. While some systems assume the network can prioritize a
+small amount of critical data under congestion~\cite{cho2012surviving}, most
+systems reduce data sizes in the first place to avoid congestion,
+e.g.\,LBFS~\cite{muthitacharoen2001low}. Over the past two years, we have seen a
+plethora of geo-distributed analytical frameworks~\cite{vulimiri2015wananlytics,
+  vulimiri2015global, pu2015low, kloudas2015pixida, viswanathan2016clarinet}
+that incorporate heterogeneous wide-area bandwidth into query optimization to
+minimize data movement. While effective in speeding up analytics, these systems
+focus on batch tasks such as MapReduce jobs or SQL queries. Such tasks are often
+executed infrequently and without real time constrain. In contrast, \sysname{}
+processes streams continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.
@@ -79,22 +70,21 @@ continuously in real time.
 %% \cite{heintz2015towards} discusses the complex trade-offs involved in
 %% wide-area analytics.
 
-\para{(Adaptive) Video Streaming.} Multimedia streaming protocols, such as
-RTP~\cite{schulzrinne2006rtp}, aim to be fast instead of reliable. While they
-can achieve low latency, their accuracy can be poor without adaptation.  Recent
-work on multimedia streaming has moved towards using TCP (primarily HTTP-based)
-and focused on designing good adaptation strategy to improve QoE, as in research
-projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and industrial
-efforts (HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic,
-  sodagar2011mpeg}). These adaptation strategies work well for video on demand
-(VoD), but they are not for ultra low latency streaming: $(i)$ they use pulling:
-the client keeps refreshing index file and fetching new chunks; $(ii)$ chunking
-introduces latency: each chunk has to be ready before the client fetches.  In
-addition, because they optimize QoE for humans, the adaptation can be a mismatch
-for analytics that rely on image details (e.g.\,6\% accuracy for PD). In
-contrast, \sysname{} learns an adaptation strategy for each application (also
-not limited to video analytics); and the runtime is optimized for ultra low
-latency.
+\para{(Adaptive) Video Streaming.} Multimedia streaming protocols,
+e.g.\,RTP~\cite{schulzrinne2006rtp}, aim to be fast instead of reliable. While
+they can achieve low latency, their accuracy can be poor without adaptation.
+Recent work on multimedia streaming has moved towards using TCP (primarily
+HTTP-based) and focused on designing good adaptation strategy to improve QoE, as
+in research projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and
+industrial efforts (HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic,
+  sodagar2011mpeg}). These adaptation strategies work well for video on demand,
+but not for low latency streaming. They use pulling: the client keeps refreshing
+index file and fetching new chunks. And chunking introduces latency: each chunk
+has to be ready before the client can fetch. In addition, because they optimize
+QoE for humans, the adaptation can be a mismatch for analytics that rely on
+image details (e.g.\,6\% accuracy for PD). In contrast, \sysname{} learns an
+adaptation strategy for each application (also not limited to video analytics);
+and the runtime is optimized for low latency.
 
 \para{QoS.} Most QoS work~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focuses on network-layer solutions that
