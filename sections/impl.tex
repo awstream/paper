@@ -5,9 +5,7 @@ While our proposed API is general and not language specific, we have implemented
 \sysname{} prototype in Rust (\textasciitilde 4000 lines of code). \sysname{} is
 open source on GitHub.\footnote{URL elided for anonymity.}  Applications use
 \sysname{} as a library and configure the execution mode---profiling, runtime as
-client, or runtime as server---with command line arguments.  We have implemented
-the deployment manager that can start, stop, and update clients/servers as shell
-scripts.
+client, or runtime as server---with command line arguments.
 
 % \begin{figure}
 %   \centering
@@ -42,6 +40,7 @@ scripts.
     testing: 16 days} \\
     \bottomrule
   \end{tabular}
+  \vspace{0.5em}
   \caption{Application details.}
   \label{tab:apps}
   \vspace{-1em}
@@ -51,20 +50,21 @@ Using \sysname{}, we have built three applications: augmented reality (AR) that
 recognizes nearby objects on mobile phones, pedestrian detection (PD) for
 surveillance cameras, and a distributed log analysis to extract the Top-K mostly
 accessed files (TK). \autoref{tab:apps} summarizes the application-specific
-part: knobs, accuracy functions, and datasets.
+parts: knobs, accuracy functions, and datasets.
 
-\para{Augmented Reality.} We target at mobile augmented reality applications
-that recognize objects by offloading the heavy computation elsewhere, e.g.\,the
-cloud. We use OpenCV 3.1~\cite{opencvlibrary} for image-related operations and
-YOLO~\cite{darknet13, redmon2016yolo9000}, a GPU-enabled pre-trained neural
-network, for object recognition. Videos are encoded with
-H.264~\cite{richardson2011h} because of its prevalence in existing systems. Our
-implementation uses GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin
-(\texttt{zerolatency} and constant quality). The quantization factor is exposed
-as a knob (in addition to image resolutions and frame rates).
+\para{Augmented Reality.} We target at augmented reality applications running on
+mobile phones that recognize nearby objects by offloading the heavy computation
+elsewhere, e.g.\,the cloud. Our implementation uses OpenCV
+3.1~\cite{opencvlibrary} for image-related operations and YOLO~\cite{darknet13,
+  redmon2016yolo9000}, a GPU-enabled pre-trained neural network, for object
+recognition. Videos are encoded with H.264~\cite{richardson2011h} because of its
+prevalence in existing systems. Our implementation uses
+GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin (\texttt{zerolatency}
+and constant quality). The quantization factor is exposed as a knob in addition
+to image resolutions and frame rates.
 
-Object recognition returns a list of bounding boxes with the type of the object,
-and each bounding box is a rectangle with normalized coordinates on the
+Object recognition returns a list of bounding boxes with the type of the
+object. Each bounding box is a rectangle with normalized coordinates on the
 image. We compare the detection against the reference result from raw data, and
 declare it success if the intersection over union (IOU) is greater than
 50\%~\cite{everingham2010pascal} and the object type matches. We use F1
@@ -94,30 +94,30 @@ runtime.
   \label{fig:topk}
 \end{figure}
 
-\para{Distributed Top-K.} Many monitoring applications aggregate information
-from geo-distributed servers to answer the \textit{Top-K}
-question~\cite{babcock2003distributed}, such as the Top-K most popular URLs, or
-the Top-K most access files. \autoref{fig:topk} shows our Top-K processing
-pipeline with example data. Source nodes first summarizes the data with
-\texttt{Window}. After the summary, the data size can still be too large because
-most real-world access patterns follow a long tail distribution: there is a
-large-but-irrelevant tail that contributes little to Top-K. The source nodes
-perform two degradation operations: (1) a head(\texttt{N}) operation that only
-takes the top \texttt{N} entries; (2) a threshold(\texttt{T}) that filters small
-entries whose count is smaller than \texttt{T}. These two operations are not
-orthogonal. Their impact on data size reduction and quality degradation depends
-on the data distribution.
+\para{Distributed Top-K.} This application aggregates server logs from
+geo-distributed servers to find out the Top-K most accessed files, similar to
+many Top-K queries~\cite{babcock2003distributed}. Before each source node sends
+the potentially-large raw log, it may first preprocess the data (such as using
+\texttt{Window}) to reduce the data size. After the preprocessing, the data size
+can still be too large because many real-world access patterns follow a long
+tail distribution: there is a large-but-irrelevant tail that contributes little
+to the final Top-K. Each source node then performs two degradation operations:
+(1) a head(\texttt{N}) operation that only takes the top \texttt{N} entries; (2)
+a threshold(\texttt{T}) that filters small entries whose count is smaller than
+\texttt{T}. These two operations are not orthogonal. Their impact on data size
+reduction and quality degradation depends on the data
+distribution. \autoref{fig:topk} illustrates our processing pipeline with
+example data.
 
-For accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a correlation
-measure of the concordance between two ranked list. The output ranges from
-\(-1\) to 1, representing no agreement to complete agreement. To integrate with
-\sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1] with a linear
-transformation. Our Top-K application aims to find the Top-50 most accessed
-files from web server logs. We use Apache log files that record and store user
-access statistics for the \href{https://www.sec.gov}{SEC.gov} website. The logs
-are split into four groups, simulating four geo-distributed nodes monitoring web
-accesses. To match the load of popular web servers, we compress one hour's logs
-into one second.
+To measure the accuracy, we use Kendall's~$\tau$~\cite{abdi2007kendall}, a
+correlation measure of the concordance between two ranked list. The output
+ranges from \(-1\) to 1, representing no agreement to complete agreement. To
+integrate with \sysname{}, we convert Kendall's~$\tau$ to the range of [0, 1]
+with a linear transformation. For our evaluation, we set K as 50 and use Apache
+log files that record and store user access statistics for the
+\href{https://www.sec.gov}{SEC.gov} website. The logs are split into four
+groups, simulating four geo-distributed nodes monitoring web accesses. To match
+the load of popular web servers, we compress one hour's logs into one second.
 
 %%% Local Variables:
 %%% mode: latex

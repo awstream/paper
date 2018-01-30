@@ -10,8 +10,8 @@ as \texttt{map} and \texttt{skip}.
 
 To integrate adaptation as a first-class abstraction, \sysname{} introduces
 \maybe{} operators that degrade data quality, yielding potential bandwidth
-savings.  Our API design has three considerations.  $(i)$~To free developers
-from specifying exact rules, the API should allow specifications with
+savings.  Our API design has three considerations. $(i)$~To free developers from
+specifying exact rules, the API should allow specifications with
 options. $(ii)$~To allow combining multiple dimensions, the API should be
 modular: each operator is a unit and the developer can chain multiple
 operators. $(iii)$~To support flexible integration with arbitrary degradation
@@ -53,33 +53,34 @@ quantizes a stream of integers in Rust:
     & ... & ... \\
     \bottomrule
   \end{tabular}
+  \vspace{0.2em}
   \caption{Stream processing operators in \sysname{}. \texttt{Vec<T>} represents
     a list of elements with type \texttt{T}.}
   \label{tab:operators}
-  \vspace{-1em}
+  \vspace{-0.5em}
 \end{table*}
 
 \vspace{-2pt}
 \begin{lstlisting}
 let quantized_stream = vec![1, 2, 3, 4].into_stream()
-  .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
-  .collect();
+    .maybe(vec![2, 4], |k, val| val.wrapping_div(k))
+    .collect();
 \end{lstlisting}
 
 The snippet creates a stream of integers, chains a degradation operation, and
-collects the execution result. In this example, the knob is [2, 4], and the
+collects the execution result. In this example, the knob is [2, 4] and the
 degradation function performs a wrapping (modular) division where the divisor is
 the chosen knob. The knob value modifies the quantization level, affecting the
 output: [1, 2, 3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1]
 (k=4). If the stream is then encoded---e.g. run-length encoding as in
-JPEG~\cite{wallace1992jpeg}---for transmission, the bandwidth consumption will
-change according to the level of degradation.
+JPEG~\cite{wallace1992jpeg}---for transmission, the data size will depend on the
+level of degradation.
 
-Based on the \texttt{maybe} primitive, one can implement wrappers of degradation
-operations for common data types. For instance, \texttt{maybe\_head} will
-optionally take the top values of a list; and \texttt{maybe\_downsample} can
-adjust the image resolution to a configured target. \sysname{} provides a number
-of such operations as a library to simplify application development
+Based on the \texttt{maybe} primitive, one can implement additional degradation
+operators for common data types. For instance, \texttt{maybe\_head} will
+optionally take the top values of a list; \texttt{maybe\_downsample} can resize
+the image to a configured resolution. \sysname{} provides a number of such
+operations as a library to simplify application development
 (\autoref{tab:operators}).
 
 With our API, the example mentioned in \autoref{subsec:motivation} can now be
@@ -87,7 +88,7 @@ implemented as follows:
 
 \vspace{-2pt}
 \begin{lstlisting}
-  let app = Camera::new((1920, 1080), 30)
+let app = Camera::new((1920, 1080), 30)
     .maybe_downsample(vec![(1600, 900), (1280, 720)])
     .maybe_skip(vec![2, 5])
     .map(|frame| frame.show())

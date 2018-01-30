@@ -9,13 +9,12 @@ operations. We describe the formalism, followed by techniques that efficiently
 perform offline and online profiling.
 
 \para{Profiling formalism.} Suppose a stream processing application has $n$
-\maybe{} operators. Each operator introduces a knob $k_i$ and their combination
-forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The set of all
-possible configurations $\mathbb{C}$ is the space that the profiling
+\maybe{} operators. Each operator introduces a knob $k_i$. The combination of
+all knobs forms a \textit{configuration} $c = [k_{1}, k_{2}, ... k_{n}]$. The
+set of all possible configurations $\mathbb{C}$ is the space that the profiling
 explores. For each configuration $c$, there are two mappings that are of
 particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
-its accuracy measure $A(c)$. \autoref{tab:notations} summarizes the notations
-used in this paper.
+its accuracy measure $A(c)$. \autoref{tab:notations} summarizes these symbols.
 
 The profiling looks for Pareto-optimal configurations; that is, for any
 configuration $c$ in the Pareto-optimal set, there is no alternative
@@ -55,6 +54,7 @@ follows:
     $\text{S}_\text{ProbeDone}$ & message when \texttt{Socket} finishes probing \\
     \bottomrule
   \end{tabular}
+  \vspace{0.3em}
   \caption{Notations used in this paper.}
   \label{tab:notations}
   \vspace{-3em}

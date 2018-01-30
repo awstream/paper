@@ -109,15 +109,15 @@ tasks.
 For individual applications, developers can pin-point a configuration for a
 given bandwidth or accuracy goal. They can also specify a criterion to limit
 effective configurations. For example, \sysname{} can enforce an upper bound on
-the bandwidth consumption. In this way, developers can control applications'
-bandwidth costs while using the profile to maximize accuracy.
+the bandwidth consumption (i.e.,~do not exceed \SI{1}{Mbps}) or a lower bound on
+application accuracy (i.e.,~do not fall below 50\%).
 
 For multiple applications, their profiles allow novel bandwidth allocation
-schemes such as utility fairness. Different from traditional resource fairness
-with which applications get an equal share of bandwidth, utility fairness aims
-to maximize the \textit{minimal} application accuracy. With the profiles,
-bandwidth allocation is equivalent to finding proper configuration $c^t$ for
-application $t$. We formulate utility fairness as follows:
+schemes such as utility fairness. Different from resource fairness with which
+applications get an equal share of bandwidth, utility fairness aims to maximize
+the \textit{minimal} application accuracy. With the profiles, bandwidth
+allocation is equivalent to finding proper configuration $c^t$ for application
+$t$. We formulate utility fairness as follows:
 
 %% Pick one based on the space
 
