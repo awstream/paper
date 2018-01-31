@@ -88,19 +88,18 @@ available machines.
 % any \textit{a priori} knowledge, all configurations are assigned randomly to
 % all available machines.
 
-\para{Online Profiling:} \sysname{} runs an online profiling process
-continuously to refine the profile. The refinement handles \textit{model drift},
-a problem when the learned profile fails to predict the performance
-accurately. There are two challenges with online profiling.  $(i)$~There are no
-ground-truth labels or reference data to compute accuracy. Because labeling data
-is prohibitively labor intensive and time consuming~\cite{russell2008labelme},
-\sysname{} currently uses raw data (data without degradation) as the
-reference. At runtime, if the application streams raw data, it is used for
-online profiling. Otherwise, we allocate additional bandwidth to transmit raw
-data, but only do so when there is spare capacity. $(ii)$~Exhaustive profiling
-is expensive. If the profiling takes too much time, the newly-learned profile
-may already be stale. \sysname{} uses a combination of parallelization and
-sampling to speed up profiling, as below:
+\para{Online Profiling:} \sysname{} supports online profiling to continuously
+refine the profile. The refinement handles \textit{model drift}, a problem when
+the learned profile fails to predict the performance accurately. There are two
+challenges with online profiling.  $(i)$~There are no ground-truth labels or
+reference data to compute accuracy. Because labeling data is prohibitively labor
+intensive and time consuming~\cite{russell2008labelme}, \sysname{} currently
+uses raw data (data without degradation) as the reference. At runtime, if the
+application streams raw data, it is used for online profiling. Otherwise, we
+allocate additional bandwidth to transmit raw data, but only do so when there is
+spare capacity. $(ii)$~Exhaustive profiling is expensive. If the profiling takes
+too much time, the newly-learned profile may already be stale. \sysname{} uses a
+combination of parallelization and sampling to speed up profiling, as below:
 
 \begin{itemize}[leftmargin=*, topsep=3pt]
 
@@ -114,7 +113,7 @@ sampling to speed up profiling, as below:
 
 \item Sampling-based profiling. Online profiling can speed up when we sample
   data or configurations. Sampling data reduces the amount of data to process,
-  but at a cost of generating less accurate profiles. When sampling
+  but at a cost of generating a less accurate profile. When sampling
   configuration, we can evaluate a subset of the Pareto-optimal configurations
   and compare their performances with an existing profile. A substantial
   difference, such as more than \SI{1}{Mbps} of bandwidth estimation, triggers a

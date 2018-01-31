@@ -24,10 +24,8 @@ updating the configuration. After the data is sent through the network,
 also performs congestion detection and extracts raw data, if it is present.  It
 tracks the minimal latency (similar to how BBR tracks
 \texttt{RTprop}~\cite{cardwell2017bbr}) and reports sudden application-level
-latency spikes to clients as congestion signals (\rc{}). Raw data is only
-transmitted when the queue is empty and online profiling is enabled. If a new
-profile is learned by the online profiler, it is fed back to AC for subsequent
-adaptation.
+latency spikes to clients as congestion signals (\rc{}). If a new profile is
+learned by the online profiler, it is fed back to AC for subsequent adaptation.
 
 \autoref{fig:cc-sm} shows the adaptation algorithm with a state machine model
 and \autoref{fig:cc-ex} shows the state transitions with an example. We first

@@ -59,11 +59,12 @@ predict maintenance ~\cite{balani2016enterprise, ge}.
 \subsection{Wide-area Bandwidth Characteristics}
 \label{sec:wide-area-bandwidth}
 
-WAN bandwidth is insufficient and costly~\cite{hsieh17gaia, pu2015low,
-  vulimiri2015wananlytics, vulimiri2015global}. Using Amazon EC2 as a case
-study, the WAN bandwidth capacity is 15x smaller than their LAN bandwidth on
-average, and up to 60x smaller in the worst case~\cite{hsieh17gaia}. In terms of
-pricing, the average WAN bandwidth cost is up to 38x of the cost of renting two
+WAN bandwidth is insufficient and costly, as shown by other
+systems~\cite{hsieh17gaia, pu2015low, vulimiri2015wananlytics,
+  vulimiri2015global}. Using Amazon EC2 as a case study, the WAN bandwidth
+capacity is 15x smaller than their LAN bandwidth on average, and up to 60x
+smaller in the worst case~\cite{hsieh17gaia}. In terms of pricing, the average
+WAN bandwidth cost is up to 38x of the cost of renting two
 machines~\cite{amazon2017pricing, hsieh17gaia}.
 
 In addition to the scarcity and cost, the large variability of WAN bandwidth
@@ -110,7 +111,7 @@ application-specific solutions. We discuss their drawbacks to motivate
 \para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
 the first to use degradation to address bandwidth limits in wide area. While
 effective in comparison to non-adaptive systems, JetStream requires developers
-to write manual policies, e.g. \textit{``if bandwidth is insufficient, switch to
+to write manual policies, e.g.~\textit{``if bandwidth is insufficient, switch to
   sending images at 75\% fidelity, then 50\% if there still isn't enough
   bandwidth. Beyond that point, reduce the frame rate, but keep the image
   fidelity.''}\footnote{Excerpt from JetStream \S
@@ -139,15 +140,15 @@ Lastly, this abstraction is too low-level. It forces developers to study and
 measure the impact of individual operations, prohibiting its wide adoption in
 practice.
 
-\para{Application-specific optimizations do not generalize.} Because
-applications have different performance metrics and rely on different features,
-a fine-tuned policy for one application will often work poorly for others. For
+\para{Application-specific optimizations do not generalize.} Because each
+application has different performance metrics and relies on different features,
+a fine-tuned policy for one application will often work poorly for another. For
 example, DASH~\cite{sodagar2011mpeg} optimizes QoE for video streaming; it keeps
 a high frame rate and reduces resolutions for adaptation. Its policy that lowers
-the resolution is a poor match for video analytics that relies on image
-details~\cite{lowe2004distinctive, viola2001rapid}. For example,
-\hyperref[fig:app-specific]{Fig.~3b} shows that pedestrian detection accuracy
-drops fast when reducing resolutions as targets are small.
+the resolution works poorly for video analytics that relies on image
+details~\cite{lowe2004distinctive, viola2001rapid}. In
+\hyperref[fig:app-specific]{Fig.~3b}, we show that pedestrian detection accuracy
+drops fast when reducing resolutions as pedestrian are small in the scenes.
 
 Similar applications face different data distributions, as shown in
 \autoref{fig:app-specific} between stationary cameras detecting pedestrians (up)
@@ -155,7 +156,7 @@ and mobile cameras recognizing objects (bottom). For stationary cameras, when we
 consider the slow walking speed of pedestrians, a high frame rate is not
 necessary. But high-resolution images are crucial because these surveillance
 cameras are far away from the targets. In the mobile camera case, because the
-cameras move, reducing the frame rate introduces significant errors.
+camera moves, reducing the frame rate introduces significant errors.
 
 %%% Local Variables:
 %%% mode: latex
