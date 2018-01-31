@@ -79,22 +79,22 @@ sends back \spd{}. Below, we describe each state and transitions.
   \texttt{Steady}.
 
 \item \textbf{Steady: low latency delivery.} \sysname{} achieves low latency by
-  spending most of the time in the \texttt{Steady} state. It changes to
-  \texttt{Degrade} when congestion occurs. If $c < c_{\max}$ and it receives
-  \qe{}, AC enters the \texttt{Probe} state to check for more available
-  bandwidth.
+  spending most of the time in \texttt{Steady}. It changes to \texttt{Degrade}
+  when congestion occurs. If $c < c_{\max}$ and it receives \qe{}, AC starts
+  \texttt{Probe} to check for more available bandwidth.
 
-\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing the
-  configuration directly causes a drastic latency increase when
-  $B(c_{i+1}) \gg B(c_i)$. To allow a smooth increase, AC requests
-  \texttt{Socket} to probe by sending additional traffic controlled by
-  \texttt{probe\_gain} (in \texttt{inc\_pace()}, similar to
+\item \textbf{Probe: more bandwidth for a higher accuracy.} Advancing $c_i$
+  directly may cause congestion if $B(c_{i+1}) \gg B(c_i)$. To allow a smooth
+  increase, AC requests \texttt{Socket} to probe by sending additional traffic
+  controlled by \texttt{probe\_gain} (in \texttt{inc\_pace()}, similar to
   BBR~\cite{cardwell2017bbr}). Raw data is used for probing if available,
   otherwise we inject dummy traffic. \sysname{} stops probing under two
   conditions: (1) upon \spd{}, it advances $c_i$; (2) upon \qc{} or \rc{}, it
-  returns to \texttt{Steady}.
+  returns to \texttt{Steady}. The explicit \texttt{Probe} phase stabilizes
+  feedback loop and prevents oscillation.
 
 \end{itemize}
+
 
 \subsection{Resource Allocation \& Fairness}
 
@@ -105,8 +105,8 @@ tasks.
 For individual applications, developers can pin-point a configuration for a
 given bandwidth or accuracy goal. They can also specify a criterion to limit
 effective configurations. For example, \sysname{} can enforce an upper bound on
-the bandwidth consumption (i.e.,~do not exceed \SI{1}{Mbps}) or a lower bound on
-application accuracy (i.e.,~do not fall below 50\%).
+the bandwidth consumption (e.g.,~do not exceed \SI{1}{Mbps}) or a lower bound on
+application accuracy (e.g.,~do not fall below 75\%).
 
 For multiple applications, their profiles allow novel bandwidth allocation
 schemes such as utility fairness. Different from resource fairness with which

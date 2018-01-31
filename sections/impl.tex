@@ -54,19 +54,20 @@ parts: knobs, accuracy functions, and datasets.
 
 \para{Augmented Reality.} We target at augmented reality applications running on
 mobile phones that recognize nearby objects by offloading the heavy computation
-elsewhere, e.g.\,the cloud. Our implementation uses OpenCV
-3.1~\cite{opencvlibrary} for image-related operations and YOLO~\cite{darknet13,
-  redmon2016yolo9000}, a GPU-enabled pre-trained neural network, for object
-recognition. Videos are encoded with H.264~\cite{richardson2011h}. Our
-implementation uses GStreamer~\cite{gstreamer} with \texttt{x264enc} plugin
-(\texttt{zerolatency} and constant quality). The quantization factor affecting
-encoding quality becomes a knob in addition to image resolutions and frame
-rates.
+elsewhere, e.g.\,the cloud.
 
-Object recognition returns a list of bounding boxes with the type of the
-object. Each bounding box is a rectangle with normalized coordinates on the
-image. We compare the detection against the reference result from raw data, and
-declare it success if the intersection over union (IOU) is greater than
+Our implementation uses OpenCV~\cite{opencvlibrary} for image-related operations
+and YOLO~\cite{darknet13, redmon2016yolo9000}, a GPU-enabled pre-trained neural
+network, for object recognition. Videos are encoded with
+H.264~\cite{richardson2011h}. Our implementation uses GStreamer~\cite{gstreamer}
+with \texttt{x264enc} plugin (\texttt{zerolatency} and constant quality). The
+quantization factor affecting encoding quality becomes a knob in addition to
+image resolutions and frame rates.
+
+Object recognition returns a list of bounding boxes with the object type. Each
+bounding box is a rectangle with normalized coordinates on the image. We compare
+the detection against the reference result from raw data, and declare it success
+if the intersection over union (IOU) is greater than
 50\%~\cite{everingham2010pascal} and the object type matches. We use F1
 score~\cite{Rijsbergen:1979:IR:539927} as the accuracy function. In terms of
 dataset, we collected our own video clips: the training data is a 24-second long
@@ -97,16 +98,18 @@ runtime.
 
 \para{Distributed Top-K.} This application aggregates machine logs from
 geo-distributed servers to find out the Top-K most accessed files, similar to
-many Top-K queries~\cite{babcock2003distributed}. \autoref{fig:topk} illustrates
-our processing pipeline with two degradation operations. First each source node
-summarizes the log using \texttt{Window} operator to reduce the data size, a
-pre-processing step. As many real-world access patterns follow a long tail
-distribution, there is a large-but-irrelevant tail that contributes little to
-the final Top-K. Each source node then filters the tail: (1) head(\texttt{N})
-takes the top \texttt{N} entries; (2) threshold(\texttt{T}) filters small
-entries whose count is smaller than \texttt{T}. These two operations affect the
-final result and the exact impact depends on data distribution. We implement
-these two operators by using \sysname{}'s \maybe{} abstraction.
+many Top-K queries~\cite{babcock2003distributed}.
+
+\autoref{fig:topk} illustrates our processing pipeline with two degradation
+operations. First each source node summarizes the log using \texttt{Window}
+operator to reduce the data size, a pre-processing step. As many real-world
+access patterns follow a long tail distribution, there can be a
+large-but-irrelevant tail that contributes little to the final Top-K. Each
+source node then filters the tail: (1) head(\texttt{N}) takes the top \texttt{N}
+entries; (2) threshold(\texttt{T}) filters small entries whose count is smaller
+than \texttt{T}. These two operations affect the final result and the exact
+impact depends on data distribution. We implement these two operators by using
+\sysname{}'s \maybe{} abstraction.
 
 To measure the accuracy, we need to compare the correlation between two ranked
 list. Kendall's~$\tau$~\cite{abdi2007kendall} is a correlation measure of the
