@@ -13,10 +13,8 @@ To integrate adaptation as a first-class abstraction, \sysname{} introduces
 savings.  Our API design has three considerations. $(i)$~To free developers from
 specifying exact rules, the API should allow specifications with
 options. $(ii)$~To allow combining multiple dimensions, the API should be
-modular: each operator is a unit and the developer can chain multiple
-operators. $(iii)$~To support flexible integration with arbitrary degradation
-functions, the API should take user-defined functions (UDFs). Therefore, our API
-is,
+modular. $(iii)$~To support flexible integration with arbitrary degradation
+functions, the API should take user-defined functions. Therefore, our API is,
 
 \vspace{-2pt}
 \begin{lstlisting}
@@ -86,7 +84,7 @@ operations as a library to simplify application development
 With our API, the example mentioned in \autoref{subsec:motivation} can now be
 implemented as follows:
 
-\vspace{-2pt}
+\vspace{-4pt}
 \begin{lstlisting}
 let app = Camera::new((1920, 1080), 30)
     .maybe_downsample(vec![(1600, 900), (1280, 720)])
@@ -97,11 +95,11 @@ let app = Camera::new((1920, 1080), 30)
 
 This snippet first instantiates a \texttt{Camera} source, which produces
 \texttt{Stream<Image>} with 1920x1080 resolution and 30 FPS\@. Two degradation
-operations follow the source: one that downsamples the image to either 1600x900
-or 1280x720 resolution, and the other that skips frames with a parameter of 2 or
-5, resulting in 30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then shows
-degraded images on the display. In practice, operators for further processing,
-such as encoding and transmission, can be chained.
+operations follow the source: one that downsamples the image to 1600x900 or
+1280x720 resolution, and the other that skips every 2 or 5 frames, resulting in
+30/(2+1)=10 FPS or 30/(5+1)= 6 FPS\@. This example then displays degraded
+images. In practice, operators for further processing, such as encoding and
+transmission, can be chained.
 
 %%% Local Variables:
 %%% mode: latex

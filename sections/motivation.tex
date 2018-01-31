@@ -93,7 +93,7 @@ networks~\cite{nikravesh2014mobile}.
 
 \begin{figure*}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/motiv-app-specific.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/motiv-app-specific.pdf}
   \caption{The measured bandwidth and application accuracy for two video
     analytics applications. (1) Manual policies lack precision without
     measurements and need to handle multiple dimensions (as in a-d). (2)
@@ -124,12 +124,12 @@ do not necessarily lead to 75\% application accuracy. In terms of bandwidth,
 naively one would think that reducing the frame rate by half will also half the
 data rate. But if video encoding such as H.264~\cite{richardson2011h} is used, a
 reduction in frame rate increases the inter-frame difference and creates
-P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3e} shows that when
+P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3c} shows that when
 reducing the frame rate to 33\% (from \(30~\text{FPS}\) to \(10~\text{FPS}\)),
 the bandwidth use can still be more than 50\%.
 
 Second, it is not scalable to specify rules one by one. A fine-grain control
-requires many rules in the policy. Applications can degrade in multiple
+requires many rules in the policy. Besides, applications can degrade in multiple
 dimensions and each dimension has different impacts (compare
 \hyperref[fig:app-specific]{Fig.~3a} with \hyperref[fig:app-specific]{Fig.~3b}).
 Specifying rules in detail and across dimensions manually is a tedious and

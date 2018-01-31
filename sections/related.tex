@@ -1,13 +1,12 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\paraf{JetStream.} JetStream pioneered the use of aggregation and degradation to
-reduce latency for wide-area streaming analytics. Compared to JetStream,
-\sysname{} makes the following major contributions: $(1)$~a novel API design to
-specify degradation in a simple and composable way; $(2)$~automatic offline
-profiling to search for Pareto-optimal configurations; $(3)$~online profiling to
-address model drift; $(4)$~an improved runtime that utilizes the learned profile
-and achieves sub-second latency (comparison in
+\paraf{JetStream.} JetStream is the first to use degradation to reduce latency
+for wide-area streaming analytics. Compared to JetStream, \sysname{} makes five
+major contributions: $(1)$~a novel API design to specify degradation in a simple
+and composable way; $(2)$~automatic offline profiling to search for
+Pareto-optimal configurations; $(3)$~online profiling to address model drift;
+$(4)$~an improved runtime system achieving sub-second latency (comparison in
 \autoref{sec:runtime-adaptation}); $(5)$~support for different resource
 allocation policies for multiple applications.
 
@@ -72,19 +71,17 @@ processes streams continuously in real time.
 
 \para{(Adaptive) Video Streaming.} Multimedia streaming protocols,
 e.g.\,RTP~\cite{schulzrinne2006rtp}, aim to be fast instead of reliable. While
-they can achieve low latency, their accuracy can be poor without adaptation.
-Recent work on multimedia streaming has moved towards using TCP (primarily
-HTTP-based) and focused on designing good adaptation strategy to improve QoE, as
-in research projects~\cite{mao2017neural, sun2016cs2p, yin2015control} and
-industrial efforts (HLS~\cite{pantos2016http}, DASH~\cite{michalos2012dynamic,
-  sodagar2011mpeg}). These adaptation strategies work well for video on demand,
-but not for low latency streaming. They use pulling: the client keeps refreshing
-index file and fetching new chunks. And chunking introduces latency: each chunk
-has to be ready before the client can fetch. In addition, because they optimize
-QoE for humans, the adaptation can be a mismatch for analytics that rely on
-image details (e.g.\,6\% accuracy for PD). In contrast, \sysname{} learns an
-adaptation strategy for each application (also not limited to video analytics);
-and the runtime is optimized for low latency.
+they can achieve low latency, their accuracy can be poor under congestion.
+Recent work has moved towards HTTP-based protocols and focused on designing
+adaptation strategy to improve QoE, as in research~\cite{mao2017neural,
+  sun2016cs2p, yin2015control} and industry (HLS~\cite{pantos2016http},
+DASH~\cite{michalos2012dynamic, sodagar2011mpeg}). These adaptation strategies
+are often pull-based: client keeps checking the index file for changes. And
+clients have to wait for the next chunk (typically 2-10 seconds). In addition,
+as we have shown in \autoref{sec:runtime-adaptation}, their adaptation is a poor
+match for analytics that rely on image details (e.g.\,6\% accuracy for PD). In
+contrast, \sysname{} learns an adaptation strategy for each application (also
+not limited to video analytics); and the runtime is optimized for low latency.
 
 \para{QoS.} Most QoS work~\cite{ferrari1990scheme, shenker1994integrated,
   shenker1995fundamental} in the 1990s focuses on network-layer solutions that

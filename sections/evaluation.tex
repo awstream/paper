@@ -280,12 +280,12 @@ We compare \sysname{} with the following baselines:
 
 \begin{itemize}[noitemsep, nolistsep, leftmargin=*]
 
-\item Streaming over TCP/UDP (non-adaptive). $(i)$~For TCP, we re-use
-  \sysname{}'s runtime that runs over TCP but disable the adaptation. $(ii)$~For
-  UDP, we use FFmpeg~\cite{bellard2012ffmpeg} to stream video:
+\item Streaming over TCP/UDP (non-adaptive). For TCP, we re-use \sysname{}
+  runtime that runs over TCP but disable the adaptation. For UDP, we use
+  FFmpeg~\cite{bellard2012ffmpeg} to stream video:
   RTP/UDP~\cite{schulzrinne2006rtp} for media and RTSP for
-  signaling~\cite{schulzrinne1998rtsp}. This is a common setup for video
-  conferencing and IP cameras~\cite{durresi2005rtp, king2009cisco}.
+  signaling~\cite{schulzrinne1998rtsp}; as in typical video conferencing and IP
+  cameras~\cite{durresi2005rtp, king2009cisco}.
 
 \item Adaptive video streaming. We use HTTP Live Streaming (HLS) to represent
   popular adaptive video streaming techniques. Our setup resembles personalized
@@ -311,7 +311,7 @@ changes.
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
     \centering
-    \includegraphics[width=0.95\columnwidth]{figures/runtime_darknet-timeseries2.pdf}
+    \includegraphics[width=0.95\columnwidth]{figures/runtime_darknet-timeseries.pdf}
     \caption{Time-series plot of the runtime behaviors: throughput (top),
       showing the effect of bandwidth shaping; latency (middle) in log scale;
       and accuracy (bottom). Overlapped lines may be hard to read; we present
@@ -445,10 +445,9 @@ fidelity and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific
     \begin{picture}(0,0)
       \put(-10, 80){\parbox{2cm}{\centering \caption{PD}\label{fig:pd-runtime}}}
     \end{picture}
-    \vspace{-3em}
   \end{subfigure}
   \begin{subfigure}[t]{\columnwidth}
-    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot2.pdf}
+    \includegraphics[width=\columnwidth]{figures/runtime_tk-boxplot.pdf}
     \begin{picture}(0,0)
       \put(-10, 60){\parbox{2cm}{\centering \caption{TK}\label{fig:tk-runtime}}}
     \end{picture}
@@ -524,35 +523,31 @@ split into four groups. $c_{\max}$ is $N=9750$ for \texttt{head} and $T=0$ for
 bandwidth consumption is much smaller than video analytics, we modify the
 bandwidth parameter: during t=200-380s, we limit the bandwidth to
 \SI{750}{Kbps}; during t=380-440s, the bandwidth is \SI{500}{Kbps}; the
-background limit is \SI{2.5}{Mpbs}. We only compared \sysname{} with two
-baselines: streaming over TCP and UDP. While JetStream has a Top-K
-implementation, it is based on TPUT~\cite{cao2004efficient} that targets at
-Top-K queries asked hourly or daily. We did not implement our Top-K pipeline
-(\autoref{fig:topk}) with JetStream because video analytical applications
-suffice the purpose of comparison. \autoref{fig:tk-runtime} shows the evaluation
-results
+background limit is \SI{2.5}{Mpbs}. We only compared \sysname{} with streaming
+over TCP and UDP. JetStream's Top-K is based on TPUT~\cite{cao2004efficient}
+that targets at queries asked hourly or daily. We did not implement our Top-K
+pipeline (\autoref{fig:topk}) with JetStream because video analytics suffice the
+purpose of comparison.
 
-Streaming over TCP has the highest accuracy (99.7\%) but the worst latency (up
-to 40 seconds). Streaming over UDP has the lowest latency but its accuracy is
-the worst (52\%). AWStream achieves low latency (1.1 seconds) and high accuracy
-(98\%) simultaneously. Notice that because TK's source generates data every
-second after \texttt{Window}, one object in the queue leads to one second
-latency.
+\autoref{fig:tk-runtime} shows the evaluation results. Streaming over TCP has
+the highest accuracy (99.7\%) but the worst latency (up to 40
+seconds). Streaming over UDP has the lowest latency but the worst accuracy
+(52\%). \sysname{} achieves low latency (1.1 seconds) and high accuracy (98\%)
+simultaneously. Notice that because TK's source generates data every second
+after \texttt{Window}, one object in the queue leads to one second latency.
 
 \vspace{0.3em}
 \para{Performance with Varying Network Delays}
 \vspace{0.2em}
 
-\noindent \sysname{} targets at wide area whose key characteristic is the large variation
-in latency~\cite{li2010cloudcmp}. While we've conducted experiments using
-real-world setup on Amazon EC2, the latency between EC2 sites is relatively low.
+\noindent \sysname{} targets at wide area whose key characteristic is the large
+variation in latency~\cite{li2010cloudcmp}. While we have conducted experiments
+using real-world setup on EC2, the latency between EC2 sites is relatively low.
 To evaluate how \sysname{} performs with increased network delays, we conducted
 another experiment with one pair of client and server under different network
-conditions. We use \texttt{netem} to add delays in addition to our bandwidth
-shaping. The additional one-way delays ranges from 0 to \SI{250}{ms}, following
-a normal distribution where the variation is 10\% of the added delay, e.g.
-$250\pm 25\text{ms}$. We add delays in both direction, so the added RTT can be
-as high as \SI{500}{ms}.
+conditions. We use \texttt{netem} to add delays, up to \SI{250}{ms} each way, so
+the added RTT can be as high as \SI{500}{ms}. The delay follows a normal
+distribution where the variation is 10\%, e.g.\,$250\pm 25\text{ms}$.
 
 \begin{figure}
   \centering
@@ -596,7 +591,7 @@ network delays.
     \caption{Utility Fairness}
     \label{fig:eq-acc}
   \end{subfigure}
-  \caption{\sysname{} allows for different resource allocation schemes.}
+  \caption{\sysname{} allows different resource allocation schemes.}
   \label{fig:multitask}
   \vspace{-0.8em}
 \end{figure}

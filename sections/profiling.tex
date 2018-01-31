@@ -108,18 +108,17 @@ sampling to speed up profiling, as below:
   configuration takes a different amount of time. Typically, an increase in the
   level of degradation leads to a decrease in computation; for example, a
   smaller FPS means fewer images to process. Therefore, we collect processing
-  times for each configuration from the offline process and schedule online
+  times for each configuration from offline profiling and schedule online
   profiling with longest first schedule (LFS)~\cite{karger2010scheduling} during
   parallelization.
 
-\item Sampling-based profiling. Online profiling can speed up if we only profile
-  a subset of all data or a subset of all configurations.  Sampling data reduces
-  the amount of data to process, but at a cost of generating less accurate
-  profiles. When sampling configuration, we can evaluate a subset of the
-  Pareto-optimal configurations and compare their performances with the existing
-  profile. A substantial difference, such as more than \SI{1}{Mbps} of bandwidth
-  estimation, triggers a full profiling over all configurations to update the
-  current profile.
+\item Sampling-based profiling. Online profiling can speed up when we sample
+  data or configurations. Sampling data reduces the amount of data to process,
+  but at a cost of generating less accurate profiles. When sampling
+  configuration, we can evaluate a subset of the Pareto-optimal configurations
+  and compare their performances with an existing profile. A substantial
+  difference, such as more than \SI{1}{Mbps} of bandwidth estimation, triggers a
+  full profiling over all configurations to update the current profile.
 
 \end{itemize}
 
