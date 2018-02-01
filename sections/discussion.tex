@@ -5,7 +5,7 @@
 adaptive applications, there are still application-specific parts required for
 developers: wrapping appropriate \maybe{} calls, providing training data, and
 implementing accuracy functions. Because \sysname{}'s API is extensible, we plan
-to build libraries for common degradation operators and accuracy functions,
+to build libraries for common degradation operations and accuracy functions,
 similar to machine learning libraries.
 
 \para{Fault-tolerance and Recovery.} \sysname{} tolerates bandwidth variation
@@ -16,9 +16,9 @@ failure-oblivious.  We leave failure detection and recovery as a future work.
 
 \para{Profile Modeling.} \sysname{} currently performs an exhaustive search when
 profiling, and only use parallelism and sampling to speed up. We plan to improve
-our profiler with statistical methods, such as Bayesian
-Optimization~\cite{snoek2012practical, alipourfard2017cherrypick}, that can
-model black box functions $B(c)$ and $A(c)$.
+our profiler with statistical methods such as Bayesian
+Optimization~\cite{snoek2012practical, alipourfard2017cherrypick} that can model
+black box functions $B(c)$ and $A(c)$.
 
 % \para{Expressiveness}: Our \maybe{} APIs allow an easy integration with
 % existing stream processing systems. While it follows the operator model,

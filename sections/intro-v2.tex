@@ -52,10 +52,10 @@ scarce, developers are faced with the decision of how to reconcile data fidelity
 (i.e., not losing any data) with data freshness (i.e., sending data as quickly
 as possible). A deterioration in either fidelity or freshness can impact
 application accuracy but the exact impact varies depending on the
-application. \footnote{E.g., an application tracking the current value of a
+application.\footnote{E.g., an application tracking the current value of a
   variable might prioritize freshness while one that is computing an average
-  might prioritize fidelity.} \autoref{fig:intro} illustrates this tradeoff with
-a few sample points in the design space.
+  might prioritize fidelity.} \autoref{fig:intro} illustrates this trade-off
+with a few sample points in the design space.
 
 \begin{figure}
   \centering
@@ -123,8 +123,8 @@ bandwidth.
   a combination of offline and online training to build an accurate model of the
   relationship between an application's accuracy and its bandwidth consumption
   under different combinations of degradation functions. Our solution exploits
-  parallelism and sampling-based techniques to efficiently explore the
-  configuration space and learn an optimal strategy.
+  parallelism and sampling to efficiently explore the configuration space and
+  learn an optimal strategy.
 
   % The key idea is to \textit{automatically} build an accurate and precise
   % \textit{performance model} instead of relying on manual policies or
@@ -159,18 +159,18 @@ parallelism and sampling techniques can speed up profiling by up to 29$\times$
 and 8.7$\times$\@ respectively.
 
 We show that \sysname{} significantly outperforms non-adaptive applications:
-e.g., achieving a more than 100$\times$ reduction in packet delivery times
-relative to applications built over TCP, or an over 88\% improvement in data
-fidelity (application accuracy) relative to applications built over UDP.  We
-also compare \sysname{} to JetStream~\cite{rabkin2014aggregation}, a
-state-of-the-art system for building adaptive streaming analytics that is based
-on manual policies: our results show that besides the benefit of generating
-optimal policies \textit{automatically}, \sysname{} achieves a 15-20$\times$
-reduction in latency and 1-5\% improvement in accuracy relative to JetStream. We
-show that these gains come from the combination of \sysname{}'s ability to learn
-better policies \emph{and} its well-designed runtime.  Hence, the ease of
-development that \sysname{} provides comes with significantly \emph{improved}
-application performance compared to typical manually crafted policies.
+e.g., achieving a 40--100$\times$ reduction in packet delivery times relative to
+applications built over TCP, or an over 45--88\% improvement in data fidelity
+(application accuracy) relative to applications built over UDP.  We also compare
+\sysname{} to JetStream~\cite{rabkin2014aggregation}, a state-of-the-art system
+for building adaptive streaming analytics that is based on manual policies: our
+results show that besides the benefit of generating optimal policies
+\textit{automatically}, \sysname{} achieves a 15-20$\times$ reduction in latency
+and 1-5\% improvement in accuracy relative to JetStream. We show that these
+gains come from the combination of \sysname{}'s ability to learn better policies
+\emph{and} its well-designed runtime.  Hence, the ease of development that
+\sysname{} provides comes with significantly \emph{improved} application
+performance compared to typical manually crafted policies.
 
 %%% Local Variables:
 %%% mode: latex

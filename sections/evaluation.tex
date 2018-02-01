@@ -42,7 +42,7 @@ as follows.
   \autoref{fig:online-tricks}).
 \item[\autoref{sec:runtime-adaptation}] At runtime, \sysname{} achieves
   sub-second latency and nominal accuracy drop for all applications
-  (\autoref{fig:ar-runtime}, \autoref{fig:pd-tk}) and across different network
+  (\autoref{fig:ar-runtime}, \autoref{fig:pd-tk}) and across various network
   conditions (\autoref{fig:ar-rtt}).
 \item[\autoref{sec:multi-task-alloc}] \sysname{} profiles allow different
   resource allocations: resource fairness and utility fairness
@@ -338,15 +338,15 @@ of \sysname{} and all baselines in time series. \autoref{fig:ar-runtime-boxplot}
 summarizes the latency and accuracy with box plots during bandwidth shaping
 (between t=200s and t=440s).
 
-The throughput figure shows the effect of traffic shaping. During the shaping,
-TCP and UDP make full use of the available bandwidth; in comparison, \sysname{},
-JetStream, JetStream++, and HLS are conservative because of adaptation (see
-their throughput drops). When we stop shaping at t=440s, TCP catches up by
-sending all queued items as fast as possible. JetStream also has queued items
-because the policy in use (with only three rules) cannot sustain \SI{5}{Mpbs}
-bandwidth. \sysname{} increases the throughput gradually due to the explicit
-probing phase. HLS is the most conservative scheme; it does not recover from
-degradation until t=500s.
+The throughput figure (\autoref{fig:ar-runtime-timeseries}) shows the effect of
+traffic shaping. During the shaping, TCP and UDP make full use of the available
+bandwidth; in comparison, \sysname{}, JetStream, JetStream++, and HLS are
+conservative because of adaptation (see their throughput drops). When we stop
+shaping at t=440s, TCP catches up by sending all queued items as fast as
+possible. JetStream also has queued items because the policy in use (with only
+three rules) cannot sustain \SI{5}{Mpbs} bandwidth. \sysname{}'s throughput
+increases gradually due to the explicit probing phase. HLS is the most
+conservative scheme; it does not recover from degradation until t=500s.
 
 % summary(latency)
 % Time        JetStream++        JetStream            HLS
@@ -527,14 +527,13 @@ background limit is \SI{2.5}{Mpbs}. We only compared \sysname{} with streaming
 over TCP and UDP. JetStream's Top-K is based on TPUT~\cite{cao2004efficient}
 that targets at queries asked hourly or daily. We did not implement our Top-K
 pipeline (\autoref{fig:topk}) with JetStream because video analytics suffice the
-purpose of comparison.
-
-\autoref{fig:tk-runtime} shows the evaluation results. Streaming over TCP has
-the highest accuracy (99.7\%) but the worst latency (up to 40
-seconds). Streaming over UDP has the lowest latency but the worst accuracy
-(52\%). \sysname{} achieves low latency (1.1 seconds) and high accuracy (98\%)
-simultaneously. Notice that because TK's source generates data every second
-after \texttt{Window}, one object in the queue leads to one second latency.
+purpose of comparison. \autoref{fig:tk-runtime} shows the evaluation
+results. Streaming over TCP has the highest accuracy (99.7\%) but the worst
+latency (up to 40 seconds). Streaming over UDP has the lowest latency but the
+worst accuracy (52\%). \sysname{} achieves low latency (1.1 seconds) and high
+accuracy (98\%) simultaneously. Notice that because TK's source generates data
+every second after \texttt{Window}, one object in the queue leads to one second
+latency.
 
 \vspace{0.3em}
 \para{Performance with Varying Network Delays}
