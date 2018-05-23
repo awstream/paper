@@ -1,15 +1,48 @@
-\documentclass[newfonts=false, format=sigplan, 10pt, letterpaper]{acmart}
+\documentclass[newfonts=false, timestamp, format=sigplan, authordraft, 10pt,
+letterpaper]{acmart}
+
 %% \documentclass[sigplan, anonymous, screen, 10pt]{acmart}
 
-\settopmatter{printacmref=false, printfolios=false}
-\renewcommand\footnotetextcopyrightpermission[1]{}
-\newcommand\eat[1]{}
-\pagestyle{plain}
+\setcopyright{rightsretained}
+\acmDOI{10.475/123_4}
+\acmISBN{123-4567-24-567/08/06}
+\acmConference[SIGCOMM'18]{ACM Special Interest Group on Data
+  Communication}{August 2018}{Budapest, Hungary}
+\acmYear{2018}
+\copyrightyear{2018}
+\acmPrice{15.00}
+
+% \settopmatter{printacmref=false, printfolios=false}
+% \renewcommand\footnotetextcopyrightpermission[1]{}
+% \newcommand\eat[1]{}
+% \pagestyle{plain}
 
 \input{meta}
 
 \title{\sysname{}: Adaptive Wide-Area Streaming Analytics}
-\gdef\addresses{Paper \textbf{\#104}, 12 pages}
+%% \gdef\addresses{Paper \textbf{\#104}, 12 pages}
+
+\author{Ben Zhang}
+\affiliation{UC Berkeley}
+\email{benzh@cs.berkeley.edu}
+
+\author{Xin Jin}
+\affiliation{Johns Hopkins University}
+\email{xinjin@cs.jhu.edu}
+
+\author{Sylvia Ratnasamy}
+\affiliation{UC Berkeley}
+\email{sylvia@eecs.berkeley.edu}
+
+\author{John Wawrzynek}
+\affiliation{UC Berkeley}
+\email{johnw@eecs.berkeley.edu}
+
+\author{Edward A. Lee}
+\affiliation{UC Berkeley}
+\email{eal@eecs.berkeley.edu}
+
+\renewcommand{\shortauthors}{B. Zhang et al.}
 
 \begin{document}
 
@@ -35,6 +68,48 @@ that \sysname{} achieves sub-second latency with only nominal accuracy drop
 (2-6\%).
 
 \end{abstract}
+
+% \begin{CCSXML}
+% <ccs2012>
+%   <concept>
+%     <concept_id>10003033.10003039.10003051</concept_id>
+%     <concept_desc>Networks~Application layer protocols</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+%   <concept>
+%     <concept_id>10003033.10003039.10003056</concept_id>
+%     <concept_desc>Networks~Cross-layer protocols</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+%   <concept>
+%     <concept_id>10003033.10003079.10003080</concept_id>
+%     <concept_desc>Networks~Network performance modeling</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+%   <concept>
+%     <concept_id>10003033.10003083.10003084.10003088</concept_id>
+%     <concept_desc>Networks~Wide area networks</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+%   <concept>
+%     <concept_id>10003033.10003083.10003094</concept_id>
+%     <concept_desc>Networks~Network dynamics</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+%   <concept>
+%     <concept_id>10003033.10003106.10010924</concept_id>
+%     <concept_desc>Networks~Public Internet</concept_desc>
+%     <concept_significance>500</concept_significance>
+%   </concept>
+% </ccs2012>
+% \end{CCSXML}
+
+% \ccsdesc[500]{Networks~Application layer protocols}
+% \ccsdesc[500]{Networks~Cross-layer protocols}
+% \ccsdesc[500]{Networks~Network performance modeling}
+% \ccsdesc[500]{Networks~Wide area networks}
+% \ccsdesc[500]{Networks~Network dynamics}
+% \ccsdesc[500]{Networks~Public Internet}
 
 \maketitle
 
