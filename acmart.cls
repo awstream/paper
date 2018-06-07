@@ -1709,7 +1709,8 @@ Computing Machinery]
   \or % siggraph
     \section*{#1}%
   \or % sigplan
-    \paragraph*{#1}%
+    \section*{#1}%
+    % old: \paragraph*{#1}%
   \or % sigchi
     \section*{#1}%
   \or % sigchi-a
@@ -2407,8 +2408,10 @@ Computing Machinery]
  \def\@secfont{\sffamily\bfseries\Large\section@raggedright\MakeTextUppercase}
  \def\@subsecfont{\sffamily\bfseries\Large\section@raggedright}
 \or % sigplan
- \def\@secfont{\bfseries\Large\section@raggedright}
- \def\@subsecfont{\bfseries\section@raggedright}
+ % old: \def\@secfont{\bfseries\Large\section@raggedright}
+ % old: \def\@subsecfont{\bfseries\section@raggedright}
+ \def\@secfont{\bfseries\Large\section@raggedright\MakeTextUppercase}
+ \def\@subsecfont{\bfseries\Large\section@raggedright}
  \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
    {-.75\baselineskip \@plus -2\p@ \@minus -.2\p@}%
    {.25\baselineskip}%
