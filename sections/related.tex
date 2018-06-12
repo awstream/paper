@@ -25,14 +25,19 @@ control logic up to developers.  While our work has a large debt to prior
 streaming work, \sysname{} targets at the wide area and explicitly explores the
 trade-off between data fidelity and freshness.
 
+\cameraready{
+
 \para{Approximate Analytics.} The idea of degrading computation fidelity for
 responsiveness is also explored elsewhere, such as SQL
-queries~\cite{hellerstein1997online, agarwal2013blinkdb,
-  ananthanarayanan2014grass}, real-time processing~\cite{farrell2016meantime},
-and video processing within large clusters~\cite{zhang2017live}. The trade-off
-between available resource and application accuracy is a common theme among all
-these systems. \sysname{} targets at wide-area streaming analytics, an emerging
-application domain especially with the advent of IoT\@.
+queries~\cite{agarwal2013blinkdb, ananthanarayanan2014grass}, real-time
+processing~\cite{farrell2016meantime}, and video processing within large
+clusters~\cite{zhang2017live}. The techniques include programming language
+support~\cite{sampson2011enerj}, sampling~\cite{garofalakis2001approximate},
+sketches~\cite{cormode2011sketch}, and online
+aggregation~\cite{hellerstein1997online}.}
+The trade-off between available resource and application accuracy is a common
+theme among all these systems. \sysname{} targets at wide-area streaming
+analytics, an emerging application domain especially with the advent of IoT\@.
 
 \para{WAN-Aware Systems.} Geo-distributed systems need to cope with high latency
 and limited bandwidth. While some systems assume the network can prioritize a
