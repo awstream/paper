@@ -113,6 +113,7 @@
       \end{axis}
     \end{tikzpicture}
     \caption{Frame Rate \\ (resolution = 1080p)}
+    \label{fig:stationary-frame-rate}
   \end{subfigure}%
   \begin{subfigure}{0.24\textwidth}
     \begin{tikzpicture}
@@ -129,6 +130,7 @@
       \end{axis}
     \end{tikzpicture}
     \caption{Resolution \\ (frame rate = 30)}
+    \label{fig:stationary-resolution}
   \end{subfigure}%
   \hspace{1em}
   \begin{subfigure}{0.2\textwidth}
@@ -169,6 +171,7 @@
       \end{axis}
     \end{tikzpicture}
     \caption{Frame Rate \\ (resolution = 1080p)}
+    \label{fig:mobile-frame-rate}
   \end{subfigure}%
   \begin{subfigure}{0.24\textwidth}
     \begin{tikzpicture}
@@ -185,6 +188,7 @@
       \end{axis}
     \end{tikzpicture}
     \caption{Resolution \\ (frame rate = 30)}
+    \label{fig:mobile-resolution}
   \end{subfigure}%
   \hspace{1em}
   \begin{subfigure}{0.2\textwidth}
@@ -194,10 +198,10 @@
   \hspace{.2em}
   \begin{subfigure}{0.2\textwidth}
     \includegraphics[width=\textwidth]{figures/darknet-2.jpg}
-    \caption{t = 1s \\ large difference compared to t = 0s}
+    \caption{t = 1s \\ large difference compared to t=0s}
   \end{subfigure}
 
-  \caption{The measured bandwidth and application accuracy for two video
+  \caption{\cameraready{Redrawn}. The measured bandwidth and application accuracy for two video
     analytics applications. (1) Manual policies lack precision without
     measurements and need to handle multiple dimensions, as in (a-b) and
     (c-d). (2) Application-specific optimizations do not generalize: degrading
