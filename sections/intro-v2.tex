@@ -52,7 +52,7 @@ scarce, developers are faced with the decision of how to reconcile data fidelity
 (i.e., not losing any data) with data freshness (i.e., sending data as quickly
 as possible). A deterioration in either fidelity or freshness can impact
 application accuracy but the exact impact varies depending on the
-application.\footnote{E.g., an application tracking the current value of a
+application.\footnote{\cameraready{For example}, an application tracking the current value of a
   variable might prioritize freshness while one that is computing an average
   might prioritize fidelity.} \autoref{fig:intro} illustrates this trade-off
 with a few sample points in the design space.
@@ -67,7 +67,7 @@ with a few sample points in the design space.
 \end{figure}
 
 Applications that simply use existing protocols without any attempt at
-adaptation can result in extreme design points. E.g., streaming over TCP ensures
+adaptation can result in extreme design points. \cameraready{For example}, streaming over TCP ensures
 reliable delivery (hence high fidelity) but backlogged data delays the delivery
 of data (hence freshness suffers).  On the other hand, streaming over UDP
 minimizes latency by sending packets as fast as possible, but uncontrolled
@@ -99,7 +99,7 @@ bandwidth.
 % with minimal developer effort.
 \sysname{} achieves this through the combination of three novel contributions:
 
-\begin{enumerate}
+\begin{enumerate}[leftmargin=*]
 \item \sysname{} introduces new programming abstractions by which a developer
   expresses \emph{what} degradation functions can be used by the framework.
   % {\bf Sylvia: Cut remainder of para? Too much detail for intro?}  More
@@ -158,19 +158,17 @@ runtime performance on a geo-distributed public cloud.  We show that
 parallelism and sampling techniques can speed up profiling by up to 29$\times$
 and 8.7$\times$ respectively.
 
-We show that \sysname{} significantly outperforms non-adaptive applications:
-e.g., achieving a 40--100$\times$ reduction in packet delivery times relative to
-applications built over TCP, or an over 45--88\% improvement in data fidelity
-(application accuracy) relative to applications built over UDP.  We also compare
-\sysname{} to JetStream~\cite{rabkin2014aggregation}, a state-of-the-art system
-for building adaptive streaming analytics that is based on manual policies: our
-results show that besides the benefit of generating optimal policies
-\textit{automatically}, \sysname{} achieves a 15-20$\times$ reduction in latency
-and 1-5\% improvement in accuracy relative to JetStream. We show that these
-gains come from the combination of \sysname{}'s ability to learn better policies
-\emph{and} its well-designed runtime.  Hence, the ease of development that
-\sysname{} provides comes with significantly \emph{improved} application
-performance compared to typical manually crafted policies.
+\cameraready{ With the combination of \sysname{}'s ability to learn better
+  policies \emph{and} its well-designed runtime, our evaluation shows that
+  \sysname{} significantly outperforms non-adaptive applications, e.g. achieving
+  a 40--100$\times$ reduction in packet delivery times relative to applications
+  built over TCP, or an over 45--88\% improvement in data fidelity (application
+  accuracy) relative to applications built over UDP. We also compare \sysname{}
+  to JetStream~\cite{rabkin2014aggregation}, a state-of-the-art system for
+  building adaptive streaming analytics that is based on manual policies: our
+  results show that besides the benefit of generating optimal policies
+  \textit{automatically}, \sysname{} achieves a 15-20$\times$ reduction in
+  latency and 1-5\% in accuracy simultaneously relative to JetStream.  }
 
 %%% Local Variables:
 %%% mode: latex

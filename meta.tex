@@ -29,11 +29,14 @@
   skip=5pt,
 }
 
-\hypersetup{
-  colorlinks=true,
-  linkcolor=ACMRed,
-  urlcolor=ACMBlue,
-  citecolor=ACMRed,
+\AtBeginDocument{
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=ACMBlue,
+    citecolor=ACMPurple,
+    urlcolor=ACMDarkBlue,
+    filecolor=ACMDarkBlue
+  }
 }
 
 \renewcommand{\ttdefault}{cmtt}
@@ -77,6 +80,8 @@
 \newcommand{\sysname}{AWStream}
 \newcommand{\para}[1]{\smallskip\noindent\textbf{#1}}
 \newcommand{\paraf}[1]{\noindent\textbf{#1}}
+
+\newcommand{\cameraready}[1]{{\color{ACMRed}#1\normalfont}}
 \newcommand{\todo}[1]{{\color{ACMRed}\bf{TODO: #1}\normalfont}}
 \newcommand{\fixme}[1]{{\color{ACMRed}\bf{FIXME: #1}\normalfont}}
 \newcommand{\question}[1]{{\color{ACMRed}\footnotesize{Q: #1}\normalfont}}

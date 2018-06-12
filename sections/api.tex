@@ -5,8 +5,10 @@
 Most stream processing systems construct applications as a directed graph of
 operators~\cite{toshniwal2014storm, zaharia2013discretized}. Each operator
 transforms input streams into new streams. \sysname{} borrows the same
-computation model.  \autoref{tab:operators} lists some example operators, such
-as \texttt{map} and \texttt{skip}.
+computation model \cameraready{and can support normal operators found in
+  existing stream processing systems such as
+  JetStream~\cite{rabkin2014aggregation} (see example operators in
+  \autoref{tab:operators}).}
 
 To integrate adaptation as a first-class abstraction, \sysname{} introduces
 \maybe{} operators that degrade data quality, yielding potential bandwidth

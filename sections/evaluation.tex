@@ -273,8 +273,9 @@ further decrease the bandwidth to \SI{5}{Mbps}; $(iv)$~at t=440s, we remove all
 traffic shaping. For UDP, HTB doesn't emulate the packet loss or out-of-order
 delivery; so we use \texttt{netem} and configure the loss probability according
 to the delivery rate. Because each pair-wise connection has a different
-capacity, we impose a \textit{background} bandwidth limit---\SI{25}{Mbps}---to
-normalize the capacity.
+capacity, we impose a \textit{background} bandwidth
+limit---\SI{25}{Mbps}---\cameraready{such that all clients can use at most 25
+  Mbps of network bandwidth.}
 
 We compare \sysname{} with the following baselines:
 

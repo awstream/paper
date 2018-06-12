@@ -15,10 +15,13 @@ Streaming~\cite{zaharia2013discretized}, it is difficult to make edge clients
 failure-oblivious.  We leave failure detection and recovery as a future work.
 
 \para{Profile Modeling.} \sysname{} currently performs an exhaustive search when
-profiling, and only use parallelism and sampling to speed up. We plan to improve
-our profiler with statistical methods such as Bayesian
-Optimization~\cite{snoek2012practical, alipourfard2017cherrypick} that can model
-black box functions $B(c)$ and $A(c)$.
+profiling. \cameraready{ While parallelism and sampling are effective, profiling
+  complexity grows exponentially with the number of knobs. Inspired by recent
+  success of using Bayesian Optimization~\cite{snoek2012practical,
+    alipourfard2017cherrypick, solnik2017bayesian} to model black-box functions,
+  we are currently exploring multi-objective Bayesian
+  Optimization~\cite{hernandez2016predictive} that can find
+  \textit{near-optimal} configurations without exhaustive search.  }
 
 % \para{Expressiveness}: Our \maybe{} APIs allow an easy integration with
 % existing stream processing systems. While it follows the operator model,
