@@ -113,9 +113,9 @@ application-specific solutions. We discuss their drawbacks to motivate
 \para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
 the first to use degradation to address bandwidth limits in wide area. While
 effective in comparison to non-adaptive systems, JetStream requires developers
-to write manual policies, e.g.~\textit{``if bandwidth is insufficient, switch to
-  sending images at 75\% fidelity, then 50\% if there still isn't enough
-  bandwidth. Beyond that point, reduce the frame rate, but keep the image
+to write manual policies, for example, ~\textit{``if bandwidth is insufficient,
+  switch to sending images at 75\% fidelity, then 50\% if there still isn't
+  enough bandwidth. Beyond that point, reduce the frame rate, but keep the image
   fidelity.''}\footnote{Excerpt from JetStream \S
   4.3~\cite{rabkin2014aggregation}.} We discuss the problems with manual
 policies below and present quantitative evaluations in

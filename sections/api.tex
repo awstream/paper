@@ -72,7 +72,7 @@ collects the execution result. In this example, the knob is [2, 4] and the
 degradation function performs a wrapping (modular) division where the divisor is
 the chosen knob. The knob value modifies the quantization level, affecting the
 output: [1, 2, 3, 4] (no degradation), [0, 1, 1, 2] (k=2), or [0, 0, 0, 1]
-(k=4). If the stream is then encoded---e.g. run-length encoding as in
+(k=4). If the stream is then encoded---for example, run-length encoding as in
 JPEG~\cite{wallace1992jpeg}---for transmission, the data size will depend on the
 level of degradation.
 

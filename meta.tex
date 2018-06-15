@@ -78,11 +78,13 @@
 %% Paper setup
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% \newcommand{\cameraready}[1]{{\color{ACMRed}#1\normalfont}}
+\newcommand{\cameraready}[1]{#1}
+
 \newcommand{\sysname}{AWStream}
 \newcommand{\para}[1]{\smallskip\noindent\textbf{#1}}
 \newcommand{\paraf}[1]{\noindent\textbf{#1}}
 
-\newcommand{\cameraready}[1]{{\color{ACMRed}#1\normalfont}}
 \newcommand{\todo}[1]{{\color{ACMRed}\bf{TODO: #1}\normalfont}}
 \newcommand{\fixme}[1]{{\color{ACMRed}\bf{FIXME: #1}\normalfont}}
 \newcommand{\question}[1]{{\color{ACMRed}\footnotesize{Q: #1}\normalfont}}
@@ -93,8 +95,8 @@
 \renewcommand*\sectionautorefname{\Snospace}
 \renewcommand*\subsectionautorefname{\Snospace}
 \renewcommand*\subsubsectionautorefname{\Snospace}
-\renewcommand*{\equationautorefname}{Eq.}
-\renewcommand*{\figureautorefname}{Fig.}
+\renewcommand*{\equationautorefname}{Equation}
+\renewcommand*{\figureautorefname}{Figure}
 
 \newcommand{\specialcell}[2][c]{%
   \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}

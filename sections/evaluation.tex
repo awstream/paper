@@ -377,10 +377,11 @@ and JetStream++ are able to adapt during traffic shaping. With a more precise
 and fine-grain policy, JetStream++ achieves a lower latency (median
 \SI{539}{\ms}) in comparison to JetStream (median \SI{1732}{\ms}). Because
 JetStream's runtime reacts instantaneously when the congestion condition
-changes, both baselines oscillate among polices during the
-experiment. \sysname{} effectively addresses the oscillation with probing and
-achieves a much lower latency: median \SI{118}{\ms}, 15$\times$ improvement over
-JetStream and 5$\times$ improvement over JetStream++.
+changes, both baselines \cameraready{easily overcompensate and exhibit
+  oscillation among polices during the experiment}. \sysname{} effectively
+addresses the oscillation with probing and achieves a much lower latency: median
+\SI{118}{\ms}, 15$\times$ improvement over JetStream and 5$\times$ improvement
+over JetStream++.
 
 % summary(accuracy)
 % Time        JetStream++        JetStream           HLS
@@ -432,11 +433,13 @@ AR. However, HLS's adaptation works poorly for PD (6\% accuracy as in
 % Max.   :375.0   Max.   :0.9991     Max.   :0.7981     Max.   :0.9991
 
 In summary, \autoref{fig:ar-runtime} shows that \sysname{} achieves low latency
-and high accuracy simultaneously. We show the results \textit{during shaping} in
-a different form in \autoref{fig:intro} to discuss the trade-off between
-fidelity and freshness.\footnote{We obtain \autoref{fig:intro}'s app-specific
-  data by feeding PD's profile to AR. We refer to JetStream as manual policies
-  in \autoref{fig:intro}.}
+and high accuracy simultaneously. \cameraready{The latency improvement over
+  JetStream allows interactive applications, such as AR, to feel responsive
+  rather than interrupted~\cite{nielsen1994usability}}. We show the results
+\textit{during shaping} in a different form in \autoref{fig:intro} to discuss
+the trade-off between fidelity and freshness.\footnote{We obtain
+  \autoref{fig:intro}'s app-specific data by feeding PD's profile to AR. We
+  refer to JetStream as manual policies in \autoref{fig:intro}.}
 
 \begin{figure}
   \centering
@@ -547,7 +550,7 @@ To evaluate how \sysname{} performs with increased network delays, we conducted
 another experiment with one pair of client and server under different network
 conditions. We use \texttt{netem} to add delays, up to \SI{250}{ms} each way, so
 the added RTT can be as high as \SI{500}{ms}. The delay follows a normal
-distribution where the variation is 10\%, e.g.\,$250\pm 25\text{ms}$.
+distribution where the variation is 10\% (e.g.,~$250\pm 25\text{ms}$).
 
 \begin{figure}
   \centering
@@ -569,6 +572,21 @@ network delays.
 
 \subsection{Resource Allocation and Fairness}
 \label{sec:multi-task-alloc}
+
+We evaluate resource allocations with two applications. In this way, the result
+also covers the case of a single application, and can generalize to more
+applications.
+
+We choose AR and PD as the example applications.  The clients and servers of
+both applications are co-located so that they share the same bottleneck
+link. The experiment starts with sufficient bandwidth. At t=60s, we start
+traffic shaping to limit the total bandwidth to \SI{6}{Mbps}. When we allocate
+resource equally between two applications (\autoref{fig:eq-bw}), each
+application gets \SI{3}{Mbps}. Under this condition, PD runs with a higher
+accuracy of 85\% while AR only achieves 77\%. In addition to resource fairness,
+\sysname{} supports utility fairness: it chooses configurations that maximize
+the minimal accuracy. In this experiment, PD receives \SI{2}{Mbps} and AR
+receives \SI{4}{Mbps}; and both achieve 80\% accuracy (\autoref{fig:eq-acc}).
 
 \begin{figure}
   \centering
@@ -595,21 +613,6 @@ network delays.
   \label{fig:multitask}
   \vspace{-0.8em}
 \end{figure}
-
-We evaluate resource allocations with two applications. In this way, the result
-also covers the case of a single application, and can generalize to more
-applications.
-
-We choose AR and PD as the example applications.  The clients and servers of
-both applications are co-located so that they share the same bottleneck
-link. The experiment starts with sufficient bandwidth. At t=60s, we start
-traffic shaping to limit the total bandwidth to \SI{6}{Mbps}. When we allocate
-resource equally between two applications (\autoref{fig:eq-bw}), each
-application gets \SI{3}{Mbps}. Under this condition, PD runs with a higher
-accuracy of 85\% while AR only achieves 77\%. In addition to resource fairness,
-\sysname{} supports utility fairness: it chooses configurations that maximize
-the minimal accuracy. In this experiment, PD receives \SI{2}{Mbps} and AR
-receives \SI{4}{Mbps}; and both achieve 80\% accuracy (\autoref{fig:eq-acc}).
 
 %%% Local Variables:
 %%% mode: latex
