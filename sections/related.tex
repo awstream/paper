@@ -25,27 +25,31 @@ control logic up to developers.  While our work has a large debt to prior
 streaming work, \sysname{} targets at the wide area and explicitly explores the
 trade-off between data fidelity and freshness.
 
-\para{Approximate Analytics.} The idea of degrading computation fidelity for
-responsiveness is also explored elsewhere, such as SQL
-queries~\cite{hellerstein1997online, agarwal2013blinkdb,
-  ananthanarayanan2014grass}, real-time processing~\cite{farrell2016meantime},
-and video processing within large clusters~\cite{zhang2017live}. The trade-off
-between available resource and application accuracy is a common theme among all
-these systems. \sysname{} targets at wide-area streaming analytics, an emerging
+\cameraready{\para{Approximate Analytics.} The idea of degrading computation
+  fidelity for responsiveness is also explored elsewhere, such as SQL
+  queries~\cite{agarwal2013blinkdb, ananthanarayanan2014grass}, real-time
+  processing~\cite{farrell2016meantime}, and video processing within large
+  clusters~\cite{zhang2017live}. They employ techniques such as programming
+  language support~\cite{sampson2011enerj},
+  sampling~\cite{garofalakis2001approximate}, sketches~\cite{cormode2011sketch},
+  and online aggregation~\cite{hellerstein1997online}.}  The trade-off between
+available resource and application accuracy is a common theme among all these
+systems. \sysname{} targets at wide-area streaming analytics, an emerging
 application domain especially with the advent of IoT\@.
 
 \para{WAN-Aware Systems.} Geo-distributed systems need to cope with high latency
 and limited bandwidth. While some systems assume the network can prioritize a
 small amount of critical data under congestion~\cite{cho2012surviving}, most
-systems reduce data sizes in the first place to avoid congestion,
-e.g.\,LBFS~\cite{muthitacharoen2001low}. Over the past two years, we have seen a
-plethora of geo-distributed analytical frameworks~\cite{vulimiri2015wananlytics,
-  vulimiri2015global, pu2015low, kloudas2015pixida, viswanathan2016clarinet}
-that incorporate heterogeneous wide-area bandwidth into query optimization to
-minimize data movement. While effective in speeding up analytics, these systems
-focus on batch tasks such as MapReduce jobs or SQL queries. Such tasks are often
-executed infrequently and without real time constrain. In contrast, \sysname{}
-processes streams continuously in real time.
+systems reduce data sizes in the first place to avoid congestion
+(e.g.,~LBFS~\cite{muthitacharoen2001low}). Over the past two years, we have seen
+a plethora of geo-distributed analytical
+frameworks~\cite{vulimiri2015wananlytics, vulimiri2015global, pu2015low,
+  kloudas2015pixida, viswanathan2016clarinet} that incorporate heterogeneous
+wide-area bandwidth into query optimization to minimize data movement. While
+effective in speeding up analytics, these systems focus on batch tasks such as
+MapReduce jobs or SQL queries. Such tasks are often executed infrequently and
+without real time constrain. In contrast, \sysname{} processes streams
+continuously in real time.
 
 %% - Pixida~\cite{kloudas2015pixida} minimizes data movement across inter-DC
 %% links by solving a traffic minimization problem in data analytics.
@@ -69,8 +73,8 @@ processes streams continuously in real time.
 %% \cite{heintz2015towards} discusses the complex trade-offs involved in
 %% wide-area analytics.
 
-\para{(Adaptive) Video Streaming.} Multimedia streaming protocols,
-e.g.\,RTP~\cite{schulzrinne2006rtp}, aim to be fast instead of reliable. While
+\para{(Adaptive) Video Streaming.} Multimedia streaming protocols
+(e.g.,~RTP~\cite{schulzrinne2006rtp}) aim to be fast instead of reliable. While
 they can achieve low latency, their accuracy can be poor under congestion.
 Recent work has moved towards HTTP-based protocols and focused on designing
 adaptation strategy to improve QoE, as in research~\cite{mao2017neural,
@@ -79,7 +83,7 @@ DASH~\cite{michalos2012dynamic, sodagar2011mpeg}). These adaptation strategies
 are often pull-based: client keeps checking the index file for changes. And
 clients have to wait for the next chunk (typically 2-10 seconds). In addition,
 as we have shown in \autoref{sec:runtime-adaptation}, their adaptation is a poor
-match for analytics that rely on image details (e.g.\,6\% accuracy for PD). In
+match for analytics that rely on image details (e.g.,~6\% accuracy for PD). In
 contrast, \sysname{} learns an adaptation strategy for each application (also
 not limited to video analytics); and the runtime is optimized for low latency.
 

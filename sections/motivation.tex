@@ -80,7 +80,6 @@ occasions when the available bandwidth is below 25\% of the maximum bandwidth.
   \caption{Bandwidth variations throughout the day between Amazon EC2 sites
     (from Ireland to California).}
   \label{fig:bw}
-  \vspace{-1em}
 \end{figure}
 
 The back-haul links between EC2 sites are better---if not at least
@@ -92,17 +91,19 @@ networks~\cite{nikravesh2014mobile}.
 \subsection{Motivation for \sysname{}}
 \label{subsec:motivation}
 
-\begin{figure*}
-  \centering
-  \includegraphics[width=0.85\linewidth]{figures/motiv-app-specific.pdf}
-  \caption{The measured bandwidth and application accuracy for two video
-    analytics applications. (1) Manual policies lack precision without
-    measurements and need to handle multiple dimensions (as in a-d). (2)
-    Application-specific optimizations do not generalize: degrading frame rates
-    works well for stationary camera (a), but not for mobile camera (c). (e-h)
-    shows example frames.}
-  \label{fig:app-specific}
-\end{figure*}
+\input{sections/fig-app-specific}
+
+% \begin{figure*}
+%   \centering
+%   \includegraphics[width=0.85\linewidth]{figures/motiv-app-specific.pdf}
+%   \caption{The measured bandwidth and application accuracy for two video
+%     analytics applications. (1) Manual policies lack precision without
+%     measurements and need to handle multiple dimensions (as in a-d). (2)
+%     Application-specific optimizations do not generalize: degrading frame rates
+%     works well for stationary camera (a), but not for mobile camera (c). (e-h)
+%     shows example frames.}
+%   \label{fig:app-specific}
+% \end{figure*}
 
 To address bandwidth limits, existing solutions use manual policies or
 application-specific solutions. We discuss their drawbacks to motivate
@@ -111,9 +112,9 @@ application-specific solutions. We discuss their drawbacks to motivate
 \para{Manual polices are sub-optimal.} JetStream~\cite{rabkin2014aggregation} is
 the first to use degradation to address bandwidth limits in wide area. While
 effective in comparison to non-adaptive systems, JetStream requires developers
-to write manual policies, e.g.~\textit{``if bandwidth is insufficient, switch to
-  sending images at 75\% fidelity, then 50\% if there still isn't enough
-  bandwidth. Beyond that point, reduce the frame rate, but keep the image
+to write manual policies, for example, ~\textit{``if bandwidth is insufficient,
+  switch to sending images at 75\% fidelity, then 50\% if there still isn't
+  enough bandwidth. Beyond that point, reduce the frame rate, but keep the image
   fidelity.''}\footnote{Excerpt from JetStream \S
   4.3~\cite{rabkin2014aggregation}.} We discuss the problems with manual
 policies below and present quantitative evaluations in
@@ -125,14 +126,14 @@ do not necessarily lead to 75\% application accuracy. In terms of bandwidth,
 naively one would think that reducing the frame rate by half will also half the
 data rate. But if video encoding such as H.264~\cite{richardson2011h} is used, a
 reduction in frame rate increases the inter-frame difference and creates
-P-frames with larger sizes. \hyperref[fig:app-specific]{Fig.~3c} shows that when
+P-frames with larger sizes. \autoref{fig:mobile-frame-rate} shows that when
 reducing the frame rate to 33\% (from \(30~\text{FPS}\) to \(10~\text{FPS}\)),
 the bandwidth use can still be more than 50\%.
 
 Second, it is not scalable to specify rules one by one. A fine-grain control
 requires many rules in the policy. Besides, applications can degrade in multiple
 dimensions and each dimension has different impacts (compare
-\hyperref[fig:app-specific]{Fig.~3a} with \hyperref[fig:app-specific]{Fig.~3b}).
+\autoref{fig:stationary-frame-rate} with \autoref{fig:stationary-resolution}).
 Specifying rules in detail and across dimensions manually is a tedious and
 error-prone process.
 
@@ -147,7 +148,7 @@ example, DASH~\cite{sodagar2011mpeg} optimizes QoE for video streaming; it keeps
 a high frame rate and reduces resolutions for adaptation. Its policy that lowers
 the resolution works poorly for video analytics that relies on image
 details~\cite{lowe2004distinctive, viola2001rapid}. In
-\hyperref[fig:app-specific]{Fig.~3b}, we show that pedestrian detection accuracy
+\autoref{fig:stationary-resolution}, we show that pedestrian detection accuracy
 drops fast when reducing resolutions as pedestrian are small in the scenes.
 
 Similar applications face different data distributions, as shown in

@@ -56,25 +56,26 @@ accuracy. Formally, $\mathbb{P}$ is defined as follows:
   \vspace{0.3em}
   \caption{Notations used in this paper.}
   \label{tab:notations}
-  \vspace{-3em}
 \end{table}
 
-Because \sysname{} allows arbitrary functions as the degradation functions, it
-does not assume a closed-form relationship for $B(c)$ and $A(c)$. Instead,
-\sysname{} takes a data-driven approach: profiling applications with
-developer-supplied training data.  We measure $B(c)$ at the point of
-transmission. The accuracy $A(c)$ is measured either against the groundtruth, or
-the reference results when all degradation operations are off.  We show examples
-of knobs, configurations, and accuracy functions when we present applications in
-\autoref{sec:implementation}.
+\cameraready{We show examples of knobs, configurations, and accuracy functions
+  when we present applications in \autoref{sec:implementation} and visualize the
+  profile of sample applications in \autoref{fig:all-profiles}.}
 
-\para{Offline Profiling.} We first use an offline process to build a bootstrap
-profile (or default profile).  \sysname{} makes no assumptions on the
-performance models, and thus evaluates all possible configurations.  While all
-knobs form a combinatorial space, the offline profiling is only a one-time
-process.  We exploit parallelism to reduce the profiling time.  Without any
-\textit{a priori} knowledge, all configurations are assigned randomly to
-available machines.
+\para{Offline Profiling.} \cameraready{ We first use an offline process to build
+  a bootstrap profile (or default profile).  Because \sysname{} allows arbitrary
+  functions as the degradation functions, it does not assume a closed-form
+  relationship for $B(c)$ and $A(c)$. \sysname{} takes a data-driven approach:
+  profiling applications with developer-supplied training data. $B(c)$ is
+  measured as the data rate (bps) at the point of transmission. The accuracy
+  $A(c)$ is measured either against the groundtruth, or the reference results
+  when all degradation operations are off. }
+
+\sysname{} makes no assumptions on the performance models, and thus evaluates
+all possible configurations.  While all knobs form a combinatorial space, the
+offline profiling is only a one-time process.  We exploit parallelism to reduce
+the profiling time.  Without any \textit{a priori} knowledge, all configurations
+are assigned randomly to available machines.
 
 % \para{Offline Profiling.} We first use an offline process to build a bootstrap
 % profile (or default profile).  Because \sysname{} supports arbitrary
