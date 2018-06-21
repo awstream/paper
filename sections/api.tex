@@ -1,31 +1,6 @@
 \subsection{API for Structured Adaptation}
 \label{sec:structure-adapt}
 
-%% Introduce graphs of operators model
-Most stream processing systems construct applications as a directed graph of
-operators~\cite{toshniwal2014storm, zaharia2013discretized}. Each operator
-transforms input streams into new streams. \sysname{} borrows the same
-computation model \cameraready{and can support normal operators found in
-  existing stream processing systems such as
-  JetStream~\cite{rabkin2014aggregation} (see example operators in
-  \autoref{tab:operators}).}
-
-To integrate adaptation as a first-class abstraction, \sysname{} introduces
-\maybe{} operators that degrade data quality, yielding potential bandwidth
-savings.  Our API design has three considerations. $(i)$~To free developers from
-specifying exact rules, the API should allow specifications with
-options. $(ii)$~To allow combining multiple dimensions, the API should be
-modular. $(iii)$~To support flexible integration with arbitrary degradation
-functions, the API should take user-defined functions. Therefore, our API is,
-
-\vspace{-2pt}
-\begin{lstlisting}
-        maybe(knobs: Vec<T>, f: (T, I) => I)
-\end{lstlisting}
-
-We illustrate the use of the \texttt{maybe} operator with an example that
-quantizes a stream of integers in Rust:
-
 \begin{table*}
   \centering
   \begin{tabular}{ c r l }
@@ -57,6 +32,31 @@ quantizes a stream of integers in Rust:
     a list of elements with type \texttt{T}.}
   \label{tab:operators}
 \end{table*}
+
+%% Introduce graphs of operators model
+Most stream processing systems construct applications as a directed graph of
+operators~\cite{toshniwal2014storm, zaharia2013discretized}. Each operator
+transforms input streams into new streams. \sysname{} borrows the same
+computation model \cameraready{and can support normal operators found in
+  existing stream processing systems such as
+  JetStream~\cite{rabkin2014aggregation} (see example operators in
+  \autoref{tab:operators}).}
+
+To integrate adaptation as a first-class abstraction, \sysname{} introduces
+\maybe{} operators that degrade data quality, yielding potential bandwidth
+savings.  Our API design has three considerations. $(i)$~To free developers from
+specifying exact rules, the API should allow specifications with
+options. $(ii)$~To allow combining multiple dimensions, the API should be
+modular. $(iii)$~To support flexible integration with arbitrary degradation
+functions, the API should take user-defined functions. Therefore, our API is,
+
+\vspace{-2pt}
+\begin{lstlisting}
+        maybe(knobs: Vec<T>, f: (T, I) => I)
+\end{lstlisting}
+
+We illustrate the use of the \texttt{maybe} operator with an example that
+quantizes a stream of integers in Rust:
 
 \vspace{-2pt}
 \begin{lstlisting}
