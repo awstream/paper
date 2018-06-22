@@ -16,18 +16,6 @@ explores. For each configuration $c$, there are two mappings that are of
 particular interest: a mapping from $c$ to its bandwidth consumption $B(c)$ and
 its accuracy measure $A(c)$. \autoref{tab:notations} summarizes these symbols.
 
-The profiling looks for Pareto-optimal configurations; that is, for any
-configuration $c$ in the Pareto-optimal set $\mathbb{P}$, there is no
-alternative configuration $c'$ that requires less bandwidth and offers a higher
-accuracy. Formally, $\mathbb{P}$ is defined as follows:
-
-{\small \vspace{-1em}
-  \begin{equation}
-  \mathbb{P} = \{ c \in \mathbb{C} : \{ c' \in \mathbb{C}: B(c') < B(c),
-  A(c') > A(c) \} = \varnothing\}
-  \label{eq:pareto}
-\end{equation}
-}%
 
 \begin{table}
   \footnotesize
@@ -56,7 +44,21 @@ accuracy. Formally, $\mathbb{P}$ is defined as follows:
   \vspace{0.3em}
   \caption{Notations used in this paper.}
   \label{tab:notations}
+  \vspace{-1.5em}
 \end{table}
+
+The profiling looks for Pareto-optimal configurations; that is, for any
+configuration $c$ in the Pareto-optimal set $\mathbb{P}$, there is no
+alternative configuration $c'$ that requires less bandwidth and offers a higher
+accuracy. Formally, $\mathbb{P}$ is defined as follows:
+
+{\small \vspace{-1em}
+  \begin{equation}
+  \mathbb{P} = \{ c \in \mathbb{C} : \{ c' \in \mathbb{C}: B(c') < B(c),
+  A(c') > A(c) \} = \varnothing\}
+  \label{eq:pareto}
+\end{equation}
+}%
 
 \cameraready{We show examples of knobs, configurations, and accuracy functions
   when we present applications in \autoref{sec:implementation} and visualize the

@@ -240,7 +240,7 @@ profiling techniques.
   \caption{Compared to the continuous profiling baseline (52X overhead), our
     sampling techniques speed up by 3$\times$ or 8.7$\times$.}
   \label{tab:online}
-  \vspace{-1em}
+  \vspace{-1.5em}
 \end{table}
 
 \subsection{Runtime Adaptation}
@@ -309,6 +309,8 @@ latency-based measure of capacity ratio; $(ii)$ \sysname{} has an explicit probe
 phase while JetStream changes its policy immediately after capacity ratio
 changes.
 
+\captionsetup[subfigure]{justification=justified, singlelinecheck=true}
+
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
     \centering
@@ -324,8 +326,7 @@ changes.
   \begin{subfigure}[t]{\columnwidth}
     \centering
     \includegraphics[width=\columnwidth]{figures/runtime_darknet-boxplot.pdf}
-    \caption{Latency and accuracy during the traffic shaping
-      (i.e.,~t=200s--440s).}
+    \caption{Latency and accuracy during the traffic shaping (t=200s--440s).}
     \label{fig:ar-runtime-boxplot}
   \end{subfigure}
   \caption{For AR, \sysname{} simultaneously achieves low latency and high
@@ -456,6 +457,7 @@ the trade-off between fidelity and freshness.\footnote{We obtain
       \put(-10, 60){\parbox{2cm}{\centering \caption{TK}\label{fig:tk-runtime}}}
     \end{picture}
   \end{subfigure}
+  \vspace{-1em}
   \caption{PD and TK performance summary. Box plot shows latency and accuracy
     during the traffic shaping (i.e.,~t=200s-440s).}
   \label{fig:pd-tk}
@@ -541,7 +543,6 @@ latency.
 
 \vspace{0.3em}
 \para{Performance with Varying Network Delays}
-\vspace{0.2em}
 
 \noindent \sysname{} targets at wide area whose key characteristic is the large
 variation in latency~\cite{li2010cloudcmp}. While we have conducted experiments
@@ -554,11 +555,37 @@ distribution where the variation is 10\% (e.g.,~$250\pm 25\text{ms}$).
 
 \begin{figure}
   \centering
-  \includegraphics[width=.88\columnwidth]{figures/runtime_darknet-bench.pdf}
+  \includegraphics[width=.8\columnwidth]{figures/runtime_darknet-bench.pdf}
   \caption{\sysname{} maintains low latency and high accuracy under different
     network delay conditions.}
   \label{fig:ar-rtt}
-  \vspace{-0.5em}
+  \vspace{-1em}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.7\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-legend.pdf}
+  \end{subfigure}
+  \\
+  \vspace{0.4em}
+  \begin{subfigure}[t]{0.45\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-left.pdf}
+    \caption{Resource Fairness}
+    \label{fig:eq-bw}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\columnwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/multitask-right.pdf}
+    \caption{Utility Fairness}
+    \label{fig:eq-acc}
+  \end{subfigure}
+  \caption{\sysname{} allows different resource allocation schemes.}
+  \label{fig:multitask}
+  \vspace{-0.8em}
 \end{figure}
 
 \autoref{fig:ar-rtt} shows the runtime behavior with various added network
@@ -587,32 +614,6 @@ accuracy of 85\% while AR only achieves 77\%. In addition to resource fairness,
 \sysname{} supports utility fairness: it chooses configurations that maximize
 the minimal accuracy. In this experiment, PD receives \SI{2}{Mbps} and AR
 receives \SI{4}{Mbps}; and both achieve 80\% accuracy (\autoref{fig:eq-acc}).
-
-\begin{figure}
-  \centering
-  \begin{subfigure}[t]{0.7\columnwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/multitask-legend.pdf}
-  \end{subfigure}
-  \\
-  \vspace{0.4em}
-  \begin{subfigure}[t]{0.45\columnwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/multitask-left.pdf}
-    \caption{Resource Fairness}
-    \label{fig:eq-bw}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{0.45\columnwidth}
-    \centering
-    \includegraphics[width=\textwidth]{figures/multitask-right.pdf}
-    \caption{Utility Fairness}
-    \label{fig:eq-acc}
-  \end{subfigure}
-  \caption{\sysname{} allows different resource allocation schemes.}
-  \label{fig:multitask}
-  \vspace{-0.8em}
-\end{figure}
 
 %%% Local Variables:
 %%% mode: latex

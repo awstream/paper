@@ -5,17 +5,17 @@
 %% The original source files were:
 %%
 %% acmart.dtx  (with options: `class')
-%% 
+%%
 %% IMPORTANT NOTICE:
-%% 
+%%
 %% For the copyright see the source file.
-%% 
+%%
 %% Any modified versions of this file must be renamed
 %% with new filenames distinct from acmart.cls.
-%% 
+%%
 %% For distribution of the original source see the terms
 %% for copying and modification in the file acmart.dtx.
-%% 
+%%
 %% This generated file may be distributed as long as the
 %% original source files, as listed above, are part of the
 %% same distribution. (The sources need not necessarily be
@@ -527,12 +527,19 @@ Computing Machinery]
      marginparwidth=2pc,heightrounded
      }%
 \or % sigplan
+   % Replace with sigconf geometry, and minor tweaks
    \geometry{twoside=true, head=13pt,
      paperwidth=8.5in, paperheight=11in,
-     includeheadfoot=false, columnsep=2pc,
-     top=1in, bottom=1in, inner=0.75in, outer=0.75in,
+     includeheadfoot, columnsep=2pc,
+     top=57pt, bottom=62pt, inner=54pt, outer=54pt,
      marginparwidth=2pc,heightrounded
      }%
+   % \geometry{twoside=true, head=13pt,
+   %   paperwidth=8.5in, paperheight=11in,
+   %   includeheadfoot=false, columnsep=2pc,
+   %   top=1in, bottom=1in, inner=0.75in, outer=0.75in,
+   %   marginparwidth=2pc,heightrounded
+   %   }%
 \or % sigchi
    \geometry{twoside=true, head=13pt,
      paperwidth=8.5in, paperheight=11in,
