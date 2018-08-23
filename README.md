@@ -1,6 +1,6 @@
 # Adaptive Wide-area Stream Processing
 
-[![Build Status][travis]](https://travis-ci.com/awstream/paper)
+[![Build Status][travis]](https://travis-ci.org/awstream/paper)
 
 Latest builds by Travis: [Paper](paper)
 
